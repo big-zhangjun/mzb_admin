@@ -66,9 +66,8 @@
                     </a-button>
                 </a-dropdown> -->
             </a-space>
-            <standard-table :columns="columns" :dataSource="dataSource" :rowKey="'id'" :scroll="{x: 1500}"
-                :pagination="{ ...pagination, onChange: onPageChange }"
-                @selectedRowChange="onSelectChange">
+            <standard-table :columns="columns" :dataSource="dataSource" :rowKey="'id'"
+                :pagination="{ ...pagination, onChange: onPageChange }" @selectedRowChange="onSelectChange">
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
                 </div>
@@ -100,16 +99,11 @@ import UserForm from '@/pages/user/components/userForm'
 // import { request } from '@/utils/request'
 import { getUserList, deltUserInfo, getDeptList, getRoleList } from '@/services/user'
 function formatDate(timestamp) {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
     const year = date.getFullYear();
-    const month = date.getMonth() + 1;
+    const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
     const day = date.getDate();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const second = date.getSeconds();
-
-    const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-    return formattedDate;
+    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
 }
 
 export default {
@@ -121,25 +115,25 @@ export default {
             advanced: true,
             visible: false,
             columns: [
-                {
-                    title: '员工编号',
-                    dataIndex: 'id',
-                    width: 150
-                },
+                // {
+                //     title: '员工编号',
+                //     dataIndex: 'id',
+                //     width: 150
+                // },
                 {
                     title: '用户名',
                     dataIndex: 'userName',
                     width: 150,
                     scopedSlots: { customRender: 'description' }
                 },
-                {
-                    title: '员工工号',
-                    dataIndex: 'userNumber',
-                    // sorter: true,
-                    needtotalCount: true,
-                    width: 150,
-                    // customRender: (text) => text + ' 次'
-                },
+                // {
+                //     title: '员工工号',
+                //     dataIndex: 'userNumber',
+                //     // sorter: true,
+                //     needtotalCount: true,
+                //     width: 150,
+                //     // customRender: (text) => text + ' 次'
+                // },
                 // {
                 //     dataIndex: 'status',
                 //     needtotalCount: true,
@@ -176,7 +170,7 @@ export default {
                 {
                     title: '在职离职',
                     width: 150,
-                    customRender: (text) => text == 1? '在职' : '离职',
+                    customRender: (text) => text == 1 ? '在职' : '离职',
                     dataIndex: "resign"
                 },
                 {
@@ -186,12 +180,12 @@ export default {
                     customRender: (text) => formatDate(text)
 
                 },
-                {
-                    title: '更新时间',
-                    width: 150,
-                    dataIndex: "updateTime",
-                    customRender: (text) => formatDate(text)
-                },
+                // {
+                //     title: '更新时间',
+                //     width: 150,
+                //     dataIndex: "updateTime",
+                //     customRender: (text) => formatDate(text)
+                // },
                 {
                     title: '操作',
                     width: 150,
@@ -205,7 +199,7 @@ export default {
             pagination: {
                 pageIndex: 1,
                 pageSize: 10,
-                totalCount: 0
+                total: 0
             },
             form: {
                 userName: "",
@@ -270,7 +264,7 @@ export default {
             getUserList({ pageSize, pageIndex, ...params }).then(res => {
                 const { records, totalCount } = res?.data?.data ?? {}
                 this.dataSource = records
-                this.pagination.totalCount = totalCount
+                this.pagination.total = totalCount
             })
         },
         // 查询部门列表
@@ -318,7 +312,7 @@ export default {
             this.type = 'add'
             this.modalTitle = '新增员工'
             this.visible = true
-            this.$nextTick(()=> {
+            this.$nextTick(() => {
                 this.$refs.userForm.resetFields()
             })
         },

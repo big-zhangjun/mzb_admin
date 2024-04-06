@@ -7,14 +7,14 @@
             </a-form-item>
             <a-form-item :label="'职位描述'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-textarea rows="4" :placeholder="'请输入职位描述'"
-                    v-decorator="['description', { rules: [{ required: true, message: '请输入职位描述' }] }]" />
+                    v-decorator="['description', { rules: [{ required: false, message: '请输入职位描述' }] }]" />
             </a-form-item>
         </a-form>
     </a-card>
 </template>
 
 <script>
-import { addRoleInfo, getDeptList, getRoleInfo, updateRoleInfo, getUserList } from '@/services/user'
+import { addRoleInfo, getDeptList, getRoleInfo, updateRoleInfo } from '@/services/user'
 export default {
     name: 'BasicForm',
     // i18n: require('./i18n'),
@@ -59,28 +59,11 @@ export default {
                     'roleName',
                     'description',
                 ]
-                const { managerRoleID, managerID } = res.data.data
-                let managerIDs = [managerRoleID, managerID]
                 Object.keys(res.data.data).forEach(item => {
                     if (keys.includes(item)) {
                         this.form.setFieldsValue({ [item]: res.data.data[item] })
                     }
                 })
-                this.options.forEach((item) => {
-                    if (item.value == managerRoleID) {
-                        getUserList({ roleId: managerRoleID }).then(respone => {
-                            let children = respone.data.data.map(_item => {
-                                return {
-                                    label: _item.nickName,
-                                    value: _item.id
-                                }
-                            })
-                            this.$set(item, 'isLeaf', true)
-                            this.$set(item, 'children', children)
-                        })
-                    }
-                })
-                this.form.setFieldsValue({ managerID: managerIDs })
 
             }
         },
@@ -94,7 +77,6 @@ export default {
                 if (!err) {
                     let params = {
                         ...values,
-                        managerID: values.managerID[values.managerID.length - 1]
                     }
                     if (this.type == 'edit') {
                         this.updateRoleInfo({ ...params, id: this.id }, callback)

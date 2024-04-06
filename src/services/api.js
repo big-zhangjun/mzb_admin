@@ -20,5 +20,15 @@ module.exports = {
   GET_ROLE_INFO: `${BASE_URL}/role/get_role_info`, // 查询职位信息
   DEL_ROLE_INFO: `${BASE_URL}/role/del_role_info`, // 删除职位信息
   UPDATE_ROLE_INFO: `${BASE_URL}/role/update_role_info`, // 修改职位信息
-  
+  GET_CLIENT_LIST: `${BASE_URL}/log/get_client_list`, // 查询客户端列表
+  GET_LOG_LIST: `${BASE_URL}/log/get_log_list`, // 查询操作日志列表
+  GET_OPERATE_LIST: `${BASE_URL}/auth/get_operate_list`, // 查询操作列表
+  GET_MODULE_LIST: `${BASE_URL}/module/get_module_list`, // 查询模块列表
+  GET_AUTHORITY_OPERATE: `${BASE_URL}/auth/get_authority_operate`, // 查询操作授权列表
+  GET_AUTHORITY_LIST: `${BASE_URL}/auth/get_authority_list`, // 查询授权模块列表
+  ADD_AUTHORITY_INFO: `${BASE_URL}/auth/add_authority_info`, // 新增模块授权
+  ADD_AUTHORITY_OPERATE: `${BASE_URL}/auth/add_authority_operate`, // 新增操作授权
+  DEL_AUTHORITY_INFO: `${BASE_URL}/auth/del_authority_info`, // 删除模块授权
+  DEL_AUTHORITY_OPERATE: `${BASE_URL}/auth/del_authority_operate`, // 删除操作授权
 }
+

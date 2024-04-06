@@ -2,20 +2,28 @@
     <a-card>
         <div :class="advanced ? 'search' : null">
             <a-form layout="horizontal">
-                <div :class="advanced ? null : 'fold'">
+                <div class="fold">
                     <a-row>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="部门名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.deptName" placeholder="请输入" />
+                        <a-col :md="8" :sm="24">
+                            <a-form-item label="客户端" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-select placeholder="请选择" v-model="form.clientID" allowClear @clear="handleSearch">
+                                    <a-select-option :value="item.id" v-for="item in clientList" :key="item.id">{{ item.cn }}</a-select-option>
+                                </a-select>
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
-                            <a-form-item :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button @click="addNew" type="primary">新建</a-button>
+                            <a-form-item label="操作类型" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-select placeholder="请选择" v-model="form.operateID" allowClear @clear="handleSearch">
+                                    <a-select-option :value="item.id" v-for="item in operaList" :key="item.id">{{ item.cn }}</a-select-option>
+                                </a-select>
                             </a-form-item>
                         </a-col>
+
                     </a-row>
+                    <span style="margin-top: 3px;">
+                        <a-button type="primary" @click="handleSearch">查询</a-button>
+                        <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                    </span>
                 </div>
             </a-form>
         </div>
@@ -23,7 +31,8 @@
             <!-- <a-space class="operator">
                 <a-button @click="addNew" type="primary">新建</a-button>
             </a-space> -->
-            <standard-table :columns="columns" :dataSource="dataSource" :rowKey="'id'">
+            <standard-table :columns="columns" :dataSource="dataSource"
+                :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
                 </div>
@@ -32,7 +41,7 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该部门?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)">
+                    <a-popconfirm title="确定删除该职位?" ok-text="确定" cancel-text="取消" @confirm="delRoleInfo(record)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -44,15 +53,15 @@
             </standard-table>
         </div>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
-            <DeptForm ref="deptForm" :type="type" />
+            <PostForm ref="postForm" :type="type" />
         </a-modal>
     </a-card>
 </template>
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
-import DeptForm from '@/pages/user/components/deptForm'
-import { getDeptList, delDeptInfo, getRoleList } from '@/services/user'
+import PostForm from '@/pages/user/components/postForm'
+import { getClientList, getLogList, getOperaList } from '@/services/backend'
 function formatDate(timestamp) {
     const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
     const year = date.getFullYear();
@@ -60,40 +69,49 @@ function formatDate(timestamp) {
     const day = date.getDate();
     return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
 }
-
 export default {
     name: 'QueryList',
-    components: { StandardTable, DeptForm },
+    components: { StandardTable, PostForm },
     data() {
         return {
-            modalTitle: "新增部门",
+            modalTitle: "新增职位",
             advanced: true,
             visible: false,
             columns: [
                 {
-                    title: '部门编号',
+                    title: '序号',
                     dataIndex: 'id',
                     width: 100
                 },
                 {
-                    title: '部门名称',
-                    dataIndex: 'deptName',
+                    title: '用户名',
+                    dataIndex: 'userName',
                     width: 100,
                 },
                 {
-                    title: '部门描述',
-                    dataIndex: 'description',
+                    title: '客户端名称',
+                    dataIndex: 'client',
                     width: 100,
                 },
                 {
-                    title: '部门负责人',
-                    dataIndex: 'manager',
+                    title: '详情',
                     width: 100,
+                    dataIndex: 'detail'
                 },
                 {
-                    title: '创建时间',
+                    title: '操作类型',
                     width: 100,
-                    dataIndex: 'createTime',
+                    dataIndex: 'operate'
+                },
+                {
+                    title: '客户端IP',
+                    width: 100,
+                    dataIndex: 'clientIP'
+                },
+                {
+                    title: '日志时间',
+                    width: 100,
+                    dataIndex: "createTime",
                     customRender: (text) => formatDate(text)
                 },
                 {
@@ -105,51 +123,50 @@ export default {
             ],
             type: 'add',
             dataSource: [],
-            selectedRows: [],
             pagination: {
                 pageIndex: 1,
                 pageSize: 10,
-                totalCount: 0
+                total: 0
             },
             form: {
-                deptName: undefined
+
             },
-            roleList: [],
-            deptList: []
+            clientList: [],
+            operaList: []
         }
     },
     // authorize: {
     //     deleteRecord: 'delete'
     // },
     mounted() {
+        this.init()
         this.getData()
     },
     methods: {
+        toggleAdvanced() {
+            this.advanced = !this.advanced
+        },
         handleSearch() {
             this.getData()
         },
         handleReset() {
             this.form = {
-                userName: "",
-                nickName: "",
-                roleID: undefined,
-                deptID: undefined,
-                resign: undefined
+
             }
             this.getData()
         },
         handleOk() {
             this.$nextTick(() => {
-                this.$refs.deptForm.handleSubmit(() => {
+                this.$refs.postForm.handleSubmit(() => {
                     this.$message.success('保存成功', 3)
                     this.visible = false
                     this.getData()
                 })
             })
         },
-        handleCancel() {
-            console.log('Clicked cancel button');
-            this.visible = false;
+        init() {
+            this.getClientList()
+            this.getOperaList()
         },
         onPageChange(page, pageSize) {
             this.pagination.pageIndex = page
@@ -157,68 +174,36 @@ export default {
             this.getData()
         },
         // 获取列表
-        getData() {
-            getDeptList(this.form).then(res => {
-                this.dataSource = res.data.data
-                // this.pagination.totalCount = totalCount
-            })
+        async getData() {
+            const { pageSize, pageIndex } = this.pagination
+            const res = await getLogList({ pageSize, pageIndex, ...this.form })
+            this.dataSource = res.data.data.records
+            this.pagination.total = res.data.data.totalCount
         },
-        // 查询职位列表
-        async getRoleList() {
-            const res = await getRoleList({})
-            if (res.data.status.retCode === 0) {
-                this.roleList = res.data.data
-            }
+        async getClientList() {
+            const res = await getClientList({})
+            this.clientList = res.data.data
         },
-        toggleAdvanced() {
-            this.advanced = !this.advanced
-        },
-        remove() {
-            this.dataSource = this.dataSource.filter(item => this.selectedRows.findIndex(row => row.key === item.key) === -1)
-            this.selectedRows = []
-        },
-        onClear() {
-            this.$message.info('您清空了勾选的所有行')
-        },
-        onStatusTitleClick() {
-            this.$message.info('你点击了状态栏表头')
-        },
-        onChange() {
-            this.$message.info('表格状态改变了')
-        },
-        onSelectChange() {
-            this.$message.info('选中行改变了')
+        async getOperaList() {
+            const res = await getOperaList({})
+            this.operaList = res.data.data
         },
         edit(data) {
-            this.modalTitle = '编辑部门'
+            this.modalTitle = '编辑职位'
             this.visible = true
             this.type = 'edit'
             this.$nextTick(() => {
-                this.$refs.deptForm.getDeptInfo(data.id)
+                this.$refs.postForm.getRoleInfo(data.id)
             })
         },
         addNew() {
             this.type = 'add'
-            this.modalTitle = '新增部门'
+            this.modalTitle = '新增职位'
             this.visible = true
             this.$nextTick(() => {
-                this.$refs.deptForm.resetFields()
+                this.$refs.postForm.resetFields()
             })
         },
-        async delDeptInfo(data) {
-            const res = await delDeptInfo({ id: data.id })
-            if (res.data.status.retCode === 0) {
-                this.$message.success("删除成功", 3)
-                this.getData()
-            } else {
-                this.$message.warning(res.data.status.msg)
-            }
-        },
-        handleMenuClick(e) {
-            if (e.key === 'delete') {
-                this.remove()
-            }
-        }
     }
 }
 </script>

@@ -26,14 +26,6 @@ const options = {
       component: TabsView,
       redirect: '/login',
       children: [
-        // {
-        //   path: 'demo',
-        //   name: '演示页',
-        //   meta: {
-        //     icon: 'file-ppt'
-        //   },
-        //   component: () => import('@/pages/demo')
-        // },
          {
           path: 'user',
           name: '组织架构',
@@ -59,21 +51,32 @@ const options = {
             }
           ]
         },
-        // {
-        //   path: 'parent1',
-        //   name: '父级路由1',
-        //   meta: {
-        //     icon: 'dashboard',
-        //   },
-        //   component: BlankView,
-        //   children: [
-        //     {
-        //       path: 'demo1',
-        //       name: '演示页面1',
-        //       component: () => import('@/pages/demo'),
-        //     }
-        //   ]
-        // },
+        {
+          path: 'backend',
+          name: '后台管理',
+          meta: {
+            icon: 'dashboard',
+          },
+          component: BlankView,
+          children: [
+            {
+              path: 'systemLog',
+              name: '系统日志',
+              component: () => import('@/pages/backend/systemLog'),
+            },
+            {
+              path: 'module',
+              name: '模块管理',
+              component: () => import('@/pages/backend/module'),
+            },
+            {
+              path: 'authority',
+              name: '权限管理',
+              component: () => import('@/pages/backend/authority'),
+            },
+            
+          ]
+        },
         // {
         //   path: 'parent2',
         //   name: '父级路由2',

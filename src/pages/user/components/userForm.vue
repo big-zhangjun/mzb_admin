@@ -29,7 +29,7 @@
             </a-form-item>
             <a-form-item :label="'邮箱'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-input :placeholder="'请输入邮箱'"
-                    v-decorator="['email', { rules: [{ required: true, message: '请输入邮箱' }] }]"></a-input>
+                    v-decorator="['email', { rules: [{ required: false, message: '请输入邮箱' }] }]"></a-input>
             </a-form-item>
             <a-form-item :label="'性别'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-radio-group v-decorator="['sex', { rules: [{ required: true, message: '请选择性别' }] }]">
@@ -42,7 +42,7 @@
             </a-form-item> -->
             <a-form-item :label="'地址'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-textarea rows="4" :placeholder="'请输入地址'"
-                    v-decorator="['address', { rules: [{ required: true, message: '请输入地址' }] }]" />
+                    v-decorator="['address', { rules: [{ required: false, message: '请输入地址' }] }]" />
             </a-form-item>
         </a-form>
     </a-card>
@@ -50,6 +50,7 @@
 
 <script>
 import { addUserInfo, getDeptList, getRoleList, getUserInfo, updateUserInfo } from '@/services/user'
+import md5 from "js-md5";
 export default {
     name: 'BasicForm',
     // i18n: require('./i18n'),
@@ -77,6 +78,11 @@ export default {
         this.initData()
     },
     methods: {
+        getMD5Up(val) {
+            let screct = md5(val)
+            let bigScrect = screct.toUpperCase()
+            return bigScrect
+        },
         // 初始化数据
         initData() {
             this.getDeptList()
@@ -128,12 +134,14 @@ export default {
                 if (!err) {
                     let params = {
                         ...values,
-                        password: '000000'
+                        
+                        resign: 1 // 是否在职
                     }
                     if (this.type == 'edit') {
-                        this.updateUserInfo({...params, id: this.id}, callback)
+                        this.updateUserInfo({ ...params, id: this.id }, callback)
                     } else {
-                        this.addUserInfo(params, callback)
+                         // 默认密码000000
+                        this.addUserInfo({...params, password: this.getMD5Up('000000')}, callback)
                     }
                 }
             })

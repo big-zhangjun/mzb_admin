@@ -6,7 +6,7 @@
                     <a-row>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="职位名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.deptName" placeholder="请输入" />
+                                <a-input v-model="form.roleName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
@@ -33,7 +33,7 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该职位?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)">
+                    <a-popconfirm title="确定删除该职位?" ok-text="确定" cancel-text="取消" @confirm="delRoleInfo(record)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -53,14 +53,13 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import PostForm from '@/pages/user/components/postForm'
-import { getRoleList, delDeptInfo } from '@/services/user'
+import { getRoleList, delRoleInfo } from '@/services/user'
 function formatDate(timestamp) {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
     const year = date.getFullYear();
-    const month = date.getMonth() + 1;
+    const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
     const day = date.getDate();
-    const formattedDate = `${year}-${String(month).padStart(2, 0)}-${day}`;
-    return formattedDate;
+    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
 }
 export default {
     name: 'QueryList',
@@ -114,7 +113,7 @@ export default {
                 totalCount: 0
             },
             form: {
-                deptName: undefined
+                roleName: undefined
             },
             roleList: [],
             deptList: []
@@ -207,8 +206,8 @@ export default {
                 this.$refs.postForm.resetFields()
             })
         },
-        async delDeptInfo(data) {
-            const res = await delDeptInfo({ id: data.id })
+        async delRoleInfo(data) {
+            const res = await delRoleInfo({ id: data.id })
             if (res.data.status.retCode === 0) {
                 this.$message.success("删除成功", 3)
                 this.getData()

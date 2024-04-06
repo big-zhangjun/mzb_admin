@@ -13,7 +13,7 @@
 
             <a-form-item :label="'部门描述'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-textarea rows="4" :placeholder="'请输入部门描述'"
-                    v-decorator="['description', { rules: [{ required: true, message: '请输入部门描述' }] }]" />
+                    v-decorator="['description', { rules: [{ required: false, message: '请输入部门描述' }] }]" />
             </a-form-item>
         </a-form>
     </a-card>
@@ -50,8 +50,14 @@ export default {
         this.initData()
     },
     methods: {
-        onChange() {
-
+        onChange(v) {
+            if (v.length < 2) {
+                this.$nextTick(() => {
+                    this.form.setFieldsValue({
+                        managerID: null
+                    })
+                })
+            }
         },
         async loadData(selectedOptions) {
             const targetOption = selectedOptions[selectedOptions.length - 1];
