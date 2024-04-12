@@ -8,7 +8,9 @@ import {
     ADD_AUTHORITY_INFO,
     ADD_AUTHORITY_OPERATE,
     DEL_AUTHORITY_INFO,
-    DEL_AUTHORITY_OPERATE
+    DEL_AUTHORITY_OPERATE,
+    DEL_MODUEL_INFO,
+    ADD_MODUEL_INFO
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -52,5 +54,13 @@ export async function delAuthorityInfo(params) {
 // 删除操作授权
 export async function delAuthorityOperate(params) {
     return request(DEL_AUTHORITY_OPERATE, METHOD.POST, params)
+}
+// 删除模块信息
+export async function delModuleInfo(params) {
+    return request(DEL_MODUEL_INFO, METHOD.POST, params)
+}
+// 新增模块信息
+export async function addModuleInfo(params) {
+    return request(ADD_MODUEL_INFO, METHOD.POST, params)
 }
 

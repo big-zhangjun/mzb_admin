@@ -30,5 +30,7 @@ module.exports = {
   ADD_AUTHORITY_OPERATE: `${BASE_URL}/auth/add_authority_operate`, // 新增操作授权
   DEL_AUTHORITY_INFO: `${BASE_URL}/auth/del_authority_info`, // 删除模块授权
   DEL_AUTHORITY_OPERATE: `${BASE_URL}/auth/del_authority_operate`, // 删除操作授权
+  DEL_MODUEL_INFO: `${BASE_URL}/module/del_module_info`, // 删除模块信息
+  ADD_MODUEL_INFO: `${BASE_URL}/module/add_module_info`, // 新增模块信息
 }
 

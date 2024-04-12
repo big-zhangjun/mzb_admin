@@ -1,6 +1,6 @@
 import TabsView from '@/layouts/tabs/TabsView'
 import BlankView from '@/layouts/BlankView'
-// import PageView from '@/layouts/PageView'
+import home from '@/pages/home'
 
 // 路由配置
 const options = {
@@ -26,28 +26,131 @@ const options = {
       component: TabsView,
       redirect: '/login',
       children: [
-         {
+        {
+          path: 'home',
+          name: '首页',
+          meta: {
+            icon: 'dashboard',
+            id: 14,
+            parentID: 0
+          },
+          component: BlankView,
+        },
+        {
           path: 'user',
           name: '组织架构',
           meta: {
             icon: 'dashboard',
+            parentID: 0,
+            id: 15
           },
           component: BlankView,
           children: [
             {
               path: 'employee',
               name: '员工管理',
+              meta: {
+                id: 24,
+                parentID: 15,
+              },
               component: () => import('@/pages/user/employee'),
             },
             {
               path: 'department',
               name: '部门管理',
+              meta: {
+                id: 23,
+                parentID: 15,
+              },
               component: () => import('@/pages/user/department'),
             },
             {
               path: 'post',
               name: '职位管理',
+              meta: {
+                id: 25,
+                parentID: 15,
+              },
               component: () => import('@/pages/user/post'),
+            }
+          ]
+        },
+        {
+          path: 'project',
+          name: '项目管理',
+          meta: {
+            icon: 'dashboard',
+            id: 16,
+            parentID: 0,
+          },
+          component: home,
+        },
+        {
+          path: 'electrical',
+          name: '电气计划',
+          meta: {
+            icon: 'dashboard',
+            parentID: 0,
+            id: 17
+          },
+          component: BlankView,
+          children: [
+            {
+              path: 'plan',
+              name: '电气计划',
+              meta: {
+                id: 77,
+                parentID: 17,
+              },
+              component: () => import('@/pages/electrical/index.vue'),
+            },
+            {
+              path: 'log',
+              name: '工作日志',
+              meta: {
+                id: 78,
+                parentID: 17,
+              },
+              component: () => import('@/pages/electrical/index.vue'),
+            }
+          ]
+        },
+        {
+          path: 'statistics',
+          name: '统计报表',
+          meta: {
+            icon: 'dashboard',
+            id: 21,
+            parentID: 0,
+          },
+          component: BlankView,
+          children: [
+            {
+              path: 'plan',
+              name: '项目统计',
+              meta: {
+                id: 38,
+                parentID: 21,
+              },
+              component: () => import('@/pages/statistics/index.vue'),
+            },
+            {
+              path: 'order',
+              name: '工单统计',
+              meta: {
+                id: 39,
+                parentID: 21,
+              },
+              component: () => import('@/pages/statistics/index.vue'),
+            },
+            {
+              path: 'log',
+              name: '日志统计',
+              meta: {
+                id: 40,
+                parentID: 21,
+              },
+              component: () => import('@/pages/statistics/index.vue'),
             }
           ]
         },
@@ -56,67 +159,41 @@ const options = {
           name: '后台管理',
           meta: {
             icon: 'dashboard',
+            id: 22,
+            parentID: 0,
           },
           component: BlankView,
           children: [
             {
               path: 'systemLog',
               name: '系统日志',
+              meta: {
+                id: 32,
+                parentID: 22,
+              },
               component: () => import('@/pages/backend/systemLog'),
             },
             {
               path: 'module',
               name: '模块管理',
+              meta: {
+                id: 34,
+                parentID: 22,
+              },
               component: () => import('@/pages/backend/module'),
             },
             {
               path: 'authority',
               name: '权限管理',
+              meta: {
+                id: 33,
+                parentID: 22,
+              },
               component: () => import('@/pages/backend/authority'),
             },
-            
+
           ]
         },
-        // {
-        //   path: 'parent2',
-        //   name: '父级路由2',
-        //   meta: {
-        //     icon: 'form'
-        //   },
-        //   component: PageView,
-        //   children: [
-        //     {
-        //       path: 'demo2',
-        //       name: '演示页面2',
-        //       component: () => import('@/pages/demo'),
-        //     }
-        //   ]
-        // },
-        // {
-        //   path: 'exception',
-        //   name: '异常页',
-        //   meta: {
-        //     icon: 'warning',
-        //   },
-        //   component: BlankView,
-        //   children: [
-        //     {
-        //       path: '404',
-        //       name: 'Exp404',
-        //       component: () => import('@/pages/exception/404')
-        //     },
-        //     {
-        //       path: '403',
-        //       name: 'Exp403',
-        //       component: () => import('@/pages/exception/403')
-        //     },
-        //     {
-        //       path: '500',
-        //       name: 'Exp500',
-        //       component: () => import('@/pages/exception/500')
-        //     }
-        //   ]
-        // },
         {
           name: '验权页面',
           path: 'auth/demo',

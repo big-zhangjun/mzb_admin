@@ -4,7 +4,7 @@
             <div class="header">
                 <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange"
                     :expanded-keys="expandedKeys" />
-                <a-tree show-icon :checkStrictly='false' :tree-data="moduleList" :replaceFields="replaceFields"
+                <a-tree show-icon :checkStrictly='false' :tree-data="moduleList" :selectable="false" :replaceFields="replaceFields"
                     :auto-expand-parent="autoExpandParent">
                     <template slot="custom" slot-scope="item">
                         <a-checkbox @click="onChanges(item)" v-model="item.checked">
@@ -213,21 +213,21 @@ export default {
         },
         // 设置操作选中
         setAuthorityChecked(arr) {
-            let roleIds = this.authorityOperateList.map(item => item.roleID)
-            let moduleIDs = this.authorityOperateList.map(item => item.moduleID)
-            let operateIDs = this.authorityOperateList.map(item => item.operateID)
+            // let roleIds = this.authorityOperateList.map(item => item.roleID)
             arr.forEach(item => {
                 if (item.children && item.children.length) {
                     this.setAuthorityChecked(item.children)
                 } else {
-                    if (roleIds.includes(this.roleID) && operateIDs.includes(item.id) && moduleIDs.includes(item.moduleId)) {
+                    let modulelist = this.authorityOperateList.filter(_item=> _item.moduleID == item.moduleId)
+                    let operaIds = modulelist.map(_item=> _item.operateID)
+                    if(operaIds.includes(item.id) ) {
                         this.$set(item, 'checked', true)
                     } else {
                         this.$set(item, 'checked', false)
                     }
                 }
             })
-        },
+        }, 
         // 获取操作列表
         async getOperaList() {
             const res = await getOperaList({})
