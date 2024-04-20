@@ -20,6 +20,7 @@
       :dataSource="dataSource"
       :scroll="scroll"
       :rowKey="rowKey"
+      v-model="pagination.pageIndex"
       :pagination="pagination"
       :expandedRowKeys="expandedRowKeys"
       :expandedRowRender="expandedRowRender"

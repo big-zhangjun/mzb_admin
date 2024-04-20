@@ -34,7 +34,7 @@ const options = {
             id: 14,
             parentID: 0
           },
-          component: BlankView,
+          component: home,
         },
         {
           path: 'user',
@@ -83,7 +83,7 @@ const options = {
             id: 16,
             parentID: 0,
           },
-          component: home,
+          component: () => import('@/pages/project/index'),
         },
         {
           path: 'electrical',
@@ -105,13 +105,31 @@ const options = {
               component: () => import('@/pages/electrical/index.vue'),
             },
             {
+              path: 'process',
+              name: '电气流程',
+              meta: {
+                id: 83,
+                parentID: 17,
+              },
+              component: () => import('@/pages/electrical/process.vue'),
+            },
+            {
               path: 'log',
               name: '工作日志',
               meta: {
                 id: 78,
                 parentID: 17,
               },
-              component: () => import('@/pages/electrical/index.vue'),
+              component: () => import('@/pages/electrical/workLog.vue'),
+            },
+            {
+              path: 'workContent',
+              name: '工作内容',
+              meta: {
+                id: 80,
+                parentID: 17,
+              },
+              component: () => import('@/pages/electrical/workContent.vue'),
             }
           ]
         },

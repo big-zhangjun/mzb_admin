@@ -132,10 +132,12 @@ export default {
       this.logging = false
       const loginRes = res.data
       if (loginRes.status.retCode == 0) {
-        const { nickName } = loginRes.data
-        let permissions = [{id: 'queryForm', operation: ['add', 'edit']}]
-        let roles = [{id: 'admin', operation: ['add', 'edit', 'delete']}]
-        this.setUser(nickName)
+        let permissions = [{id: 'queryForm', operation: ['add', 'edit']} ]
+        let roles = [{id: 'admin', operation: ['add', 'edit', 'delete']} ]
+        // 'id'+'testKey'+'date'
+        const timestamp = Date.now();
+        let sig = '1-' + loginRes.data.id +'testkey'+  timestamp
+        this.setUser({...loginRes.data, sig: md5(sig), ts: timestamp})
         this.setPermissions(permissions)
         this.setRoles(roles)
         setAuthorization({ token: loginRes.data.id, expireAt: new Date(loginRes.data.expireAt) })

@@ -107,7 +107,7 @@ export default {
             dataSource: [],
             selectedRows: [],
             pagination: {
-                pageIndex: 1,
+                current: 1,
                 pageSize: 10,
                 totalCount: 0
             },
@@ -152,7 +152,7 @@ export default {
             this.visible = false;
         },
         onPageChange(page, pageSize) {
-            this.pagination.pageIndex = page
+            this.pagination.current = page
             this.pagination.pageSize = pageSize
             this.getData()
         },

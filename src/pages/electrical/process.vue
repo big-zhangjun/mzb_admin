@@ -1,35 +1,29 @@
 <template>
     <a-card>
-        <div :class="advanced ? 'search' : null">
+        <!-- <div :class="advanced ? 'search' : null">
             <a-form layout="horizontal">
                 <div class="fold">
                     <a-row>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.productName" placeholder="请输入" />
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
+                                <a-input v-model="form.deptName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
-                            <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.customerName" placeholder="请输入" />
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item :labelCol="{ span: 3 }" style="margin-top: -1px;margin-left: 18px;"
-                                :wrapperCol="{ span: 18, offset: 0 }">
+                            <a-form-item style="margin-top: -1px;" :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
                                 <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button  @click="handleReset">重置</a-button>
+                                <a-button @click="addNew" type="primary">新建</a-button>
                             </a-form-item>
                         </a-col>
                     </a-row>
+
                 </div>
             </a-form>
-        </div>
+        </div> -->
         <div>
-            <a-space class="operator">
+            <!-- <a-space class="operator">
                 <a-button @click="addNew" type="primary">新建</a-button>
-
-            </a-space>
+            </a-space> -->
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
@@ -40,7 +34,7 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)">
+                    <a-popconfirm title="确定删除该流程?" ok-text="确定" cancel-text="取消" @confirm="delFlowInfo(record)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -52,55 +46,36 @@
             </standard-table>
         </div>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
-            <ProjectForm ref="ProjectForm" :type="type" />
+            <ProcessForm ref="ProcessForm" :type="type" />
         </a-modal>
     </a-card>
 </template>
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
-import ProjectForm from '@/pages/project/components/projectForm'
-import { getProjectList, delProjectInfo } from '@/services/project'
-// function formatDate(timestamp) {
-//   const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
-//   const year = date.getFullYear();
-//   const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
-//   const day = date.getDate();
-//   return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
-// }
+import ProcessForm from '@/pages/electrical/components/processForm'
+import { getOperaList } from '@/services/backend'
+import { getFlowList, delFlowInfo } from '@/services/electrical'
+
 export default {
-    name: 'QueryList',
-    components: { StandardTable, ProjectForm },
+    name: 'workContent',
+    components: { StandardTable, ProcessForm },
     data() {
         return {
-            modalTitle: "新增项目",
+            modalTitle: "新增流程",
             advanced: true,
             visible: false,
+            name: "",
             columns: [
                 {
-                    title: '项目编号',
-                    dataIndex: 'number',
+                    title: '序号',
+                    dataIndex: 'id',
                     width: 100
                 },
                 {
-                    title: '产品编号',
-                    dataIndex: 'productNumber',
+                    title: '内容',
+                    dataIndex: 'content',
                     width: 100,
-                },
-                {
-                    title: '产品名称',
-                    dataIndex: 'productName',
-                    width: 100
-                },
-                {
-                    title: '客户名称',
-                    dataIndex: 'customerName',
-                    width: 100,
-                },
-                {
-                    title: '型号',
-                    width: 100,
-                    dataIndex: 'model'
                 },
                 {
                     title: '操作',
@@ -127,13 +102,13 @@ export default {
     //     deleteRecord: 'delete'
     // },
     mounted() {
+        this.init()
         this.getData()
     },
     methods: {
         toggleAdvanced() {
             this.advanced = !this.advanced
         },
-        
         handleSearch() {
             this.getData()
         },
@@ -145,12 +120,15 @@ export default {
         },
         handleOk() {
             this.$nextTick(() => {
-                this.$refs.ProjectForm.handleSubmit(() => {
+                this.$refs.ProcessForm.handleSubmit(() => {
                     this.$message.success('保存成功', 3)
                     this.visible = false
                     this.getData()
                 })
             })
+        },
+        init() {
+            this.getOperaList()
         },
         onPageChange(page, pageSize) {
             this.pagination.pageIndex = page
@@ -160,38 +138,41 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getProjectList({ pageSize, pageIndex, ...this.form })
-            this.dataSource = res.data.data.records
-            this.pagination.total = res.data.data.totalCount
+            const res = await getFlowList({ pageSize, pageIndex })
+            this.dataSource = res.data.data
+        },
+        async getOperaList() {
+            const res = await getOperaList({})
+            this.operaList = res.data.data
         },
         edit(data) {
-            this.modalTitle = '编辑项目'
+            this.modalTitle = '编辑流程'
             this.visible = true
             this.type = 'edit'
             this.$nextTick(() => {
-                this.$refs.ProjectForm.getProjectInfo(data.id)
+                this.$refs.ProcessForm.getWorkTent(data)
             })
         },
-        async delProjectInfo(data) {
+        addNew() {
+            this.type = 'add'
+            this.modalTitle = '新增流程'
+            this.visible = true
+            this.$nextTick(() => {
+                this.$refs.ProcessForm.resetFields()
+            })
+        },
+        async delFlowInfo(data) {
             const params = {
                 id: data.id
             }
-            let res = await delProjectInfo(params)
+            let res = await delFlowInfo(params)
             if (res.data.status.retCode == 0) {
                 this.$message.success("操作成功")
             } else {
                 this.$message.warning("操作失败")
             }
             this.getData()
-        },
-        addNew() {
-            this.type = 'add'
-            this.modalTitle = '新增项目'
-            this.visible = true
-            this.$nextTick(() => {
-                this.$refs.ProjectForm.resetFields()
-            })
-        },
+        }
     }
 }
 </script>

@@ -197,7 +197,7 @@ export default {
             dataSource: [],
             selectedRows: [],
             pagination: {
-                pageIndex: 1,
+                current: 1,
                 pageSize: 10,
                 total: 0
             },
@@ -251,17 +251,17 @@ export default {
             this.visible = false;
         },
         onPageChange(page, pageSize) {
-            this.pagination.pageIndex = page
+            this.pagination.current = page
             this.pagination.pageSize = pageSize
             this.getData()
         },
         // 获取列表
         getData() {
-            const { pageSize, pageIndex } = this.pagination
+            const { pageSize, current } = this.pagination
             let params = {
                 ...this.form
             }
-            getUserList({ pageSize, pageIndex, ...params }).then(res => {
+            getUserList({ pageSize, pageIndex: current, ...params }).then(res => {
                 const { records, totalCount } = res?.data?.data ?? {}
                 this.dataSource = records
                 this.pagination.total = totalCount

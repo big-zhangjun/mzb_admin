@@ -22,6 +22,7 @@ module.exports = {
   UPDATE_ROLE_INFO: `${BASE_URL}/role/update_role_info`, // 修改职位信息
   GET_CLIENT_LIST: `${BASE_URL}/log/get_client_list`, // 查询客户端列表
   GET_LOG_LIST: `${BASE_URL}/log/get_log_list`, // 查询操作日志列表
+  DEL_LOG_INFO: `${BASE_URL}/log/del_log_info`, // 删除操作日志列表
   GET_OPERATE_LIST: `${BASE_URL}/auth/get_operate_list`, // 查询操作列表
   GET_MODULE_LIST: `${BASE_URL}/module/get_module_list`, // 查询模块列表
   GET_AUTHORITY_OPERATE: `${BASE_URL}/auth/get_authority_operate`, // 查询操作授权列表
@@ -32,5 +33,23 @@ module.exports = {
   DEL_AUTHORITY_OPERATE: `${BASE_URL}/auth/del_authority_operate`, // 删除操作授权
   DEL_MODUEL_INFO: `${BASE_URL}/module/del_module_info`, // 删除模块信息
   ADD_MODUEL_INFO: `${BASE_URL}/module/add_module_info`, // 新增模块信息
+  GET_PROJECT_LIST: `${BASE_URL}/project/get_project_list`, // 新增模块信息
+  DEL_PROJECT_INFO: `${BASE_URL}/project/del_project_info`, // 删除项目信息
+  ADD_PROJECT_INFO: `${BASE_URL}/project/add_project_info`, // 新增项目信息
+  GET_PROJECT_INFO: `${BASE_URL}/project/get_project_info`, //查询项目信息
+  UPDATE_PROJECT_INFO: `${BASE_URL}/project/update_project_info`, //查询项目信息
+  GET_BLOG_CONTENT_LIST: `${BASE_URL}/blog/get_blog_content_list`, //查询工作日志内容列表
+  ADD_BLOG_CONTENT_LIST: `${BASE_URL}/blog/add_blog_content`, //新增工作日志内容
+  DEL_BLOG_CONTENT_LIST: `${BASE_URL}/blog/del_blog_content`, //删除工作日志内容
+  UPDATE_BLOG_CONTENT_LIST: `${BASE_URL}/blog/update_blog_content`, //修改工作日志内容
+  GET_FLOW_LIST: `${BASE_URL}/flow/get_flow_list`, //查询项目流程列表
+  ADD_FLOW_LIST: `${BASE_URL}/flow/add_flow_info`, //新增项目流程列表
+  GET_FLOW_INFO: `${BASE_URL}/flow/get_flow_info`, //查询项目流程信息
+  DEL_FLOW_INFO: `${BASE_URL}/flow/del_flow_info`, //删除项目流程信息 
+  UPDATE_FLOW_INFO: `${BASE_URL}/flow/update_flow_info`, //更新项目流程信息 
+  GET_BLOG_LIST: `${BASE_URL}/blog/get_blog_list`, //查询工作日志列表
+  ADD_BLOG_INFO: `${BASE_URL}/blog/add_blog_info`, //新增工作日志列表
+  GET_BLOG_INFO: `${BASE_URL}/blog/get_blog_info`, //查询工作日志信息
+  DEL_BLOG_INFO: `${BASE_URL}/blog/del_blog_info`, //删除工作日志信息 
+  UPDATE_BLOG_INFO: `${BASE_URL}/blog/update_blog_info`, //修改工作日志信息
 }
-

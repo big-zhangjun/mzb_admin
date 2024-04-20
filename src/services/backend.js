@@ -1,6 +1,7 @@
 import {
     GET_CLIENT_LIST,
     GET_LOG_LIST,
+    DEL_LOG_INFO,
     GET_OPERATE_LIST,
     GET_MODULE_LIST,
     GET_AUTHORITY_OPERATE,
@@ -22,6 +23,10 @@ export async function getClientList(params) {
 // 查询操作日志列表
 export async function getLogList(params) {
     return request(GET_LOG_LIST, METHOD.POST, params)
+}
+// 删除操作日志列表
+export async function delLogInfo(params) {
+    return request(DEL_LOG_INFO, METHOD.POST, params)
 }
 // 查询操作列表
 export async function getOperaList(params) {

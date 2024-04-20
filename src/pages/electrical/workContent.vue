@@ -4,26 +4,19 @@
             <a-form layout="horizontal">
                 <div class="fold">
                     <a-row>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="客户端" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.clientID" allowClear @clear="handleSearch">
-                                    <a-select-option :value="item.id" v-for="item in clientList" :key="item.id">{{ item.cn }}</a-select-option>
-                                </a-select>
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
+                                <a-input v-model="form.deptName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
-                            <a-form-item label="操作类型" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.operateID" allowClear @clear="handleSearch">
-                                    <a-select-option :value="item.id" v-for="item in operaList" :key="item.id">{{ item.cn }}</a-select-option>
-                                </a-select>
+                            <a-form-item style="margin-top: -1px;" :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
+                                <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
+                                <a-button @click="addNew" type="primary">新建</a-button>
                             </a-form-item>
                         </a-col>
-
                     </a-row>
-                    <span style="margin-top: 3px;">
-                        <a-button type="primary" @click="handleSearch">查询</a-button>
-                        <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
-                    </span>
+
                 </div>
             </a-form>
         </div>
@@ -37,11 +30,11 @@
                     {{ text }}
                 </div>
                 <div slot="action" slot-scope="{text, record}">
-                    <!-- <a style="margin-right: 8px" @click="edit(record)">
+                    <a style="margin-right: 8px" @click="edit(record)">
                         <a-icon type="edit" />编辑
-                    </a> -->
+                    </a>
 
-                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)">
+                    <a-popconfirm title="确定删除该工作?" ok-text="确定" cancel-text="取消" @confirm="delBlogContentList(record)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -53,70 +46,36 @@
             </standard-table>
         </div>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
-            <PostForm ref="postForm" :type="type" />
+            <WorkContentForm ref="WorkContentForm" :type="type" />
         </a-modal>
     </a-card>
 </template>
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
-import PostForm from '@/pages/user/components/postForm'
-import { getClientList, getLogList, getOperaList, delLogInfo } from '@/services/backend'
-function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000); 
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; 
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)} ${String(hours).padStart(2, 0)}:${String(minutes).padStart(2, 0)}:${String(seconds).padStart(2, 0)}`;
-}
+import WorkContentForm from '@/pages/electrical/components/workContentForm'
+import { getOperaList } from '@/services/backend'
+import { getBlogContentList, delBlogContentList } from '@/services/electrical'
 
 export default {
-    name: 'QueryList',
-    components: { StandardTable, PostForm },
+    name: 'workContent',
+    components: { StandardTable, WorkContentForm },
     data() {
         return {
-            modalTitle: "新增职位",
+            modalTitle: "新增工作",
             advanced: true,
             visible: false,
+            name: "",
             columns: [
                 {
                     title: '序号',
                     dataIndex: 'id',
-                    width: 40
+                    width: 100
                 },
                 {
-                    title: '用户名',
-                    dataIndex: 'userName',
-                    width: 60,
-                },
-                {
-                    title: '客户端名称',
-                    dataIndex: 'client',
-                    width: 80,
-                },
-                {
-                    title: '详情',
-                    width: 200,
-                    dataIndex: 'detail'
-                },
-                {
-                    title: '操作类型',
+                    title: '内容',
+                    dataIndex: 'content',
                     width: 100,
-                    dataIndex: 'operate'
-                },
-                {
-                    title: '客户端IP',
-                    width: 100,
-                    dataIndex: 'clientIP'
-                },
-                {
-                    title: '日志时间',
-                    width: 100,
-                    dataIndex: "createTime",
-                    customRender: (text) => formatDate(text)
                 },
                 {
                     title: '操作',
@@ -128,7 +87,7 @@ export default {
             type: 'add',
             dataSource: [],
             pagination: {
-                current: 1,
+                pageIndex: 1,
                 pageSize: 10,
                 total: 0
             },
@@ -146,15 +105,11 @@ export default {
         this.init()
         this.getData()
     },
-    activated() {
-        this.getData()
-    },
     methods: {
         toggleAdvanced() {
             this.advanced = !this.advanced
         },
         handleSearch() {
-            this.pagination.current = 1
             this.getData()
         },
         handleReset() {
@@ -165,7 +120,7 @@ export default {
         },
         handleOk() {
             this.$nextTick(() => {
-                this.$refs.postForm.handleSubmit(() => {
+                this.$refs.WorkContentForm.handleSubmit(() => {
                     this.$message.success('保存成功', 3)
                     this.visible = false
                     this.getData()
@@ -173,57 +128,51 @@ export default {
             })
         },
         init() {
-            this.getClientList()
             this.getOperaList()
         },
         onPageChange(page, pageSize) {
-            this.pagination.current = page
+            this.pagination.pageIndex = page
             this.pagination.pageSize = pageSize
             this.getData()
         },
         // 获取列表
         async getData() {
-            const { pageSize, current } = this.pagination
-            const res = await getLogList({ pageSize, pageIndex:current, ...this.form })
-            this.dataSource = res.data.data.records
-            this.pagination.total = res.data.data.totalCount
-        },
-        async getClientList() {
-            const res = await getClientList({})
-            this.clientList = res.data.data
+            const { pageSize, pageIndex } = this.pagination
+            const res = await getBlogContentList({ pageSize, pageIndex, ...this.form })
+            this.dataSource = res.data.data
         },
         async getOperaList() {
             const res = await getOperaList({})
             this.operaList = res.data.data
         },
         edit(data) {
-            this.modalTitle = '编辑职位'
+            this.modalTitle = '编辑工作'
             this.visible = true
             this.type = 'edit'
             this.$nextTick(() => {
-                this.$refs.postForm.getRoleInfo(data.id)
+                this.$refs.WorkContentForm.getWorkTent(data)
             })
         },
         addNew() {
             this.type = 'add'
-            this.modalTitle = '新增职位'
+            this.modalTitle = '新增工作'
             this.visible = true
             this.$nextTick(() => {
-                this.$refs.postForm.resetFields()
+                this.$refs.WorkContentForm.resetFields()
             })
         },
-        async delLogInfo(data) {
+        async delBlogContentList(data) {
             const params = {
                 id: data.id
             }
-            let res = await delLogInfo(params)
+            let res = await delBlogContentList(params)
             if (res.data.status.retCode == 0) {
                 this.$message.success("操作成功")
             } else {
                 this.$message.warning("操作失败")
             }
             this.getData()
-        },
+        }
     }
 }
 </script>
