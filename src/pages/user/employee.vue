@@ -53,7 +53,7 @@
             </a-form>
         </div>
         <div>
-            <a-space class="operator">
+            <a-space class="operator" v-if="permission.includes(1)">
                 <a-button @click="addNew" type="primary">新建</a-button>
                 <!-- <a-button>批量操作</a-button> -->
                 <!-- <a-dropdown>
@@ -72,11 +72,11 @@
                     {{ text }}
                 </div>
                 <div slot="action" slot-scope="{text, record}">
-                    <a style="margin-right: 8px" @click="edit(record)">
+                    <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该员工?" ok-text="确定" cancel-text="取消" @confirm="deltUserInfo(record)">
+                    <a-popconfirm title="确定删除该员工?" ok-text="确定" cancel-text="取消" @confirm="deltUserInfo(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -97,6 +97,7 @@
 import StandardTable from '@/components/table/StandardTable'
 import UserForm from '@/pages/user/components/userForm'
 // import { request } from '@/utils/request'
+import { mapGetters } from 'vuex'
 import { getUserList, deltUserInfo, getDeptList, getRoleList } from '@/services/user'
 function formatDate(timestamp) {
     const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
@@ -201,6 +202,7 @@ export default {
                 pageSize: 10,
                 total: 0
             },
+            permission: [],
             form: {
                 userName: "",
                 nickName: "",
@@ -218,6 +220,15 @@ export default {
     mounted() {
         this.getData()
         this.initData()
+        this.permission = this.$route.meta.permission
+    },
+    computed: {
+        ...mapGetters('setting', ['menuData']),
+    },
+    watch: {
+        menuData() {
+          this.permission = this.$route.meta.permission
+        }
     },
     methods: {
         handleSearch() {

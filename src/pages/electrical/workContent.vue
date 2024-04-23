@@ -12,7 +12,7 @@
                         <a-col :md="8" :sm="24">
                             <a-form-item style="margin-top: -1px;" :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
                                 <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button @click="addNew" type="primary">新建</a-button>
+                                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
                             </a-form-item>
                         </a-col>
                     </a-row>
@@ -30,11 +30,11 @@
                     {{ text }}
                 </div>
                 <div slot="action" slot-scope="{text, record}">
-                    <a style="margin-right: 8px" @click="edit(record)">
+                    <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该工作?" ok-text="确定" cancel-text="取消" @confirm="delBlogContentList(record)">
+                    <a-popconfirm title="确定删除该工作?" ok-text="确定" cancel-text="取消" @confirm="delBlogContentList(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -55,6 +55,7 @@
 import StandardTable from '@/components/table/StandardTable'
 import WorkContentForm from '@/pages/electrical/components/workContentForm'
 import { getOperaList } from '@/services/backend'
+import { mapGetters} from 'vuex'
 import { getBlogContentList, delBlogContentList } from '@/services/electrical'
 
 export default {
@@ -95,7 +96,8 @@ export default {
 
             },
             clientList: [],
-            operaList: []
+            operaList: [],
+            permission: []
         }
     },
     // authorize: {
@@ -104,6 +106,15 @@ export default {
     mounted() {
         this.init()
         this.getData()
+        this.permission = this.$route.meta.permission
+    },
+    computed: {
+        ...mapGetters('setting', ['menuData']),
+    },
+    watch: {
+        menuData() {
+          this.permission = this.$route.meta.permission
+        }
     },
     methods: {
         toggleAdvanced() {

@@ -5,7 +5,8 @@ import deepMerge from 'deepmerge'
 import basicOptions from '@/router/async/config.async'
 import {
   getModuleList,
-  getAuthorityList
+  getAuthorityList,
+  getAuthorityOperate
 } from '@/services/backend'
 //应用配置
 let appOptions = {
@@ -137,8 +138,11 @@ async function getModuleListFun() {
   let res = await getModuleList({ parentId: -1 })
   getAuthorityListFun(res.data.data)
 }
+// 获取权限
 async function getAuthorityListFun(list) {
-  let res = await getAuthorityList({ roleID: 1 })
+  let user = localStorage.getItem("admin.user")
+  let roleID = JSON.parse(user).roleID
+  let res = await getAuthorityList({ roleID })
   let result = []
   list.forEach(element => {
     res.data.data.forEach(item => {
@@ -152,22 +156,37 @@ async function getAuthorityListFun(list) {
   const rootRoute = router.options.routes.find(item => item.path === '/')
   const menuRoutes = rootRoute && rootRoute.children
   // let tree = extractData(tree1, menuRoutes)
-  let newRoutes = getRouter(tree1, menuRoutes)
+  let operate = await getAuthorityOperateFun()
+  let newRoutes = getRouter(tree1, menuRoutes, operate.data.data)
   if (menuRoutes) {
     store.commit('setting/setMenuData', newRoutes)
   }
 }
-function getRouter(p, b) {
+getAuthorityOperateFun()
+// 获取操作权限
+async function getAuthorityOperateFun() {
+  let user = localStorage.getItem("admin.user")
+  let roleID = JSON.parse(user).roleID
+  return await getAuthorityOperate({ roleID })
+}
+function getRouter(p, b, operateList) {
   const result = p.map(itemP => {
     const route = b.find(itemB => itemB.meta.id === itemP.id);
     if (route) {
       const newRoute = { ...route };
       if (itemP.children.length > 0) {
         newRoute.children = itemP.children.map(childP => {
-          return route.children.find(childB => childB.meta.id === childP.id);
+          let list = operateList.filter(item=> item.moduleID == childP.id).map(item=> item.operateID)
+          let res = route.children.find(childB => childB.meta.id === childP.id);
+          if(res) {
+            res.meta.permission = list
+          }
+          return res
         }).filter(childRoute => childRoute !== undefined);
       } else {
-        if(newRoute.children && newRoute.children.length) {
+        let list = operateList.filter(item=> item.moduleID == newRoute.meta.id).map(item=> item.operateID)
+        newRoute.meta.permission = list
+        if (newRoute.children && newRoute.children.length) {
           newRoute.show = 1
         }
       }
@@ -176,7 +195,7 @@ function getRouter(p, b) {
       }
       return newRoute;
     }
-  }).filter(route => route !== undefined && route.show !==1);
+  }).filter(route => route !== undefined && route.show !== 1);
   return result
 
 }

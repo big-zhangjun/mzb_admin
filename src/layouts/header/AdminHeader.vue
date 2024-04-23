@@ -2,7 +2,7 @@
   <a-layout-header :class="[headerTheme, 'admin-header']">
     <div :class="['admin-header-wide', layout, pageWidth]">
       <router-link v-if="isMobile || layout === 'head'" to="/" :class="['logo', isMobile ? null : 'pc', headerTheme]">
-        <img width="32" src="@/assets/img/logo.png" />
+        <img width="32" src="@/assets/img/logo.jpg" />
         <h1 v-if="!isMobile">{{systemName}}</h1>
       </router-link>
       <a-divider v-if="isMobile" type="vertical" />
@@ -19,6 +19,7 @@
           </a-tooltip>
           <header-notice class="header-item"/>
           <header-avatar class="header-item"/>
+          <div class="name">{{ userName }}</div>
           <a-dropdown class="lang header-item">
             <div>
               <a-icon type="global"/> {{langAlias}}

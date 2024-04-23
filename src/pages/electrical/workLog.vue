@@ -34,7 +34,7 @@
                         <a-icon type="edit" />编辑
                     </a> -->
 
-                    <a-popconfirm title="确定删除该流程?" ok-text="确定" cancel-text="取消" @confirm="delBlogInfo(record)">
+                    <a-popconfirm title="确定删除该流程?" ok-text="确定" cancel-text="取消" @confirm="delBlogInfo(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -56,7 +56,7 @@ import StandardTable from '@/components/table/StandardTable'
 import LogForm from '@/pages/electrical/components/logForm'
 import { getOperaList } from '@/services/backend'
 import { getBlogList, delBlogInfo } from '@/services/electrical'
-
+import { mapGetters } from 'vuex'
 export default {
     name: 'workContent',
     components: { StandardTable, LogForm },
@@ -115,7 +115,8 @@ export default {
 
             },
             clientList: [],
-            operaList: []
+            operaList: [],
+            permission: []
         }
     },
     // authorize: {
@@ -124,6 +125,15 @@ export default {
     mounted() {
         this.init()
         this.getData()
+        this.permission = this.$route.meta.permission
+    },
+    computed: {
+        ...mapGetters('setting', ['menuData']),
+    },
+    watch: {
+        menuData() {
+          this.permission = this.$route.meta.permission
+        }
     },
     methods: {
         toggleAdvanced() {

@@ -6,10 +6,7 @@
                     <a-row>
                         <a-col :md="8" :sm="24">
                             <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
-                                    <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
-                                        }}</a-select-option>
-                                </a-select>
+                                <a-input v-model="form.productName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
@@ -29,10 +26,10 @@
             </a-form>
         </div>
         <div>
-            <a-space class="operator">
-                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
+            <!-- <a-space class="operator">
+                <a-button @click="addNew" type="primary">新建</a-button>
 
-            </a-space>
+            </a-space> -->
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
@@ -43,8 +40,7 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"
-                        v-if="permission.includes(2)">
+                    <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"  v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -56,16 +52,16 @@
             </standard-table>
         </div>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
-            <ProjectForm ref="ProjectForm" :type="type" />
+            <PlanForm ref="PlanForm" :type="type" />
         </a-modal>
     </a-card>
 </template>
 
 <script>
 import StandardTable from '@/components/table/StandardTable'
-import ProjectForm from '@/pages/project/components/projectForm'
+import PlanForm from '@/pages/electrical/components/planForm'
 import { getProjectList, delProjectInfo } from '@/services/project'
-import { mapGetters } from 'vuex/dist/vuex.common.js'
+import { mapGetters } from 'vuex'
 // function formatDate(timestamp) {
 //   const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
 //   const year = date.getFullYear();
@@ -75,19 +71,12 @@ import { mapGetters } from 'vuex/dist/vuex.common.js'
 // }
 export default {
     name: 'QueryList',
-    components: { StandardTable, ProjectForm },
+    components: { StandardTable, PlanForm },
     data() {
         return {
             modalTitle: "新增项目",
             advanced: true,
             visible: false,
-            productName: [
-                "热压罐",
-                "储气罐",
-                "液压釜",
-                "固化炉",
-                "系统改造"
-            ],
             columns: [
                 {
                     title: '项目编号',
@@ -129,39 +118,33 @@ export default {
                 total: 0
             },
             form: {
-
+                "number": "",
+                "productNumber": "",
+                "customerName": "",
+                "productName": "",
+                "level": 0,
+                "pageSize": 10,
+                "pageIndex": 1
             },
             clientList: [],
             operaList: [],
             permission: []
         }
     },
-
+    // authorize: {
+    //     deleteRecord: 'delete'
+    // },
+    mounted() {
+        this.getData()
+        this.permission = this.$route.meta.permission
+    },
     computed: {
         ...mapGetters('setting', ['menuData']),
-        // permission () {
-        //     if(this.$route.meta.permission) {
-        //         let list = this.$route.meta.permission
-        //         return list
-        //     } else {
-        //         return []
-        //     }
-        // }
     },
     watch: {
         menuData() {
           this.permission = this.$route.meta.permission
         }
-    },
-    // menuData
-    // authorize: {
-    //     deleteRecord: 'delete'
-    // },
-    async mounted() {
-        await this.getData()
-        if (this.$route.meta) {
-            this.permission = this.$route.meta.permission
-        } 
     },
     methods: {
         toggleAdvanced() {
@@ -179,11 +162,8 @@ export default {
         },
         handleOk() {
             this.$nextTick(() => {
-                this.$refs.ProjectForm.handleSubmit(() => {
-                    this.$message.success('保存成功', 3)
-                    this.visible = false
-                    this.getData()
-                })
+                this.$message.success('保存成功', 3)
+                this.visible = false
             })
         },
         onPageChange(page, pageSize) {
@@ -203,7 +183,7 @@ export default {
             this.visible = true
             this.type = 'edit'
             this.$nextTick(() => {
-                this.$refs.ProjectForm.getProjectInfo(data.id)
+                this.$refs.PlanForm.getProjectInfo(data.id)
             })
         },
         async delProjectInfo(data) {
@@ -223,7 +203,7 @@ export default {
             this.modalTitle = '新增项目'
             this.visible = true
             this.$nextTick(() => {
-                this.$refs.ProjectForm.resetFields()
+                this.$refs.PlanForm.resetFields()
             })
         },
     }

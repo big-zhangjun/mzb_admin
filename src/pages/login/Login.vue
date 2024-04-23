@@ -117,8 +117,8 @@ export default {
       this.form.validateFields((err) => {
         if (!err) {
           this.logging = true
-          const name = this.form.getFieldValue('name')
-          const password = this.getMD5Up(this.form.getFieldValue('password'))
+          const name = this.form.getFieldValue('name').trim()
+          const password = this.getMD5Up(this.form.getFieldValue('password')).trim()
           login(name, password).then(this.afterLogin)
         }
       })

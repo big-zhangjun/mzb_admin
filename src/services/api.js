@@ -52,4 +52,13 @@ module.exports = {
   GET_BLOG_INFO: `${BASE_URL}/blog/get_blog_info`, //查询工作日志信息
   DEL_BLOG_INFO: `${BASE_URL}/blog/del_blog_info`, //删除工作日志信息 
   UPDATE_BLOG_INFO: `${BASE_URL}/blog/update_blog_info`, //修改工作日志信息
+  ADDECREP: `${BASE_URL}/project/add_ec_rep`, //新增电柜负责人
+  DELECREP: `${BASE_URL}/project/del_ec_rep`, //删除电柜负责人
+  UPDATEECINFO: `${BASE_URL}/project/update_ec_info`, //修改电柜信息  
+  ADDSIREP: `${BASE_URL}/project/add_si_rep`, //新增安装信息  
+  DELSIREP: `${BASE_URL}/project/del_si_rep`, //删除安装信息  
+  UPDATESIINFO: `${BASE_URL}/project/update_si_info`, //修改安装信息  
+  ADDASREP: `${BASE_URL}/project/add_as_rep`, //新增售后信息  
+  DELASREP: `${BASE_URL}/project/del_as_rep`, //删除售后信息  
+  UPDATEASINFO: `${BASE_URL}/project/update_as_info`, //修改售后信息  
 }

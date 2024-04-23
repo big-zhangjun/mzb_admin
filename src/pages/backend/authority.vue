@@ -182,7 +182,8 @@ export default {
         async getRoleList() {
             const res = await getRoleList({})
             this.roleList = res.data.data
-            this.roleID = res.data.data[0].id
+            let user = localStorage.getItem("admin.user")
+            this.roleID = JSON.parse(user).roleID
         },
         // 查询操作授权列表
         async getAuthorityOperate() {

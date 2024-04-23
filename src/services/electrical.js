@@ -14,6 +14,16 @@ import {
     GET_BLOG_INFO,
     DEL_BLOG_INFO,
     UPDATE_BLOG_INFO,
+    UPDATEECINFO,
+    ADDECREP,
+    DELECREP,
+    UPDATESIINFO,
+    ADDSIREP,
+    DELSIREP,
+    ADDASREP,
+    DELASREP,
+    UPDATEASINFO,
+
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -86,4 +96,48 @@ export async function updateBlogInfo(params) {
     return request(UPDATE_BLOG_INFO, METHOD.POST, params)
 }
 
+// 新增电柜负责人
+export async function addEcRep(params) {
+    return request(ADDECREP, METHOD.POST, params)
+}
+
+// 删除电柜负责人
+export async function delEcRep(params) {
+    return request(DELECREP, METHOD.POST, params)
+}
+
+// 修改电柜信息
+export async function updateEcInfo(params) {
+    return request(UPDATEECINFO, METHOD.POST, params)
+}
+
+// 新增安装负责人
+export async function addSiRep(params) {
+    return request(ADDSIREP, METHOD.POST, params)
+}
+
+// 删除安装负责人
+export async function delSiRep(params) {
+    return request(DELSIREP, METHOD.POST, params)
+}
+
+// 修改安装信息
+export async function updateSiInfo(params) {
+    return request(UPDATESIINFO, METHOD.POST, params)
+}
+
+// 新增售后负责人
+export async function addAsRep(params) {
+    return request(ADDASREP, METHOD.POST, params)
+}
+
+// 删除售后负责人
+export async function delAsRep(params) {
+    return request(DELASREP, METHOD.POST, params)
+}
+
+// 修改售后信息
+export async function updateAsInfo(params) {
+    return request(UPDATEASINFO, METHOD.POST, params)
+}
 

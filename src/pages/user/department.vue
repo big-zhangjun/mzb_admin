@@ -12,7 +12,7 @@
                         <a-col :md="8" :sm="24">
                             <a-form-item :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
                                 <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button @click="addNew" type="primary">新建</a-button>
+                                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
                             </a-form-item>
                         </a-col>
                     </a-row>
@@ -29,10 +29,10 @@
                 </div>
                 <div slot="action" slot-scope="{text, record}">
                     <a style="margin-right: 8px" @click="edit(record)">
-                        <a-icon type="edit" />编辑
+                        <a-icon type="edit" v-if="permission.includes(3)"/>编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该部门?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)">
+                    <a-popconfirm title="确定删除该部门?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -52,6 +52,7 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import DeptForm from '@/pages/user/components/deptForm'
+import {mapGetters} from 'vuex'
 import { getDeptList, delDeptInfo, getRoleList } from '@/services/user'
 function formatDate(timestamp) {
     const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
@@ -115,14 +116,24 @@ export default {
                 deptName: undefined
             },
             roleList: [],
-            deptList: []
+            deptList: [],
+            permission: []
         }
     },
     // authorize: {
     //     deleteRecord: 'delete'
     // },
+    computed: {
+        ...mapGetters('setting', ['menuData']),
+    },
     mounted() {
         this.getData()
+        this.permission = this.$route.meta.permission
+    },
+    watch: {
+        menuData() {
+          this.permission = this.$route.meta.permission
+        }
     },
     methods: {
         handleSearch() {

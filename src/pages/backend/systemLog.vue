@@ -41,7 +41,7 @@
                         <a-icon type="edit" />编辑
                     </a> -->
 
-                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)">
+                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -61,6 +61,7 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import PostForm from '@/pages/user/components/postForm'
+import {mapGetters} from 'vuex'
 import { getClientList, getLogList, getOperaList, delLogInfo } from '@/services/backend'
 function formatDate(timestamp) {
     const date = new Date(timestamp * 1000); 
@@ -135,6 +136,7 @@ export default {
             form: {
 
             },
+            permission: [],
             clientList: [],
             operaList: []
         }
@@ -145,6 +147,15 @@ export default {
     mounted() {
         this.init()
         this.getData()
+        this.permission = this.$route.meta.permission
+    },
+    computed: {
+        ...mapGetters('setting', ['menuData']),
+    },
+    watch: {
+        menuData() {
+          this.permission = this.$route.meta.permission
+        }
     },
     activated() {
         this.getData()
