@@ -19,7 +19,6 @@
           </a-tooltip>
           <header-notice class="header-item"/>
           <header-avatar class="header-item"/>
-          <div class="name">{{ userName }}</div>
           <a-dropdown class="lang header-item">
             <div>
               <a-icon type="global"/> {{langAlias}}

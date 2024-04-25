@@ -55,7 +55,7 @@
                 </template>
             </standard-table>
         </div>
-        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
+        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500">
             <ProjectForm ref="ProjectForm" :type="type" />
         </a-modal>
     </a-card>
@@ -92,22 +92,22 @@ export default {
                 {
                     title: '项目编号',
                     dataIndex: 'number',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '产品编号',
                     dataIndex: 'productNumber',
-                    width: 100,
+                    width: 50,
                 },
                 {
                     title: '产品名称',
                     dataIndex: 'productName',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '客户名称',
                     dataIndex: 'customerName',
-                    width: 100,
+                    width: 200,
                 },
                 {
                     title: '型号',

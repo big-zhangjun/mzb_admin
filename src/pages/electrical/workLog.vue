@@ -21,20 +21,20 @@
             </a-form>
         </div> -->
         <div>
-            <!-- <a-space class="operator">
+            <a-space class="operator">
                 <a-button @click="addNew" type="primary">新建</a-button>
-            </a-space> -->
+            </a-space>
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
                 </div>
                 <div slot="action" slot-scope="{text, record}">
-                    <!-- <a style="margin-right: 8px" @click="edit(record)">
+                    <a style="margin-right: 8px" @click="edit(record)"  v-if="permission.includes(3)">
                         <a-icon type="edit" />编辑
-                    </a> -->
+                    </a>
 
-                    <a-popconfirm title="确定删除该流程?" ok-text="确定" cancel-text="取消" @confirm="delBlogInfo(record)" v-if="permission.includes(2)">
+                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delBlogInfo(record)" v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -45,7 +45,7 @@
                 </template>
             </standard-table>
         </div>
-        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
+        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="800">
             <LogForm ref="LogForm" :type="type" />
         </a-modal>
     </a-card>
@@ -62,7 +62,7 @@ export default {
     components: { StandardTable, LogForm },
     data() {
         return {
-            modalTitle: "新增流程",
+            modalTitle: "新增日志",
             advanced: true,
             visible: false,
             name: "",
@@ -177,7 +177,7 @@ export default {
             this.operaList = res.data.data
         },
         edit(data) {
-            this.modalTitle = '编辑流程'
+            this.modalTitle = '编辑日志'
             this.visible = true
             this.type = 'edit'
             this.$nextTick(() => {
@@ -186,7 +186,7 @@ export default {
         },
         addNew() {
             this.type = 'add'
-            this.modalTitle = '新增流程'
+            this.modalTitle = '新增日志'
             this.visible = true
             this.$nextTick(() => {
                 this.$refs.LogForm.resetFields()
