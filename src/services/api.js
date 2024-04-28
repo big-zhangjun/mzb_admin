@@ -61,4 +61,6 @@ module.exports = {
   ADDASREP: `${BASE_URL}/project/add_as_rep`, //新增售后信息  
   DELASREP: `${BASE_URL}/project/del_as_rep`, //删除售后信息  
   UPDATEASINFO: `${BASE_URL}/project/update_as_info`, //修改售后信息  
+  EXPORTPROJECTLIST: `${BASE_URL}/project/export_project_list`, //导出项目列表
+  IMPORTPROJECTLIST: `${BASE_URL}/project/import_project_list`, //导入项目列表
 }

@@ -4,7 +4,9 @@ import {
     DEL_PROJECT_INFO,
     ADD_PROJECT_INFO,
     GET_PROJECT_INFO,
-    UPDATE_PROJECT_INFO
+    EXPORTPROJECTLIST,
+    UPDATE_PROJECT_INFO,
+    IMPORTPROJECTLIST
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -32,4 +34,12 @@ export async function getProjectInfo(params) {
 // 修改项目信息
 export async function updateProjectInfo(params) {
     return request(UPDATE_PROJECT_INFO, METHOD.POST, params)
+}
+// 导出项目列表
+export async function exportProjectList(params) {
+    return request(EXPORTPROJECTLIST, METHOD.POST, params)
+}
+// 导入项目列表
+export async function importProjectList(params) {
+    return request(IMPORTPROJECTLIST, METHOD.POST, params)
 }

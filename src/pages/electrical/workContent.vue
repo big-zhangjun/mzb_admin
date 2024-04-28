@@ -6,7 +6,7 @@
                     <a-row>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.deptName" placeholder="请输入" />
+                                <a-input v-model="form.content" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
@@ -71,12 +71,12 @@ export default {
                 {
                     title: '序号',
                     dataIndex: 'id',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '内容',
                     dataIndex: 'content',
-                    width: 100,
+                    width: 400,
                 },
                 {
                     title: '操作',

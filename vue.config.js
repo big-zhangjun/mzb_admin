@@ -1,8 +1,8 @@
 let path = require('path')
 const webpack = require('webpack')
 const ThemeColorReplacer = require('webpack-theme-color-replacer')
-const {getThemeColors, modifyVars} = require('./src/utils/themeUtil')
-const {resolveCss} = require('./src/utils/theme-color-replacer-extend')
+const { getThemeColors, modifyVars } = require('./src/utils/themeUtil')
+const { resolveCss } = require('./src/utils/theme-color-replacer-extend')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
 const productionGzipExtensions = ['js', 'css']
@@ -36,6 +36,11 @@ const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
   devServer: {
+    host: '0.0.0.0',
+    port: '8080',
+    https: false,
+    disableHostCheck: true,
+    open: false,// 配置自动启动浏览器
     proxy: {
       '/api': { //此处要与 /services/api.js 中的 API_PROXY_PREFIX 值保持一致
         target: process.env.VUE_APP_API_BASE_URL,
@@ -87,7 +92,7 @@ module.exports = {
     if (isProd) {
       config.plugin('optimize-css')
         .tap(args => {
-            args[0].cssnanoOptions.preset[1].colormin = false
+          args[0].cssnanoOptions.preset[1].colormin = false
           return args
         })
     }

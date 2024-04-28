@@ -81,22 +81,22 @@ export default {
                 {
                     title: '项目编号',
                     dataIndex: 'number',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '产品编号',
                     dataIndex: 'productNumber',
-                    width: 100,
+                    width: 50,
                 },
                 {
                     title: '产品名称',
                     dataIndex: 'productName',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '客户名称',
                     dataIndex: 'customerName',
-                    width: 100,
+                    width: 300,
                 },
                 {
                     title: '型号',

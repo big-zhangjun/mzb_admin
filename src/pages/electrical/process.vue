@@ -70,12 +70,12 @@ export default {
                 {
                     title: '序号',
                     dataIndex: 'id',
-                    width: 100
+                    width: 50
                 },
                 {
                     title: '内容',
                     dataIndex: 'content',
-                    width: 100,
+                    width: 400,
                 },
                 {
                     title: '操作',

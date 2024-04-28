@@ -2,7 +2,7 @@
     <a-card>
         <div :class="advanced ? 'search' : null">
             <a-form layout="horizontal">
-                <div class="fold">
+                <div :class="advanced ? null : 'fold'">
                     <a-row>
                         <a-col :md="8" :sm="24">
                             <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
@@ -13,48 +13,72 @@
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
+                            <a-form-item label="产品编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input v-model="form.productNumber" placeholder="请输入" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :md="8" :sm="24">
                             <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-input v-model="form.customerName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
+                    </a-row>
+                    <a-row v-if="advanced">
+                        <!-- <a-col :md="8" :sm="24">
+                            <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input placeholder="请输入" v-model="form.nickName"/>
+                            </a-form-item>
+                        </a-col> -->
                         <a-col :md="8" :sm="24">
-                            <a-form-item :labelCol="{ span: 3 }" style="margin-top: -1px;margin-left: 18px;"
-                                :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button @click="handleReset">重置</a-button>
+                            <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-range-picker v-model="form.dateData" style="width: 100%;" />
                             </a-form-item>
                         </a-col>
                     </a-row>
                 </div>
+                <span style="float: right; margin-top: 3px;">
+                    <a-button type="primary" @click="handleSearch">查询</a-button>
+                    <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                    <a @click="toggleAdvanced" style="margin-left: 8px">
+                        {{ advanced ? '收起' : '展开' }}
+                        <a-icon :type="advanced ? 'up' : 'down'" />
+                    </a>
+                </span>
             </a-form>
         </div>
-        <div>
-            <a-space class="operator">
-                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
-
-            </a-space>
-            <standard-table :columns="columns" :dataSource="dataSource"
-                :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
-                <div slot="description" slot-scope="{text}">
-                    {{ text }}
-                </div>
-                <div slot="action" slot-scope="{text, record}">
-                    <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
-                        <a-icon type="edit" />编辑
-                    </a>
-
-                    <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"
-                        v-if="permission.includes(2)">
-                        <a>
-                            <a-icon type="delete" />删除
+        <a-spin :spinning="uploadLoading">
+            <div>
+                <a-space class="operator">
+                    <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
+                    <a-button @click="exportFile" type="danger" v-if="permission.includes(1)">导出</a-button>
+                    <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
+                        :showUploadList="false" :customRequest="customRequest">
+                        <a-button> <a-icon type="upload" /> 导入 </a-button>
+                    </a-upload>
+                </a-space>
+                <standard-table :columns="columns" :dataSource="dataSource"
+                    :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
+                    <div slot="description" slot-scope="{text}">
+                        {{ text }}
+                    </div>
+                    <div slot="action" slot-scope="{text, record}">
+                        <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
+                            <a-icon type="edit" />编辑
                         </a>
-                    </a-popconfirm>
-                </div>
-                <template slot="statusTitle">
-                    <a-icon @click.native="onStatusTitleClick" type="info-circle" />
-                </template>
-            </standard-table>
-        </div>
+
+                        <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"
+                            v-if="permission.includes(2)">
+                            <a>
+                                <a-icon type="delete" />删除
+                            </a>
+                        </a-popconfirm>
+                    </div>
+                    <template slot="statusTitle">
+                        <a-icon @click.native="onStatusTitleClick" type="info-circle" />
+                    </template>
+                </standard-table>
+            </div>
+        </a-spin>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500">
             <ProjectForm ref="ProjectForm" :type="type" />
         </a-modal>
@@ -64,7 +88,7 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import ProjectForm from '@/pages/project/components/projectForm'
-import { getProjectList, delProjectInfo } from '@/services/project'
+import { getProjectList, delProjectInfo, importProjectList } from '@/services/project'
 import { mapGetters } from 'vuex/dist/vuex.common.js'
 // function formatDate(timestamp) {
 //   const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
@@ -73,19 +97,25 @@ import { mapGetters } from 'vuex/dist/vuex.common.js'
 //   const day = date.getDate();
 //   return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
 // }
+import moment from 'moment';
 export default {
     name: 'QueryList',
     components: { StandardTable, ProjectForm },
     data() {
         return {
+            headers: {
+                authorization: 'authorization-text',
+            },
             modalTitle: "新增项目",
             advanced: true,
             visible: false,
+            dateData: undefined,
             productName: [
                 "热压罐",
                 "储气罐",
                 "液压釜",
                 "固化炉",
+                "浸渍罐",
                 "系统改造"
             ],
             columns: [
@@ -133,7 +163,8 @@ export default {
             },
             clientList: [],
             operaList: [],
-            permission: []
+            permission: [],
+            uploadLoading: false
         }
     },
 
@@ -150,7 +181,7 @@ export default {
     },
     watch: {
         menuData() {
-          this.permission = this.$route.meta.permission
+            this.permission = this.$route.meta.permission
         }
     },
     // menuData
@@ -161,11 +192,110 @@ export default {
         await this.getData()
         if (this.$route.meta) {
             this.permission = this.$route.meta.permission
-        } 
+        }
     },
     methods: {
         toggleAdvanced() {
             this.advanced = !this.advanced
+        },
+        // 
+        handleChange() {
+
+        },
+        async customRequest(data) {
+            console.log(data);
+            const form = new FormData()
+            form.append('excel', data.file)
+            this.uploadLoading = true
+            const res = await importProjectList(form)
+            if (res.data.status.retCode == 0) {
+                this.uploadLoading = false
+                this.getData()
+                this.$message.success(`成功导入${res.data.data}条数据`)
+            }
+        },
+        // 导出
+        async exportFile() {
+            if (!window.showSaveFilePicker) {
+                let file = await this.getFile('')
+                let blob = await file.blob()
+                const url = URL.createObjectURL(blob);
+                // 创建一个<a>元素用于下载
+                const a = document.createElement('a');
+                // 设置href为Blob的URL
+                a.href = url;
+                // 设置下载的文件名，假设后端没有设置Content-Disposition头
+                a.download = '电气项目计划表.xlsx'; // 你需要替换为实际的文件名和扩展名
+                // 将<a>元素添加到文档中，并模拟点击它
+                document.body.appendChild(a);
+                a.click();
+
+                // 清理
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                return
+            }
+            try {
+                const opts = {
+                    types: [
+                        {
+                            description: '文件',
+                            accept: {
+                                'text/plain': ['.xlsx'],
+                            }
+                        }
+                    ],
+                    excludeAcceptAllOption: true
+                };
+
+                const handle = await window.showSaveFilePicker(opts); // 打开保存文件对话框
+                const writable = await handle.createWritable(); // 创建可写入的文件对象
+                // 在这里写入文件内容
+                let file = await this.getFile(handle.name)
+                let blob = await file.blob()
+                await writable.write(blob);
+                await writable.close();
+
+                this.$message.success('文件保存成功')
+            } catch (error) {
+                // this.$message.warning('文件保存失败')
+                console.error('文件保存失败:', error);
+            }
+        },
+        async getFile(remark) {
+            const { pageSize, pageIndex } = this.pagination
+            const { dateData, ...formData } = this.form
+            let endTime = 0
+            let startTime = 0
+            if (dateData) {
+                startTime = moment(dateData[0])
+                endTime = moment(dateData[1])
+            }
+            let params = {
+                ...formData,
+                startTime,
+                endTime,
+                level: 0,
+                pageSize,
+                remark,
+                pageIndex
+            }
+            const API_PROXY_PREFIX = '/api'
+            const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : API_PROXY_PREFIX
+            let user = JSON.parse(localStorage.getItem("userKey"))
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'app-sig': user.sig,
+                    'app-ts': user.ts,
+                    'app-id': `${user.id}`
+                },
+                body: JSON.stringify(params)
+            };
+
+            return await fetch(BASE_URL + '/project/export_project_list', options)
+
         },
 
         handleSearch() {
@@ -194,7 +324,15 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getProjectList({ pageSize, pageIndex, ...this.form })
+            const { dateData, ...data } = this.form
+            console.log(dateData, 'ss)', this.form);
+            let endTime = 0
+            let startTime = 0
+            if (dateData) {
+                startTime = moment(dateData[0]).unix()
+                endTime = moment(dateData[1]).unix()
+            }
+            const res = await getProjectList({ pageSize, pageIndex, startTime, endTime, ...data })
             this.dataSource = res.data.data.records
             this.pagination.total = res.data.data.totalCount
         },

@@ -31,7 +31,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请选择级别'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'级别'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-select :placeholder="'请选择级别'"
                             v-decorator="['level', { rules: [{ required: true, message: '请选择级别' }] }]">
                             <a-select-option :value="item.value" v-for="item in levels" :key="item.name">{{ item.name
@@ -40,7 +40,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请输入规格型号'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'规格型号'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="'请输入规格型号'"
                             v-decorator="['Model', { rules: [{ required: true, message: '请输入规格型号' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
@@ -73,13 +73,13 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'工作温度(℃)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'工作温度(℃)'"
+                        <a-input :placeholder="'请输入工作温度(℃)'"
                             v-decorator="['workingTemperature', { rules: [{ required: false, message: '工作温度(℃)' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请输入罐体厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'罐体厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="'请输入罐体厚度(mm)'"
                             v-decorator="['tankthickness', { rules: [{ required: false, message: '请输入罐体厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
@@ -104,20 +104,20 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'循环风机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择循环风机'"
-                            v-decorator="['circulatingFan', { rules: [{ required: false, message: '请选择循环风机' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入循环风机'"
+                            v-decorator="['circulatingFan', { rules: [{ required: false, message: '请输入循环风机' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'热电偶'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'热电偶'"
-                            v-decorator="['thermocouple', { rules: [{ required: false, message: '热电偶' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入热电偶'"
+                            v-decorator="['thermocouple', { rules: [{ required: false, message: '请输入热电偶' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请输入检测口'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'检测口'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="'请输入检测口'"
                             v-decorator="['inspectionPort', { rules: [{ required: false, message: '请输入检测口' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
@@ -142,20 +142,20 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'真空泵'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择真空泵'"
-                            v-decorator="['vacuumPump', { rules: [{ required: false, message: '请选择真空泵' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入真空泵'"
+                            v-decorator="['vacuumPump', { rules: [{ required: false, message: '请输入真空泵' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'缓冲罐(m³)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'缓冲罐(m³)'"
-                            v-decorator="['bufferTank', { rules: [{ required: false, message: '缓冲罐(m³)' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入缓冲罐(m³)'"
+                            v-decorator="['bufferTank', { rules: [{ required: false, message: '请输入缓冲罐(m³)' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请输入真空度'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'真空度'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="'请输入真空度'"
                             v-decorator="['vacuumDegree', { rules: [{ required: false, message: '请输入真空度' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
@@ -174,8 +174,8 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'储气榷筒体厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择储气榷筒体厚度(mm)'"
-                            v-decorator="['assTankthickness', { rules: [{ required: false, message: '请选择储气榷筒体厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入储气榷筒体厚度(mm)'"
+                            v-decorator="['assTankthickness', { rules: [{ required: false, message: '请输入储气榷筒体厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
@@ -187,7 +187,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item :label="'请输入空压机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                    <a-form-item :label="'空压机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="'请输入空压机'"
                             v-decorator="['airCompressor', { rules: [{ required: false, message: '请输入空压机' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
@@ -202,76 +202,76 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'增压机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'增压机'"
-                            v-decorator="['supercharger', { rules: [{ required: false, message: '增压机' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入增压机'"
+                            v-decorator="['supercharger', { rules: [{ required: false, message: '请输入增压机' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'罐内小车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'罐内小车'"
-                            v-decorator="['carInTank', { rules: [{ required: false, message: '罐内小车' }, { max: 32, message: '长度至多为 32!' }] }]" />
+                        <a-input :placeholder="'请输入罐内小车'"
+                            v-decorator="['carInTank', { rules: [{ required: false, message: '请输入罐内小车' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'罐外小车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择罐外小车'"
-                            v-decorator="['carOutTank', { rules: [{ required: false, message: '请选择罐外小车' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入罐外小车'"
+                            v-decorator="['carOutTank', { rules: [{ required: false, message: '请输入罐外小车' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'桥架'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'桥架'"
-                            v-decorator="['bridgeTray', { rules: [{ required: false, message: '桥架' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入桥架'"
+                            v-decorator="['bridgeTray', { rules: [{ required: false, message: '请输入桥架' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'牵引车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'牵引车'"
-                            v-decorator="['tractor', { rules: [{ required: false, message: '牵引车' }, { max: 32, message: '长度至多为 32!' }] }]" />
+                        <a-input :placeholder="'请输入牵引车'"
+                            v-decorator="['tractor', { rules: [{ required: false, message: '请输入牵引车' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
                 </a-col>
 
                 <a-col :span="8">
                     <a-form-item :label="'泄压阀'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择泄压阀'"
-                            v-decorator="['pressureReliefValve', { rules: [{ required: false, message: '请选择泄压阀' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入泄压阀'"
+                            v-decorator="['pressureReliefValve', { rules: [{ required: false, message: '请输入泄压阀' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'进气阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'进气阀组'"
-                            v-decorator="['intakeValveGroup', { rules: [{ required: false, message: '进气阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入进气阀组'"
+                            v-decorator="['intakeValveGroup', { rules: [{ required: false, message: '请输入进气阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'排气阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'排气阀组'"
-                            v-decorator="['exhaustValveGroup', { rules: [{ required: false, message: '排气阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
+                        <a-input :placeholder="'请输入排气阀组'"
+                            v-decorator="['exhaustValveGroup', { rules: [{ required: false, message: '请输入排气阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'冷却阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择冷却阀组'"
-                            v-decorator="['coolingValveGroup', { rules: [{ required: false, message: '请选择冷却阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入冷却阀组'"
+                            v-decorator="['coolingValveGroup', { rules: [{ required: false, message: '请输入冷却阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'排空阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'排空阀组'"
-                            v-decorator="['emptyValveGroup', { rules: [{ required: false, message: '排空阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
+                        <a-input :placeholder="'请输入排空阀组'"
+                            v-decorator="['emptyValveGroup', { rules: [{ required: false, message: '请输入排空阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
                         </a-input>
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item :label="'气冷阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'气冷阀组'"
-                            v-decorator="['airCooledValve', { rules: [{ required: false, message: '气冷阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
+                        <a-input :placeholder="'请输入气冷阀组'"
+                            v-decorator="['airCooledValve', { rules: [{ required: false, message: '请输入气冷阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -303,7 +303,7 @@
                         }}</a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item :label="'请输入规格型号'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+            <a-form-item :label="'规格型号'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-input :placeholder="'请输入规格型号'"
                     v-decorator="['Model', { rules: [{ required: false, message: '请输入规格型号' }, { max: 32, message: '长度至多为 32!' }] }]" />
             </a-form-item>
@@ -329,13 +329,10 @@ export default {
                 "储气罐",
                 "液压釜",
                 "固化炉",
+                "浸渍罐",
                 "系统改造"
             ],
             levels: [
-                {
-                    name: "P0",
-                    value: 0
-                },
                 {
                     name: "P1",
                     value: 1

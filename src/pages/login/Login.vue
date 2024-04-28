@@ -144,6 +144,7 @@ export default {
         // 获取路由配置
         getRoutesConfig().then(result => {
           const routesConfig = result.data
+          console.log(routesConfig, '');
           loadRoutes(routesConfig)
           this.$router.push('/user/employee')
           this.$message.success(loginRes.status.msg, 3)

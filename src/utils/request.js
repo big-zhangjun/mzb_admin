@@ -46,6 +46,11 @@ async function request(url, method, params, config) {
       if (localStorage.getItem("admin.user")) {
         user = JSON.parse(localStorage.getItem("admin.user"))
       }
+      localStorage.setItem('userKey', JSON.stringify({
+        sig: user.sig || sig,
+        ts: user.ts || ts,
+        id: `1-${user.id}`
+      }))
       axios.defaults.headers.common['app-sig'] = user.sig || sig;
       axios.defaults.headers.common['app-ts'] = user.ts || ts;
       axios.defaults.headers.common['app-id'] = `1-${user.id}`;
