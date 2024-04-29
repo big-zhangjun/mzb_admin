@@ -175,7 +175,7 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getProjectEpList({ pageSize, pageIndex, ...this.form, status: 2 })
+            const res = await getProjectEpList({ pageSize, pageIndex, ...this.form, status: 4 })
             this.dataSource = res.data.data.records
             this.pagination.total = res.data.data.totalCount
         },

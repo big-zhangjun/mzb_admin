@@ -175,16 +175,9 @@ function getRouter(p, b, operateList) {
     if (route) {
       const newRoute = { ...route };
       if (itemP.children.length > 0) {
-        newRoute.children = itemP.children.map(childP => {
-          let list = operateList.filter(item=> item.moduleID == childP.id).map(item=> item.operateID)
-          let res = route.children.find(childB => childB.meta.id === childP.id);
-          if(res) {
-            res.meta.permission = list
-          }
-          return res
-        }).filter(childRoute => childRoute !== undefined);
+        newRoute.children = getChildrenRoute(itemP, operateList, route)
       } else {
-        let list = operateList.filter(item=> item.moduleID == newRoute.meta.id).map(item=> item.operateID)
+        let list = operateList.filter(item => item.moduleID == newRoute.meta.id).map(item => item.operateID)
         newRoute.meta.permission = list
         if (newRoute.children && newRoute.children.length) {
           newRoute.show = 1
@@ -199,7 +192,29 @@ function getRouter(p, b, operateList) {
   return result
 
 }
-
+function getChildrenRoute(itemP, operateList, route) {
+  return itemP.children.map(childP => {
+    let list = operateList.filter(item => item.moduleID == childP.id).map(item => item.operateID)
+    let res = route.children.find(childB => childB.meta.id === childP.id);
+    if (res) {
+      res.meta.permission = list
+    }
+    if (res && res.children && res.children.length) {
+      let result = itemP.children.find(item => item.id == res.meta.id)
+      if(result) {
+        res.children = res.children.filter((item)=> {
+          let list = operateList.filter(_item => _item.moduleID == item.meta.id).map(item => item.operateID)
+          item.meta.permission = list
+          let child = result.children.find(_item=> _item.id == item.meta.id)
+          if(child) {
+            return child
+          }
+        })
+      }
+    }
+    return res
+  }).filter(childRoute => childRoute !== undefined);
+}
 
 function buildTreeData(data) {
   const treeData = [];

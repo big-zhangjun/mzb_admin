@@ -1,319 +1,35 @@
 <template>
     <a-card class="projectForm" :body-style="{ padding: '24px 32px' }" :bordered="false">
         <a-form :form="form">
-
             <a-row :gutter="24">
-                <a-col :span="8">
-                    <a-form-item :label="'项目编号'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入项目编号'"
-                            v-decorator="['number', { rules: [{ required: true, message: '请输入项目编号' }, { min: 6, message: '长度至少为 6!' }, { max: 32, message: '长度至多为 32!' } , { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'产品编号'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入产品编号'"
-                            v-decorator="['productNumber', { rules: [{ required: true, message: '请输入产品编号' }, { min: 6, message: '长度至少为 6!' }, { max: 32, message: '长度至多为 32!' } , { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'客户名称'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入客户名称'"
-                            v-decorator="['customerName', { rules: [{ required: true, message: '请输入客户名称' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'产品名称'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-select :placeholder="'请选择产品名称'"
-                            v-decorator="['productName', { rules: [{ required: true, message: '请选择产品名称' }] }]">
-                            <a-select-option :value="item" v-for="item in projectName" :key="item">{{ item
+                <a-col :span="8" v-for="item in formList" :key="item.key">
+                    <a-form-item :label="item.label" :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
+                        <a-input :placeholder="item.placeholder" v-if="item.type == 'input'"
+                            v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }, { min: 6, message: '长度至少为 6!' }, { max: 32, message: '长度至多为 32!' }, { max: 32, message: '长度至多为 32!' }] }]" />
+
+                        <a-select :placeholder="item.placeholder" v-if="item.type == 'defaultSelect'"
+                            v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]">
+                            <a-select-option :value="_item.value" v-for="_item in item.options" :key="_item.value">{{
+                                _item.name
+                            }}</a-select-option>
+                        </a-select>
+                        <a-select allowClear mode="combobox" showArrow showSearch multiple="false"
+                            @dropdownVisibleChange="dropdownVisibleChange(item)" :placeholder="item.placeholder"
+                            v-if="item.type == 'select'"
+                            v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]">
+                            <a-select-option :value="_item" v-for="_item in item.options" :key="_item">{{ _item
                                 }}</a-select-option>
                         </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'级别'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-select :placeholder="'请选择级别'"
-                            v-decorator="['level', { rules: [{ required: true, message: '请选择级别' }] }]">
-                            <a-select-option :value="item.value" v-for="item in levels" :key="item.name">{{ item.name
-                                }}</a-select-option>
-                        </a-select>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'规格型号'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入规格型号'"
-                            v-decorator="['Model', { rules: [{ required: true, message: '请输入规格型号' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <!-- 分割线 -->
-                <a-col :span="8">
-                    <a-form-item :label="'罐体尺寸'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入罐体尺寸'"
-                            v-decorator="['tankSize', { rules: [{ required: false, message: '请输入罐体尺寸' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'容积(m³)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入容积(m³)'"
-                            v-decorator="['volume', { rules: [{ required: false, message: '请输入容积(m³)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'工作压力(MPa)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入工作压力(MPa)'"
-                            v-decorator="['workingPressure', { rules: [{ required: false, message: '请输入工作压力(MPa)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'设计压力(MPa)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入设计压力(MPa)'"
-                            v-decorator="['designPressure', { rules: [{ required: false, message: '请输入设计压力(MPa)' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input >
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'工作温度(℃)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入工作温度(℃)'"
-                            v-decorator="['workingTemperature', { rules: [{ required: false, message: '工作温度(℃)' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'罐体厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入罐体厚度(mm)'"
-                            v-decorator="['tankthickness', { rules: [{ required: false, message: '请输入罐体厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'球冠封头厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入球冠封头厚度(mm)'"
-                            v-decorator="['sphericalCrownThickness', { rules: [{ required: false, message: '请输入球冠封头厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'椭圆封头厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入椭圆封头厚度(mm)'"
-                            v-decorator="['ellipticalHeadThickness', { rules: [{ required: false, message: '请输入椭圆封头厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'加热功率(kw)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入加热功率(kw)'"
-                            v-decorator="['heatingPower', { rules: [{ required: false, message: '请输入加热功率(kw)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'循环风机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入循环风机'"
-                            v-decorator="['circulatingFan', { rules: [{ required: false, message: '请输入循环风机' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'热电偶'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入热电偶'"
-                            v-decorator="['thermocouple', { rules: [{ required: false, message: '请输入热电偶' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'检测口'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入检测口'"
-                            v-decorator="['inspectionPort', { rules: [{ required: false, message: '请输入检测口' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'罐门结构'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入罐门结构'"
-                            v-decorator="['doorStructure', { rules: [{ required: false, message: '请输入罐门结构' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'开门方向'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入开门方向'"
-                            v-decorator="['openingDirection', { rules: [{ required: false, message: '请输入开门方向' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'真空路数'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入真空路数'"
-                            v-decorator="['vacuumNumber', { rules: [{ required: false, message: '请输入真空路数' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'真空泵'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入真空泵'"
-                            v-decorator="['vacuumPump', { rules: [{ required: false, message: '请输入真空泵' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'缓冲罐(m³)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入缓冲罐(m³)'"
-                            v-decorator="['bufferTank', { rules: [{ required: false, message: '请输入缓冲罐(m³)' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'真空度'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入真空度'"
-                            v-decorator="['vacuumDegree', { rules: [{ required: false, message: '请输入真空度' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'储气罐规格'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入储气罐规格'"
-                            v-decorator="['assModel', { rules: [{ required: false, message: '请输入储气罐规格' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'储气罐工作压力(MPa)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入储气罐工作压力(MPa)'"
-                            v-decorator="['assWorkingPressure', { rules: [{ required: false, message: '请输入储气罐工作压力(MPa)' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'储气榷筒体厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入储气榷筒体厚度(mm)'"
-                            v-decorator="['assTankthickness', { rules: [{ required: false, message: '请输入储气榷筒体厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'储气罐封头厚度(mm)'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'储气罐封头厚度(mm)'"
-                            v-decorator="['assHeadThickness', { rules: [{ required: false, message: '储气罐封头厚度(mm)' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'空压机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入空压机'"
-                            v-decorator="['airCompressor', { rules: [{ required: false, message: '请输入空压机' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-
-                <a-col :span="8">
-                    <a-form-item :label="'制氮机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请选择制氮机'"
-                            v-decorator="['nitrogenPlant', { rules: [{ required: false, message: '请选择制氮机' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'增压机'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入增压机'"
-                            v-decorator="['supercharger', { rules: [{ required: false, message: '请输入增压机' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'罐内小车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入罐内小车'"
-                            v-decorator="['carInTank', { rules: [{ required: false, message: '请输入罐内小车' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'罐外小车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入罐外小车'"
-                            v-decorator="['carOutTank', { rules: [{ required: false, message: '请输入罐外小车' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'桥架'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入桥架'"
-                            v-decorator="['bridgeTray', { rules: [{ required: false, message: '请输入桥架' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'牵引车'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入牵引车'"
-                            v-decorator="['tractor', { rules: [{ required: false, message: '请输入牵引车' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-
-                <a-col :span="8">
-                    <a-form-item :label="'泄压阀'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入泄压阀'"
-                            v-decorator="['pressureReliefValve', { rules: [{ required: false, message: '请输入泄压阀' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'进气阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入进气阀组'"
-                            v-decorator="['intakeValveGroup', { rules: [{ required: false, message: '请输入进气阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'排气阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入排气阀组'"
-                            v-decorator="['exhaustValveGroup', { rules: [{ required: false, message: '请输入排气阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'冷却阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入冷却阀组'"
-                            v-decorator="['coolingValveGroup', { rules: [{ required: false, message: '请输入冷却阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'排空阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入排空阀组'"
-                            v-decorator="['emptyValveGroup', { rules: [{ required: false, message: '请输入排空阀组' }, { max: 32, message: '长度至多为 32!' }] }]">
-                        </a-input>
-                    </a-form-item>
-                </a-col>
-                <a-col :span="8">
-                    <a-form-item :label="'气冷阀组'"  :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
-                        <a-input :placeholder="'请输入气冷阀组'"
-                            v-decorator="['airCooledValve', { rules: [{ required: false, message: '请输入气冷阀组' }, { max: 32, message: '长度至多为 32!' }] }]" />
                     </a-form-item>
                 </a-col>
             </a-row>
         </a-form>
-        <!-- <a-form :form="form">
-            <a-form-item :label="'项目编号'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-input :placeholder="'请输入项目编号'"
-                    v-decorator="['number', { rules: [{ required: false, message: '请输入项目编号' }, { max: 32, message: '长度至多为 32!' }] }]" />
-            </a-form-item>
-            <a-form-item :label="'产品编号'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-input :placeholder="'请输入产品编号'"
-                    v-decorator="['productNumber', { rules: [{ required: false, message: '请输入产品编号' }, { max: 32, message: '长度至多为 32!' }] }]" />
-            </a-form-item>
-            <a-form-item :label="'客户名称'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-input :placeholder="'请输入客户名称'"
-                    v-decorator="['customerName', { rules: [{ required: false, message: '请输入客户名称' }, { max: 32, message: '长度至多为 32!' }] }]" />
-            </a-form-item>
-            <a-form-item :label="'产品名称'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-select :placeholder="'请选择产品名称'"
-                    v-decorator="['productName', { rules: [{ required: false, message: '请选择产品名称' }, { max: 32, message: '长度至多为 32!' }] }]">
-                    <a-select-option :value="item" v-for="item in projectName" :key="item">{{ item
-                        }}</a-select-option>
-                </a-select>
-            </a-form-item>
-            <a-form-item :label="'请选择级别'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-select :placeholder="'请选择级别'"
-                    v-decorator="['level', { rules: [{ required: false, message: '请选择级别' }, { max: 32, message: '长度至多为 32!' }] }]">
-                    <a-select-option :value="item.value" v-for="item in levels" :key="item.name">{{ item.name
-                        }}</a-select-option>
-                </a-select>
-            </a-form-item>
-            <a-form-item :label="'规格型号'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                <a-input :placeholder="'请输入规格型号'"
-                    v-decorator="['Model', { rules: [{ required: false, message: '请输入规格型号' }, { max: 32, message: '长度至多为 32!' }] }]" />
-            </a-form-item>
-        </a-form> -->
     </a-card>
 </template>
 
 <script>
 import { getDeptList } from '@/services/user'
-import { addProjectInfo, getProjectInfo, updateProjectInfo } from '@/services/project'
+import { addProjectInfo, getProjectInfo, updateProjectInfo, getProjectTips } from '@/services/project'
 
 export default {
     name: 'BasicForm',
@@ -353,6 +69,419 @@ export default {
                     name: "P5",
                     value: 5
                 }
+            ],
+            formList: [
+                {
+                    label: "项目编号",
+                    key: "number",
+                    type: "input",
+                    placeholder: "请输入项目编号",
+                    required: true
+                },
+                {
+                    label: "产品编号",
+                    key: "productNumber",
+                    type: "input",
+                    placeholder: "请输入产品编号",
+                    required: true
+                },
+                {
+                    label: "客户名称",
+                    key: "customerName",
+                    type: "select",
+                    placeholder: "请选择客户名称",
+                    required: true
+                },
+                {
+                    label: "产品名称",
+                    key: "productName",
+                    type: "defaultSelect",
+                    required: true,
+                    options: [
+                        {
+                            name: "热压罐",
+                            value: '热压罐'
+                        },
+                        {
+                            name: "储气罐",
+                            value: '储气罐'
+                        },
+                        {
+                            name: "液压釜",
+                            value: '液压釜'
+                        },
+                        {
+                            name: "固化炉",
+                            value: '固化炉'
+                        },
+                        {
+                            name: "浸渍罐",
+                            value: '浸渍罐'
+                        },
+                        {
+                            name: "系统改造",
+                            value: '系统改造'
+                        }
+                    ],
+                    placeholder: "请选择产品名称"
+                },
+                {
+                    label: "级别",
+                    key: "level",
+                    type: "defaultSelect",
+                    required: true,
+                    options: [
+                        {
+                            name: "P1",
+                            value: 1
+                        },
+                        {
+                            name: "P2",
+                            value: 2
+                        },
+                        {
+                            name: "P3",
+                            value: 3
+                        },
+                        {
+                            name: "P4",
+                            value: 4
+                        },
+                        {
+                            name: "P5",
+                            value: 5
+                        }
+                    ],
+                    placeholder: "请选择级别"
+                },
+                {
+                    label: "规格/型号",
+                    key: "Model",
+                    type: "select",
+                    required: true,
+                    options: [
+
+                    ],
+                    placeholder: "请选择规格/型号"
+                },
+                {
+                    label: "罐体尺寸",
+                    key: "tankSize",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择罐体尺寸"
+                },
+                {
+                    label: "容积(m³)",
+                    key: "volume",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择容积(m³)"
+                },
+                {
+                    label: "工作压力(MPa)",
+                    key: "workingPressure",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择工作压力(MPa)"
+                },
+                {
+                    label: "设计压力(MPa)",
+                    key: "designPressure",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择设计压力(MPa)"
+                },
+                {
+                    label: "工作温度(℃)",
+                    key: "workingTemperature",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择工作温度(℃)"
+                },
+                {
+                    label: "罐体厚度(mm)",
+                    key: "tankthickness",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择罐体厚度(mm)"
+                },
+                {
+                    label: "球冠封头厚度(mm)",
+                    key: "sphericalCrownThickness",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择球冠封头厚度(mm)"
+                },
+                // 份
+                {
+                    label: "椭圆封头厚度(mm)",
+                    key: "ellipticalHeadThickness",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择椭圆封头厚度(mm)"
+                },
+                {
+                    label: "加热功率(kw)",
+                    key: "heatingPower",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择加热功率(kw)"
+                },
+                {
+                    label: "循环风机",
+                    key: "circulatingFan",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择循环风机"
+                },
+                {
+                    label: "热电偶",
+                    key: "thermocouple",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择热电偶"
+                },
+                {
+                    label: "检测口",
+                    key: "inspectionPort",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择检测口"
+                },
+                {
+                    label: "罐门结构",
+                    key: "doorStructure",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择罐门结构"
+                },
+                {
+                    label: "开门方向",
+                    key: "openingDirection",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择开门方向"
+                },
+                {
+                    label: "真空路数",
+                    key: "vacuumNumber",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择真空路数"
+                },
+                {
+                    label: "真空泵",
+                    key: "vacuumPump",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择真空泵"
+                },
+                // 份
+                {
+                    label: "缓冲罐(m³)",
+                    key: "bufferTank",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择缓冲罐(m³)"
+                },
+                {
+                    label: "真空度",
+                    key: "vacuumDegree",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择真空度"
+                },
+                {
+                    label: "储气罐规格",
+                    key: "assModel",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择储气罐规格"
+                },
+                {
+                    label: "储气罐工作压力(MPa)",
+                    key: "assWorkingPressure",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择储气罐工作压力(MPa)"
+                },
+                {
+                    label: "储气罐筒体厚度(mm)",
+                    key: "assTankthickness",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择储气罐筒体厚度(mm)"
+                },
+                {
+                    label: "储气罐封头厚度(mm)",
+                    key: "assHeadThickness",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择储气罐封头厚度(mm)"
+                },
+                {
+                    label: "空压机",
+                    key: "airCompressor",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择空压机"
+                },
+                {
+                    label: "制氮机",
+                    key: "nitrogenPlant",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择制氮机"
+                },
+                {
+                    label: "增压机",
+                    key: "supercharger",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择增压机"
+                },
+                // f
+                {
+                    label: "罐内小车",
+                    key: "carInTank",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择罐内小车"
+                },
+                {
+                    label: "罐外小车",
+                    key: "carOutTank",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择罐外小车"
+                },
+                {
+                    label: "桥架",
+                    key: "bridgeTray",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择桥架"
+                },
+                {
+                    label: "牵引车",
+                    key: "tractor",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择牵引车"
+                },
+                {
+                    label: "泄压阀",
+                    key: "pressureReliefValve",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择泄压阀"
+                },
+                {
+                    label: "进气阀组",
+                    key: "intakeValveGroup",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择进气阀组"
+                },
+                {
+                    label: "排气阀组",
+                    key: "exhaustValveGroup",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择排气阀组"
+                },
+                {
+                    label: "冷却阀组",
+                    key: "coolingValveGroup",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择冷却阀组"
+                },
+                {
+                    label: "排空阀组",
+                    key: "emptyValveGroup",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择排空阀组"
+                },
+                {
+                    label: "气冷阀组",
+                    key: "airCooledValve",
+                    type: "select",
+                    options: [
+
+                    ],
+                    placeholder: "请选择气冷阀组"
+                },
             ]
         }
     },
@@ -392,10 +521,11 @@ export default {
                 //     'productName',
                 //     'level',
                 // ]
+                let keys = this.formList.map(item => item.key)
                 Object.keys(res.data.data).forEach(item => {
-                    // if (keys.includes(item)) {
+                    if (keys.includes(item)) {
                         this.form.setFieldsValue({ [item]: res.data.data[item] })
-                    // }
+                    }
                 })
                 this.form.setFieldsValue({ Model: res.data.data.model })
 
@@ -405,7 +535,15 @@ export default {
         resetFields() {
             this.form.resetFields();
         },
-
+        async dropdownVisibleChange(v) {
+            console.log(v.options.length);
+            if (!v.options.length) {
+                let res = await getProjectTips({ remark: v.label })
+                if (res.data.status.retCode == 0) {
+                    v.options = res.data.data
+                }
+            }
+        },
         handleSubmit(callback) {
             this.form.validateFields((err, values) => {
                 if (!err) {

@@ -61,7 +61,7 @@
                     </a-form-item>
                 </a-form>
             </a-tab-pane>
-            <a-tab-pane key="3" tab="售后" force-render>
+            <!-- <a-tab-pane key="3" tab="售后" force-render>
                 <a-form :form="ecForm">
                     <a-form-item :label="'售后负责人'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select mode="multiple" placeholder="请选择" @deselect="handleMenageDeselect($event, 'as')"
@@ -89,7 +89,7 @@
                         </a-select>
                     </a-form-item>
                 </a-form>
-            </a-tab-pane>
+            </a-tab-pane> -->
         </a-tabs>
     </a-card>
 </template>
@@ -98,7 +98,7 @@
 import { getUserList } from '@/services/user'
 import { addEcRep, delEcRep, updateEcInfo, addSiRep, delSiRep, updateSiInfo, addAsRep, delAsRep, updateAsInfo } from '@/services/electrical'
 import moment from 'moment';
-import { getProjectInfo } from '@/services/project'
+import { getProjectEpInfo } from '@/services/project'
 export default {
     name: 'BasicForm',
     // i18n: require('./i18n'),
@@ -286,12 +286,12 @@ export default {
         },
         // 获取员工信息
         async getProjectInfo(id) {
-            const res = await getProjectInfo({ id })
+            const res = await getProjectEpInfo({ id })
             this.id = id
             if (res.data.status.retCode === 0) {
                 let ecRep = res.data.data.ecRep ? res.data.data.ecRep.split(",").map(item => +item) : [];
                 let siRep = res.data.data.siRep ? res.data.data.siRep.split(",").map(item => +item) : [];
-                let asRep = res.data.data.siRep ? res.data.data.asRep.split(",").map(item => +item) : [];
+                // let asRep = res.data.data.siRep ? res.data.data.asRep.split(",").map(item => +item) : [];
                 this.ecForm.setFieldsValue({
                     ecRep,
                     ecStartDate: res.data.data.ecStartDate,
@@ -301,10 +301,10 @@ export default {
                     siStartTime: res.data.data.siStartTime,
                     siEndTime: res.data.data.siEndTime,
                     siStatus: res.data.data.siStatus,
-                    asRep,
-                    asStartTime: res.data.data.asStartTime,
-                    asEndTime: res.data.data.asEndTime,
-                    asStatus: res.data.data.asStatus,
+                    // asRep,
+                    // asStartTime: res.data.data.asStartTime,
+                    // asEndTime: res.data.data.asEndTime,
+                    // asStatus: res.data.data.asStatus,
                 });
                 this.detail = res.data.data
             }

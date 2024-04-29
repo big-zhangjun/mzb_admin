@@ -46,16 +46,16 @@
                 </span>
             </a-form>
         </div>
+        <a-space class="operator">
+            <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
+            <a-button @click="exportFile" type="danger" v-if="permission.includes(1)">导出</a-button>
+            <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
+                :showUploadList="false" :customRequest="customRequest">
+                <a-button> <a-icon type="upload" /> 导入 </a-button>
+            </a-upload>
+        </a-space>
         <a-spin :spinning="uploadLoading">
             <div>
-                <a-space class="operator">
-                    <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
-                    <a-button @click="exportFile" type="danger" v-if="permission.includes(1)">导出</a-button>
-                    <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
-                        :showUploadList="false" :customRequest="customRequest">
-                        <a-button> <a-icon type="upload" /> 导入 </a-button>
-                    </a-upload>
-                </a-space>
                 <standard-table :columns="columns" :dataSource="dataSource"
                     :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                     <div slot="description" slot-scope="{text}">
@@ -80,7 +80,7 @@
             </div>
         </a-spin>
         <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500">
-            <ProjectForm ref="ProjectForm" :type="type" />
+            <ProjectForm ref="ProjectForm" :type="type" :key="projectFormKey"/>
         </a-modal>
     </a-card>
 </template>
@@ -103,6 +103,7 @@ export default {
     components: { StandardTable, ProjectForm },
     data() {
         return {
+            projectFormKey: 0,
             headers: {
                 authorization: 'authorization-text',
             },
@@ -143,6 +144,11 @@ export default {
                     title: '型号',
                     width: 100,
                     dataIndex: 'model'
+                },
+                {
+                    title: '级别',
+                    width: 100,
+                    dataIndex: 'level'
                 },
                 {
                     title: '操作',
@@ -212,6 +218,9 @@ export default {
                 this.uploadLoading = false
                 this.getData()
                 this.$message.success(`成功导入${res.data.data}条数据`)
+            } else {
+                this.$message.success(res.data.status.msg)
+                this.uploadLoading = false
             }
         },
         // 导出
@@ -337,6 +346,7 @@ export default {
             this.pagination.total = res.data.data.totalCount
         },
         edit(data) {
+            this.projectFormKey++
             this.modalTitle = '编辑项目'
             this.visible = true
             this.type = 'edit'
@@ -357,6 +367,7 @@ export default {
             this.getData()
         },
         addNew() {
+            this.projectFormKey++
             this.type = 'add'
             this.modalTitle = '新增项目'
             this.visible = true

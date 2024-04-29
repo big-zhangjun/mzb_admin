@@ -6,7 +6,10 @@ import {
     GET_PROJECT_INFO,
     EXPORTPROJECTLIST,
     UPDATE_PROJECT_INFO,
-    IMPORTPROJECTLIST
+    IMPORTPROJECTLIST,
+    GETPROJECTTIPS,
+    GET_PROJECT_EP_LIST,
+    GET_PROJECT_EP_INFO
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -14,6 +17,14 @@ import { request, METHOD } from '@/utils/request'
 // 查询项目列表
 export async function getProjectList(params) {
     return request(GET_PROJECT_LIST, METHOD.POST, params)
+}
+// 查询项目列表
+export async function getProjectEpList(params) {
+    return request(GET_PROJECT_EP_LIST, METHOD.POST, params)
+}
+// 查询项目列表
+export async function getProjectEpInfo(params) {
+    return request(GET_PROJECT_EP_INFO, METHOD.POST, params)
 }
 
 // 删除项目信息
@@ -42,4 +53,8 @@ export async function exportProjectList(params) {
 // 导入项目列表
 export async function importProjectList(params) {
     return request(IMPORTPROJECTLIST, METHOD.POST, params)
+}
+// 查询项目提示
+export async function getProjectTips(params) {
+    return request(GETPROJECTTIPS, METHOD.POST, params)
 }

@@ -110,7 +110,31 @@ const options = {
                 id: 77,
                 parentID: 17,
               },
-              component: () => import('@/pages/electrical/plan.vue'),
+              component: BlankView,
+              children: [
+                {
+                  path: 'done',
+                  name: '已完成',
+                  meta: {
+                    permission: [],
+                    icon: 'dashboard',
+                    id: 84,
+                    parentID: 77,
+                  },
+                  component: () => import('@/pages/electrical/done.vue'),
+                },
+                {
+                  path: 'completed',
+                  name: '待完成',
+                  meta: {
+                    permission: [],
+                    icon: 'dashboard',
+                    id: 85,
+                    parentID: 77,
+                  },
+                  component: () => import('@/pages/electrical/plan.vue'),
+                },
+              ]
             },
             {
               path: 'process',

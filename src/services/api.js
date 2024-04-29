@@ -63,4 +63,7 @@ module.exports = {
   UPDATEASINFO: `${BASE_URL}/project/update_as_info`, //修改售后信息  
   EXPORTPROJECTLIST: `${BASE_URL}/project/export_project_list`, //导出项目列表
   IMPORTPROJECTLIST: `${BASE_URL}/project/import_project_list`, //导入项目列表
+  GETPROJECTTIPS: `${BASE_URL}/project/get_project_tips`, //查询项目提示
+  GET_PROJECT_EP_LIST: `${BASE_URL}/project/get_ep_list`, //查询项目提示
+  GET_PROJECT_EP_INFO: `${BASE_URL}/project/get_ep_info`, //查询项目提示
 }
