@@ -2,28 +2,37 @@
     <a-card>
         <div :class="advanced ? 'search' : null">
             <a-form layout="horizontal">
-                <div class="fold">
+                <div :class="advanced ? null : 'fold'">
                     <a-row>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.content" placeholder="请输入" />
+                        <a-col :md="8" :sm="24">
+                            <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input v-model="form.content" style="width: 100%" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
-                            <a-form-item style="margin-top: -1px;" :labelCol="{ span: 3 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-button style="margin-right: 18px;" @click="handleSearch">查询</a-button>
-                                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
+                            <a-form-item label="类别" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-select placeholder="请选择" v-model="form.contentType">
+                                    <a-select-option :value="item.type" v-for="item in typeList" :key="item.type">{{
+                                        item.label }}</a-select-option>
+                                </a-select>
                             </a-form-item>
                         </a-col>
                     </a-row>
-
                 </div>
+                <span style="float: right; margin-top: 3px;">
+                    <a-button type="primary" @click="handleSearch">查询</a-button>
+                    <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                    <a @click="toggleAdvanced" style="margin-left: 8px">
+                        {{ advanced ? '收起' : '展开' }}
+                        <a-icon :type="advanced ? 'up' : 'down'" />
+                    </a>
+                </span>
             </a-form>
         </div>
         <div>
-            <!-- <a-space class="operator">
-                <a-button @click="addNew" type="primary">新建</a-button>
-            </a-space> -->
+            <a-space class="operator">
+                <a-button v-if="permission.includes(1)" @click="addNew" type="primary">新建</a-button>
+            </a-space>
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
@@ -34,7 +43,8 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该工作?" ok-text="确定" cancel-text="取消" @confirm="delBlogContentList(record)" v-if="permission.includes(2)">
+                    <a-popconfirm title="确定删除该工作?" ok-text="确定" cancel-text="取消" @confirm="delBlogContentList(record)"
+                        v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -55,7 +65,7 @@
 import StandardTable from '@/components/table/StandardTable'
 import WorkContentForm from '@/pages/electrical/components/workContentForm'
 import { getOperaList } from '@/services/backend'
-import { mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import { getBlogContentList, delBlogContentList } from '@/services/electrical'
 
 export default {
@@ -74,6 +84,17 @@ export default {
                     width: 50
                 },
                 {
+                    title: '类型',
+                    width: 100,
+                    dataIndex: 'contentType',
+                    customRender: (text) => {
+                        let res = this.typeList.find(item => item.type == text)
+                        if (res) {
+                            return res.label
+                        }
+                    }
+                },
+                {
                     title: '内容',
                     dataIndex: 'content',
                     width: 400,
@@ -84,6 +105,20 @@ export default {
                     scopedSlots: { customRender: 'action' }
                 },
 
+            ],
+            typeList: [
+                {
+                    label: "电气柜",
+                    type: 1
+                },
+                {
+                    label: "现场安装",
+                    type: 2
+                },
+                {
+                    label: "售后",
+                    type: 3
+                }
             ],
             type: 'add',
             dataSource: [],
@@ -113,7 +148,7 @@ export default {
     },
     watch: {
         menuData() {
-          this.permission = this.$route.meta.permission
+            this.permission = this.$route.meta.permission
         }
     },
     methods: {
@@ -121,6 +156,7 @@ export default {
             this.advanced = !this.advanced
         },
         handleSearch() {
+            console.log('aa');
             this.getData()
         },
         handleReset() {

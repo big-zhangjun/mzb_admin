@@ -113,17 +113,6 @@ const options = {
               component: BlankView,
               children: [
                 {
-                  path: 'done',
-                  name: '已完成',
-                  meta: {
-                    permission: [],
-                    icon: 'dashboard',
-                    id: 84,
-                    parentID: 77,
-                  },
-                  component: () => import('@/pages/electrical/done.vue'),
-                },
-                {
                   path: 'completed',
                   name: '待完成',
                   meta: {
@@ -133,6 +122,17 @@ const options = {
                     parentID: 77,
                   },
                   component: () => import('@/pages/electrical/plan.vue'),
+                },
+                {
+                  path: 'done',
+                  name: '已完成',
+                  meta: {
+                    permission: [],
+                    icon: 'dashboard',
+                    id: 84,
+                    parentID: 77,
+                  },
+                  component: () => import('@/pages/electrical/done.vue'),
                 },
               ]
             },

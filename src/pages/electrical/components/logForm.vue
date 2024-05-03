@@ -10,7 +10,7 @@
                     v-decorator="['address', { rules: [{ required: true, message: '请输入地址' }] }]"></a-input>
             </a-form-item>
             <a-form-item :label="'项目信息：'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
-                <a-select v-decorator="['projectID', { rules: [{ required: true, message: '请选择项目信息' }] }]"
+                <a-select show-search v-decorator="['projectID', { rules: [{ required: true, message: '请选择项目信息' }] }]"
                     placeholder="请选择">
                     <a-select-option :value="item.id" v-for="item in projectList" :key="item.id">
                         {{ item.label }}
@@ -18,8 +18,8 @@
                 </a-select>
             </a-form-item>
             <a-form-item :label="'工作内容：'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
-                <a-select mode="multiple" v-decorator="['contentId', { rules: [{ required: true, message: '请选择日期' }] }]"
-                    placeholder="请选择">
+                <a-select mode="multiple" show-search
+                    v-decorator="['contentId', { rules: [{ required: true, message: '请选择日期' }] }]" placeholder="请选择">
                     <a-select-option :value="item.id" v-for="item in blogContentList" :key="item.id">
                         {{ item.content }}
                     </a-select-option>
@@ -37,7 +37,7 @@
 import moment from 'moment';
 
 // import { addBlogList, getDeptList, getRoleInfo, updateBlogContentList } from '@/services/user'
-import { addBlogList, getBlogContentList } from '@/services/electrical'
+import { addBlogList, getBlogContentList, addEcRep, addSiRep, addAsRep } from '@/services/electrical'
 import { getProjectList } from '@/services/project'
 
 export default {
@@ -79,7 +79,7 @@ export default {
             this.projectList = res.data.data.records.map(item => {
                 return {
                     id: item.id,
-                    label: item.customerName + item.model
+                    label: item.productNumber + '---' + item.customerName + '---' + item.model
                 }
             })
         },
@@ -100,18 +100,18 @@ export default {
         //     }
         // },
         getWorkTent(data) {
-           let keys = [
-            'blogDay',
-            'address',
-            'remark',
-            'projectID'
-           ]
-           keys.forEach((key)=>{
-               this.form.setFieldsValue({ [key]: data[key] })
-           })
-           let ids = data.content.split(",")
-           let contentIds = this.blogContentList.filter(item=> ids.includes(item.content)).map(item=> item.id)
-           this.form.setFieldsValue({ contentId: contentIds })
+            let keys = [
+                'blogDay',
+                'address',
+                'remark',
+                'projectID'
+            ]
+            keys.forEach((key) => {
+                this.form.setFieldsValue({ [key]: data[key] })
+            })
+            let ids = data.content.split(",")
+            let contentIds = this.blogContentList.filter(item => ids.includes(item.content)).map(item => item.id)
+            this.form.setFieldsValue({ contentId: contentIds })
         },
         // 清空表单
         resetFields() {
@@ -129,11 +129,50 @@ export default {
                         userID: this.$store.state.account.user.id,
                         content: this.blogContentList.filter(item => contentId.includes(item.id)).map(item => item.content).join(",")
                     }
-
                     this.addBlogList(params, callback)
 
+
+                    let addFun = this.blogContentList.filter(item => contentId.includes(item.id)).map(item => item.contentType)
+                    addFun = [...new Set(addFun)]
+                    addFun.forEach(async item => {
+                        await this.addUser(item, params.projectID)
+                    })
                 }
             })
+        },
+        async addUser(type, id) {
+            let fun = ""
+            switch (type) {
+                case 1:
+                    fun = this.addEcRep
+                    break
+                case 2:
+                    fun = this.addSiRep
+                    break
+                case 3:
+                    fun = this.addAsRep
+                    break
+            }
+            const user = JSON.parse(localStorage.getItem("admin.user"))
+            let params = {
+                id,
+                "rep": user.id,
+                "repName": user.userName
+            }
+            console.log(params,'ss');
+            fun(params)
+        },
+        async addEcRep(params) {
+            const res = await addEcRep(params)
+            console.log(res);
+        },
+        async addSiRep(params) {
+            const res = await addSiRep(params)
+            console.log(res);
+        },
+        async addAsRep(params) {
+            const res = await addAsRep(params)
+            console.log(res);
         },
         addBlogList(params, callback) {
             addBlogList(params).then(res => {

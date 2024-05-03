@@ -6,7 +6,10 @@
                     <a-row>
                         <a-col :md="8" :sm="24">
                             <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.productName" placeholder="请输入" />
+                                <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
+                                    <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
+                                        }}</a-select-option>
+                                </a-select>
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
@@ -30,7 +33,7 @@
                 <a-button @click="addNew" type="primary">新建</a-button>
 
             </a-space> -->
-            <standard-table :columns="columns" :dataSource="dataSource"
+            <standard-table :columns="columns" :dataSource="dataSource"  :scroll="{ x: 2000 }"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
@@ -41,11 +44,6 @@
                         <a-icon type="edit" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"  v-if="permission.includes(2)">
-                        <a>
-                            <a-icon type="delete" />删除
-                        </a>
-                    </a-popconfirm>
                 </div>
                 <template slot="statusTitle">
                     <a-icon @click.native="onStatusTitleClick" type="info-circle" />
@@ -63,13 +61,18 @@ import StandardTable from '@/components/table/StandardTable'
 import PlanForm from '@/pages/electrical/components/planForm'
 import { getProjectEpList, delProjectInfo } from '@/services/project'
 import { mapGetters } from 'vuex'
-// function formatDate(timestamp) {
-//   const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
-//   const year = date.getFullYear();
-//   const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
-//   const day = date.getDate();
-//   return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
-// }
+function formatDate(timestamp) {
+  if(timestamp == '1000-01-01') {
+    return '--'
+  }
+  return timestamp
+}
+function getStatus(list, v) {
+    let res = list.find(item=> item.id == v)
+    if(res) {
+        return res.label
+    }
+}
 export default {
     name: 'QueryList',
     components: { StandardTable, PlanForm },
@@ -78,12 +81,33 @@ export default {
             modalTitle: "新增项目",
             advanced: true,
             visible: false,
-            columns: [
+            productName: [
+                "热压罐",
+                "储气罐",
+                "液压釜",
+                "固化炉",
+                "浸渍罐",
+                "系统改造"
+            ],
+            statusList: [
                 {
-                    title: '项目编号',
-                    dataIndex: 'number',
-                    width: 50
+                    label: "未开始",
+                    id: 1
                 },
+                {
+                    label: "进行中",
+                    id: 2
+                },
+                {
+                    label: "缺料中",
+                    id: 3
+                },
+                {
+                    label: "已完成",
+                    id: 4
+                }
+            ],
+            columns: [
                 {
                     title: '产品编号',
                     dataIndex: 'productNumber',
@@ -97,16 +121,63 @@ export default {
                 {
                     title: '客户名称',
                     dataIndex: 'customerName',
-                    width: 300,
+                    width: 150,
                 },
                 {
                     title: '型号',
-                    width: 100,
+                    width: 80,
                     dataIndex: 'model'
+                },
+                {
+                    title: '电气柜负责人',
+                    dataIndex: 'ecRepName',
+                    width: 80,
+                },
+                {
+                    title: '电气柜开始日期',
+                    dataIndex: 'ecStartDate',
+                    customRender: (text) => formatDate(text),
+                    width: 80,
+                },
+                {
+                    title: '电气柜结束日期',
+                    dataIndex: 'ecEndDate',
+                    customRender: (text) => formatDate(text),
+                    width: 80,
+                },
+                {
+                    title: '电气柜安装状态',
+                    dataIndex: 'ecStatus',
+                    customRender: (text) => getStatus(this.statusList, text),
+                    width: 80,
+                },
+                {
+                    title: '现场安装负责人',
+                    dataIndex: 'siRepName',
+                    width: 80,
+                },
+                {
+                    title: '现场安装开始日期',
+                    dataIndex: 'siStartTime',
+                    customRender: (text) => formatDate(text),
+                    width: 80,
+                },
+                {
+                    title: '现场安装结束日期',
+                    dataIndex: 'siEndTime',
+                    customRender: (text) => formatDate(text),
+                    width: 80,
+                },
+                {
+                    title: '现场安装状态',
+                    dataIndex: 'siStatus',
+                    customRender: (text) => getStatus(this.statusList, text),
+                    width: 80,
                 },
                 {
                     title: '操作',
                     width: 100,
+                    fixed: 'right',
                     scopedSlots: { customRender: 'action' }
                 },
 

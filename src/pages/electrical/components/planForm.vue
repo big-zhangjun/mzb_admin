@@ -22,7 +22,7 @@
                                 v-decorator="['ecEndDate', { rules: [{ required: false, message: '请选择日期' }] }]" />
                         </a-form-item>
                         <a-form-item :label="'电气柜安装状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
-                            <a-select v-decorator="['ecStatus', { rules: [{ required: false, message: '请选择日期' }] }]"
+                            <a-select v-decorator="['ecStatus', { rules: [{ required: false, message: '请选择电气柜安装状态' }] }]"
                                 @change="handleStatusChange" placeholder="请选择" @select="handleEcStatus('ec')">
                                 <a-select-option :value="item.id" v-for="item in statusList" :key="item.id">
                                     {{ item.label }}
@@ -32,9 +32,9 @@
                     </a-form>
                 </div>
             </a-tab-pane>
-            <a-tab-pane key="2" tab="安装" force-render>
+            <a-tab-pane key="2" tab="现场安装" force-render>
                 <a-form :form="ecForm">
-                    <a-form-item :label="'安装负责人'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'现场安装负责人'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select mode="multiple" placeholder="请选择" @deselect="handleMenageDeselect($event, 'si')"
                             @select="handleMenageSelect($event, 'si')"
                             v-decorator="['siRep', { rules: [{ required: false, message: '请选择负责人' }] }]">
@@ -43,15 +43,15 @@
                             </a-select-option>
                         </a-select>
                     </a-form-item>
-                    <a-form-item :label="'安装开始日期'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'现场安装开始日期'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-date-picker @change="onChangeStart('si')" style="width: 100%;"
                             v-decorator="['siStartTime', { rules: [{ required: false, message: '请选择日期' }] }]" />
                     </a-form-item>
-                    <a-form-item :label="'安装结束日期'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'现场安装结束日期'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-date-picker @change="onChangeEnd('si')" style="width: 100%;"
                             v-decorator="['siEndTime', { rules: [{ required: false, message: '请选择日期' }] }]" />
                     </a-form-item>
-                    <a-form-item :label="'安装状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'现场安装状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select v-decorator="['siStatus', { rules: [{ required: false, message: '请选择日期' }] }]"
                             @change="handleStatusChange" placeholder="请选择" @select="handleEcStatus('si')">
                             <a-select-option :value="item.id" v-for="item in statusList" :key="item.id">
@@ -294,12 +294,12 @@ export default {
                 // let asRep = res.data.data.siRep ? res.data.data.asRep.split(",").map(item => +item) : [];
                 this.ecForm.setFieldsValue({
                     ecRep,
-                    ecStartDate: res.data.data.ecStartDate,
-                    ecEndDate: res.data.data.ecEndDate,
+                    ecStartDate: res.data.data.ecStartDate == '1000-01-01' ? '' : res.data.data.ecStartDate,
+                    ecEndDate: res.data.data.ecEndDate == '1000-01-01' ? '' : res.data.data.ecEndDate,
                     ecStatus: res.data.data.ecStatus,
                     siRep,
-                    siStartTime: res.data.data.siStartTime,
-                    siEndTime: res.data.data.siEndTime,
+                    siStartTime: res.data.data.siStartTime == '1000-01-01' ? '' : res.data.data.siStartTime,
+                    siEndTime: res.data.data.siEndTime == '1000-01-01' ? '' : res.data.data.siEndTime,
                     siStatus: res.data.data.siStatus,
                     // asRep,
                     // asStartTime: res.data.data.asStartTime,
