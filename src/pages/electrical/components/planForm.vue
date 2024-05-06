@@ -22,8 +22,9 @@
                                 v-decorator="['ecEndDate', { rules: [{ required: false, message: '请选择日期' }] }]" />
                         </a-form-item>
                         <a-form-item :label="'电气柜安装状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
-                            <a-select v-decorator="['ecStatus', { rules: [{ required: false, message: '请选择电气柜安装状态' }] }]"
-                                @change="handleStatusChange" placeholder="请选择" @select="handleEcStatus('ec')">
+                            <a-select
+                                v-decorator="['ecStatus', { rules: [{ required: false, message: '请选择电气柜安装状态' }] }]"
+                                 placeholder="请选择" @select="handleEcStatus('ec')">
                                 <a-select-option :value="item.id" v-for="item in statusList" :key="item.id">
                                     {{ item.label }}
                                 </a-select-option>
@@ -53,8 +54,28 @@
                     </a-form-item>
                     <a-form-item :label="'现场安装状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select v-decorator="['siStatus', { rules: [{ required: false, message: '请选择日期' }] }]"
-                            @change="handleStatusChange" placeholder="请选择" @select="handleEcStatus('si')">
+                             placeholder="请选择" @select="handleEcStatus('si')">
                             <a-select-option :value="item.id" v-for="item in statusList" :key="item.id">
+                                {{ item.label }}
+                            </a-select-option>
+                        </a-select>
+                    </a-form-item>
+                </a-form>
+            </a-tab-pane>
+            <a-tab-pane key="3" tab="清单" force-render>
+                <a-form :form="ecForm">
+                    <a-form-item :label="'电气柜清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                        <a-select @select="handleListSelect($event, 'ec')" placeholder="请选择"
+                            v-decorator="['electricalList', { rules: [{ required: false, message: '请选择电气柜清单' }] }]">
+                            <a-select-option :value="item.id" v-for="item in list" :key="item.id">
+                                {{ item.label }}
+                            </a-select-option>
+                        </a-select>
+                    </a-form-item>
+                    <a-form-item :label="'现场安装清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                        <a-select @select="handleListSelect($event, 'si')" placeholder="请选择"
+                            v-decorator="['invoiceList', { rules: [{ required: false, message: '请选择现场安装清单' }] }]">
+                            <a-select-option :value="item.id" v-for="item in list" :key="item.id">
                                 {{ item.label }}
                             </a-select-option>
                         </a-select>
@@ -82,7 +103,7 @@
                     </a-form-item>
                     <a-form-item :label="'售后状态'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select v-decorator="['asStatus', { rules: [{ required: false, message: '请选择日期' }] }]"
-                            @change="handleStatusChange" placeholder="请选择" @select="handleEcStatus('as')">
+                             placeholder="请选择" @select="handleEcStatus('as')">
                             <a-select-option :value="item.id" v-for="item in statusList" :key="item.id">
                                 {{ item.label }}
                             </a-select-option>
@@ -98,7 +119,7 @@
 import { getUserList } from '@/services/user'
 import { addEcRep, delEcRep, updateEcInfo, addSiRep, delSiRep, updateSiInfo, addAsRep, delAsRep, updateAsInfo } from '@/services/electrical'
 import moment from 'moment';
-import { getProjectEpInfo } from '@/services/project'
+import { getProjectEpInfo, updateEcListInfo } from '@/services/project'
 export default {
     name: 'BasicForm',
     // i18n: require('./i18n'),
@@ -108,6 +129,16 @@ export default {
             value: 1,
             userList: [],
             ecForm: this.$form.createForm(this),
+            list: [
+                {
+                    label: "有",
+                    id: 1
+                },
+                {
+                    label: "无",
+                    id: 0
+                },
+            ],
             statusList: [
                 {
                     label: "未开始",
@@ -292,15 +323,18 @@ export default {
                 let ecRep = res.data.data.ecRep ? res.data.data.ecRep.split(",").map(item => +item) : [];
                 let siRep = res.data.data.siRep ? res.data.data.siRep.split(",").map(item => +item) : [];
                 // let asRep = res.data.data.siRep ? res.data.data.asRep.split(",").map(item => +item) : [];
+                console.log(res.data.electricalList);
                 this.ecForm.setFieldsValue({
                     ecRep,
                     ecStartDate: res.data.data.ecStartDate == '1000-01-01' ? '' : res.data.data.ecStartDate,
                     ecEndDate: res.data.data.ecEndDate == '1000-01-01' ? '' : res.data.data.ecEndDate,
                     ecStatus: res.data.data.ecStatus,
+                    electricalList: res.data.data.electricalList,
                     siRep,
                     siStartTime: res.data.data.siStartTime == '1000-01-01' ? '' : res.data.data.siStartTime,
                     siEndTime: res.data.data.siEndTime == '1000-01-01' ? '' : res.data.data.siEndTime,
                     siStatus: res.data.data.siStatus,
+                    invoiceList: res.data.data.invoiceList
                     // asRep,
                     // asStartTime: res.data.data.asStartTime,
                     // asEndTime: res.data.data.asEndTime,
@@ -310,8 +344,14 @@ export default {
             }
         },
         // 更改状态
-        handleStatusChange() {
-
+        async handleListSelect() {
+            let params = {
+                id:  this.id,
+                electricalList: this.ecForm.getFieldsValue().electricalList,
+                invoiceList: this.ecForm.getFieldsValue().invoiceList
+            }
+            await updateEcListInfo(params)
+            this.$emit('unpadeList')
         },
         async addEcRep(params) {
             const res = await addEcRep(params)

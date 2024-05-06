@@ -48,7 +48,7 @@
         </div>
         <a-space class="operator">
             <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
-            <a-button @click="exportFile" type="danger" v-if="permission.includes(1)">导出</a-button>
+            <a-button @click="exportFile" type="danger" v-if="permission.includes(5)">导出</a-button>
             <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
                 :showUploadList="false" :customRequest="customRequest">
                 <a-button> <a-icon type="upload" /> 导入 </a-button>

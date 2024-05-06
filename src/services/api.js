@@ -66,4 +66,8 @@ module.exports = {
   GETPROJECTTIPS: `${BASE_URL}/project/get_project_tips`, //查询项目提示
   GET_PROJECT_EP_LIST: `${BASE_URL}/project/get_ep_list`, //查询项目提示
   GET_PROJECT_EP_INFO: `${BASE_URL}/project/get_ep_info`, //查询项目提示
+  UPDATE_EP_LIST_INFO: `${BASE_URL}/project/update_ep_list_info`, //修改清单信息
+  EXPORT_EP_LIST: `${BASE_URL}/project/export_ep_list`, //导出电气计划
+  ADD_NOTICE_INFO: `${BASE_URL}/notice/add_notice_info`, //新增公告信息
+  GET_NOTICE_LIST: `${BASE_URL}/notice/get_notice_list`, //查询公告列表
 }

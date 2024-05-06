@@ -9,7 +9,9 @@ import {
     IMPORTPROJECTLIST,
     GETPROJECTTIPS,
     GET_PROJECT_EP_LIST,
-    GET_PROJECT_EP_INFO
+    GET_PROJECT_EP_INFO,
+    UPDATE_EP_LIST_INFO,
+    EXPORT_EP_LIST
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -57,4 +59,12 @@ export async function importProjectList(params) {
 // 查询项目提示
 export async function getProjectTips(params) {
     return request(GETPROJECTTIPS, METHOD.POST, params)
+}
+// 修改清单信息
+export async function updateEcListInfo(params) {
+    return request(UPDATE_EP_LIST_INFO, METHOD.POST, params)
+}
+// 导出电气计划
+export async function exportEpList(params) {
+    return request(EXPORT_EP_LIST, METHOD.POST, params)
 }

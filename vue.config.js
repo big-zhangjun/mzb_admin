@@ -57,6 +57,7 @@ module.exports = {
       patterns: [path.resolve(__dirname, "./src/theme/theme.less")],
     }
   },
+  lintOnSave: false,
   configureWebpack: config => {
     config.entry.app = ["babel-polyfill", "whatwg-fetch", "./src/main.js"];
     config.performance = {

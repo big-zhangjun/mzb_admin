@@ -4,42 +4,50 @@
             <a-form layout="horizontal">
                 <div :class="advanced ? null : 'fold'">
                     <a-row>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="用户名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="用户名" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-input v-model="form.userName" style="width: 100%" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="部门名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="部门名称" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.deptID">
                                     <a-select-option :value="item.id" v-for="item in deptList" :key="item.id">{{
             item.deptName }}</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="职位名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="职位名称" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.roleID">
                                     <a-select-option :value="item.id" v-for="item in roleList" :key="item.id">{{
             item.roleName }}</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
-                    </a-row>
-                    <a-row v-if="advanced">
-                        <!-- <a-col :md="8" :sm="24">
-                            <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input placeholder="请输入" v-model="form.nickName"/>
-                            </a-form-item>
-                        </a-col> -->
-                        <a-col :md="8" :sm="24">
-                            <a-form-item label="在职离职" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="在职离职" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.resign">
                                     <a-select-option :value="1">在职</a-select-option>
                                     <a-select-option :value="2">离职</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
+                    </a-row>
+                    <a-row v-if="advanced">
+                        <!-- <a-col :md="6" :sm="24">
+                            <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input placeholder="请输入" v-model="form.nickName"/>
+                            </a-form-item>
+                        </a-col> -->
+                        <!-- <a-col :md="6" :sm="24">
+                            <a-form-item label="在职离职" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-select placeholder="请选择" v-model="form.resign">
+                                    <a-select-option :value="1">在职</a-select-option>
+                                    <a-select-option :value="2">离职</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col> -->
                     </a-row>
                 </div>
                 <span style="float: right; margin-top: 3px;">

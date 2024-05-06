@@ -252,6 +252,16 @@ const options = {
               },
               component: () => import('@/pages/backend/authority'),
             },
+            {
+              path: 'announcement',
+              name: '公告管理',
+              meta: {
+                permission: [],
+                id: 49,
+                parentID: 22,
+              },
+              component: () => import('@/pages/backend/announcement'),
+            }
 
           ]
         },

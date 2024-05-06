@@ -11,7 +11,9 @@ import {
     DEL_AUTHORITY_INFO,
     DEL_AUTHORITY_OPERATE,
     DEL_MODUEL_INFO,
-    ADD_MODUEL_INFO
+    ADD_MODUEL_INFO,
+    ADD_NOTICE_INFO,
+    GET_NOTICE_LIST
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -68,4 +70,15 @@ export async function delModuleInfo(params) {
 export async function addModuleInfo(params) {
     return request(ADD_MODUEL_INFO, METHOD.POST, params)
 }
+// 新增公告信息
+export async function addNoticeInfo(params) {
+    return request(ADD_NOTICE_INFO, METHOD.POST, params)
+}
+
+// 查询公告列表
+export async function getNoticeList(params) {
+    return request(GET_NOTICE_LIST, METHOD.POST, params)
+}
+
+
 

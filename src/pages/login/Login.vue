@@ -146,7 +146,7 @@ export default {
           const routesConfig = result.data
           console.log(routesConfig, '');
           loadRoutes(routesConfig)
-          this.$router.push('/user/employee')
+          this.$router.push('/home')
           this.$message.success(loginRes.status.msg, 3)
         })
       } else {
