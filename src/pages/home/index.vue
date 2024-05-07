@@ -5,25 +5,25 @@
       <div>{{ user.roleName }} | {{ user.mobile }}</div>
     </div>
     <template slot="extra">
-      <head-info class="split-right" :title="'project'" content="56" />
+      <!-- <head-info class="split-right" :title="'project'" content="56" />
       <head-info class="split-right" :title="'ranking'" content="8/24" />
-      <head-info class="split-right" :title="'visit'" content="2,223" />
+      <head-info class="split-right" :title="'visit'" content="2,223" /> -->
     </template>
     <template>
       <a-row style="margin: 0 -12px">
         <a-col style="padding: 0 12px" :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card class="project-list" style="margin-bottom: 24px;" :bordered="false" title="公告信息"
             :body-style="{ padding: 0 }">
-            <a slot="extra">更多</a>
+            <a slot="extra" @click="goNoticeList">更多</a>
             <div>
-              <a-card-grid :key="i" v-for="(item, i) in projects">
-                <a-card :bordered="false" :body-style="{ padding: 0 }">
+              <a-card-grid :key="item.id" v-for="(item, i) in noticeList">
+                <a-card @click="goDetail(item)" :bordered="false" :body-style="{ padding: 0 }">
                   <a-card-meta>
                     <div slot="title" class="card-title">
                       <!-- <a-avatar  :src="item.logo" /> -->
                       <div class="content">
                         <div class="left">
-                          <span>{{ item.title }}</span>
+                          <span class="title">{{ item.title }}</span>
                           <span class="creator">{{ item.creator }}</span>
                         </div>
                         <div class="right">
@@ -33,8 +33,12 @@
                     </div>
                   </a-card-meta>
                   <div class="project-item">
-                    <a class="group">{{ item.createTime }}</a>
-                    <!-- <span class="datetime">9小时前</span> -->
+                    <a class="group">创建时间：{{ item.createTime }}</a>
+                    <!-- <a-popconfirm title="确定删除该公告?" ok-text="确定" cancel-text="取消" @confirm="deleteNotice(item, i)">
+                      <a>
+                        删除
+                      </a>
+                    </a-popconfirm> -->
                   </div>
                 </a-card>
               </a-card-grid>
@@ -70,13 +74,13 @@ import PageLayout from '@/layouts/PageLayout'
 import HeadInfo from '@/components/tool/HeadInfo'
 import Radar from '@/components/chart/Radar'
 import { mapGetters } from 'vuex'
-import { getNoticeList } from "@/services/backend"
+import { getNoticeList, delNoticeInfo } from "@/services/backend"
 export default {
   name: 'WorkPlace',
   components: { HeadInfo, PageLayout, Radar },
   data() {
     return {
-      projects: [
+      noticeList: [
 
       ],
       loading: true,
@@ -96,23 +100,61 @@ export default {
   },
   methods: {
     getImg(data) {
-      if(!data.img) {
-        return require("@/assets/cover/1.jpg")
+      console.log('ss');
+      if (!data.cover) {
+        let randomNum = Math.floor(Math.random() * 5) + 1;
+        let imgs = [
+          "1.jpg",
+          "2.jpg",
+          "3.jpg",
+          "4.png",
+          "5.png"
+        ]
+        return require(`@/assets/cover/${imgs[randomNum - 1]}`)
+      } else if (data.cover.includes("custom")) {
+        return require(`@/assets/cover/${data.cover.split("/")[1]}`)
+      } else {
+        return process.env.VUE_APP_API_BASE_URL + data.cover.replace(/^\./, '')
       }
     },
+    goDetail(data) {
+      this.$router.push({
+        path: "/noticeDetail",
+        query: {
+          id: data.id
+        }
+      })
+    },
+    goNoticeList() {
+      this.$router.push({
+        path: "/notices"
+      })
+    },
     async getNoticeList() {
+      let user = localStorage.getItem('admin.user')
+      let userid = JSON.parse(user).id
       let params = {
-        "creatorID": 171,
+        "creatorID": userid,
         "updaterID": 0,
-        "startTime": 0,
-        "endTime": 0,
-        "pageSize": 10,
+        "startTime": "",
+        "endTime": "",
+        "pageSize": 6,
         "pageIndex": 1
       }
       let res = await getNoticeList(params)
       if (res.data.status.retCode === 0) {
-        this.projects = res.data.data.records
-        console.log(this.projects);
+        this.noticeList = res.data.data.records
+        console.log(this.noticeList);
+      }
+    },
+    async deleteNotice(data, idx) {
+      let params = {
+        id: data.id
+      }
+      let res = await delNoticeInfo(params)
+      if (res.data.status.retCode === 0) {
+        this.$message.success("删除成功")
+        this.noticeList.splice(idx, 1)
       }
     }
   }

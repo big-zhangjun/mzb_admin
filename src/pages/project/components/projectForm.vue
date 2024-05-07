@@ -11,7 +11,7 @@
                             v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]">
                             <a-select-option :value="_item.value" v-for="_item in item.options" :key="_item.value">{{
                                 _item.name
-                            }}</a-select-option>
+                                }}</a-select-option>
                         </a-select>
                         <a-select allowClear mode="combobox" showArrow showSearch multiple="false"
                             @dropdownVisibleChange="dropdownVisibleChange(item)" :placeholder="item.placeholder"
@@ -20,6 +20,7 @@
                             <a-select-option :value="_item" v-for="_item in item.options" :key="_item">{{ _item
                                 }}</a-select-option>
                         </a-select>
+                        <a-date-picker valueFormat="YYYY-MM-DD" style="width: 100%;" v-if="item.type == 'date-picker'" v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]"/>
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -90,6 +91,20 @@ export default {
                     key: "customerName",
                     type: "select",
                     placeholder: "请选择客户名称",
+                    required: true
+                },
+                {
+                    label: "下单日期",
+                    key: "orderDate",
+                    type: "date-picker",
+                    placeholder: "请选择下单日期",
+                    required: true
+                },
+                {
+                    label: "收货日期",
+                    key: "deliveryDate",
+                    type: "date-picker",
+                    placeholder: "请选择收货日期",
                     required: true
                 },
                 {

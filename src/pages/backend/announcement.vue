@@ -47,7 +47,11 @@ export default {
         handleSearch() { },
         handleOk() {
             this.$nextTick(() => {
-                this.$refs.wangEdit.handleSubmit()
+                this.$refs.wangEdit.handleSubmit(() => {
+                    this.$router.push({
+                        path: "/notices"
+                    })
+                })
             })
         }
     }
@@ -59,11 +63,13 @@ export default {
     width: calc(100% - 216px);
     display: inline-block
 }
+
 .content {
     width: 800px;
     margin: 0 auto;
     padding-bottom: 40px;
 }
+
 .operator {
     margin-bottom: 18px;
 }

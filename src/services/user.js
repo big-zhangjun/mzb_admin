@@ -129,13 +129,13 @@ export async function getRoleInfo(params) {
     ...params
   })
 }
+
 export async function getRoutesConfig() {
   let result = {}
   result.code = 0
   result.data = []
   return result
 }
-
 /**
  * 退出登录
  */

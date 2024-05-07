@@ -13,7 +13,9 @@ import {
     DEL_MODUEL_INFO,
     ADD_MODUEL_INFO,
     ADD_NOTICE_INFO,
-    GET_NOTICE_LIST
+    GET_NOTICE_LIST,
+    DEL_NOTICE_INFO,
+    GET_NOTICE_INFO
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -80,5 +82,13 @@ export async function getNoticeList(params) {
     return request(GET_NOTICE_LIST, METHOD.POST, params)
 }
 
+// 删除公告信息
+export async function delNoticeInfo(params) {
+    return request(DEL_NOTICE_INFO, METHOD.POST, params)
+}
+// 删除公告信息
+export async function getNoticeInfo(params) {
+    return request(GET_NOTICE_INFO, METHOD.POST, params)
+}
 
 

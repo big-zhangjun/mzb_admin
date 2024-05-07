@@ -11,7 +11,8 @@ import {
     GET_PROJECT_EP_LIST,
     GET_PROJECT_EP_INFO,
     UPDATE_EP_LIST_INFO,
-    EXPORT_EP_LIST
+    EXPORT_EP_LIST,
+    UPLOAD_FILE
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -55,6 +56,11 @@ export async function exportProjectList(params) {
 // 导入项目列表
 export async function importProjectList(params) {
     return request(IMPORTPROJECTLIST, METHOD.POST, params)
+}
+
+// 上传文件
+export async function upLoadFile(params) {
+    return request(UPLOAD_FILE, METHOD.POST, params)
 }
 // 查询项目提示
 export async function getProjectTips(params) {

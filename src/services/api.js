@@ -70,4 +70,7 @@ module.exports = {
   EXPORT_EP_LIST: `${BASE_URL}/project/export_ep_list`, //导出电气计划
   ADD_NOTICE_INFO: `${BASE_URL}/notice/add_notice_info`, //新增公告信息
   GET_NOTICE_LIST: `${BASE_URL}/notice/get_notice_list`, //查询公告列表
+  DEL_NOTICE_INFO: `${BASE_URL}/notice/del_notice_info`, //删除公告信息
+  GET_NOTICE_INFO: `${BASE_URL}/notice/get_notice_info`, //查询公告信息
+  UPLOAD_FILE: `${BASE_URL}/disk/upload_file`, //上传附件
 }

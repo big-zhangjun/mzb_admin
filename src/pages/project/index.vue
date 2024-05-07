@@ -141,8 +141,18 @@ export default {
                     width: 200,
                 },
                 {
+                    title: "下单日期",
+                    dataIndex: "orderDate",
+                    width: 80
+                },
+                {
+                    title: "收货日期",
+                    dataIndex: "deliveryDate",
+                    width: 80
+                },
+                {
                     title: '型号',
-                    width: 100,
+                    width: 80,
                     dataIndex: 'model'
                 },
                 {
@@ -212,6 +222,7 @@ export default {
             console.log(data);
             const form = new FormData()
             form.append('excel', data.file)
+            console.log(form);
             this.uploadLoading = true
             const res = await importProjectList(form)
             if (res.data.status.retCode == 0) {

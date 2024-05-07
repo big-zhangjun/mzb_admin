@@ -4,6 +4,8 @@ import {initRouter} from './router'
 import './theme/index.less'
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
+import mUpload from '@/components/mUpload'
+// 注册全局组件  
 import '@/mock'
 import store from './store'
 import 'animate.css/source/animate.css'
@@ -13,6 +15,7 @@ import bootstrap from '@/bootstrap'
 import 'moment/locale/zh-cn'
 const router = initRouter(store.state.setting.asyncRoutes)
 const i18n = initI18n('CN', 'US')
+Vue.component('mUpload', mUpload);  
 Vue.use(Antd)
 Vue.config.productionTip = false
 Vue.use(Viser)

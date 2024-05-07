@@ -1,5 +1,6 @@
 import TabsView from '@/layouts/tabs/TabsView'
 import BlankView from '@/layouts/BlankView'
+import PageView from '@/layouts/PageView'
 import home from '@/pages/home'
 
 // 路由配置
@@ -266,18 +267,32 @@ const options = {
           ]
         },
         {
-          name: '验权页面',
-          path: 'auth/demo',
+          path: 'notices',
+          name: '公告列表',
           meta: {
             permission: [],
-            icon: 'file-ppt',
-            authority: {
-              permission: 'form',
-              role: 'manager'
-            },
-            component: () => import('@/pages/demo')
-          }
-        }
+            icon: 'dashboard',
+          },
+          component: () => import('@/pages/notice/index.vue'),
+        },
+        {
+          path: 'noticeDetail',
+          name: '公告详情',
+          meta: {
+            permission: [],
+            icon: 'dashboard',
+          },
+          component: () => import('@/pages/notice/detail.vue'),
+        },
+        // {
+        //   name: '测试',
+        //   path: 'demo',
+        //   component: PageView,
+        //   meta: {
+        //     icon: 'file-ppt',
+        //     component: () => import('@/pages/electrical/workContent.vue'),
+        //   }
+        // }
       ]
     }
   ]
