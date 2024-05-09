@@ -240,9 +240,11 @@ export default {
     },
     methods: {
         handleSearch() {
+            this.pagination.current = 1
             this.getData()
         },
         handleReset() {
+            this.pagination.current = 1
             this.form = {
                 userName: "",
                 nickName: "",

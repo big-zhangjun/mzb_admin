@@ -64,17 +64,17 @@
             </a-tab-pane>
             <a-tab-pane key="3" tab="清单" force-render>
                 <a-form :form="ecForm">
-                    <a-form-item :label="'电气柜清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'电气清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select @select="handleListSelect($event, 'ec')" placeholder="请选择"
-                            v-decorator="['electricalList', { rules: [{ required: false, message: '请选择电气柜清单' }] }]">
+                            v-decorator="['electricalList', { rules: [{ required: false, message: '请选择电气清单' }] }]">
                             <a-select-option :value="item.id" v-for="item in list" :key="item.id">
                                 {{ item.label }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
-                    <a-form-item :label="'现场安装清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
+                    <a-form-item :label="'发货清单'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                         <a-select @select="handleListSelect($event, 'si')" placeholder="请选择"
-                            v-decorator="['invoiceList', { rules: [{ required: false, message: '请选择现场安装清单' }] }]">
+                            v-decorator="['invoiceList', { rules: [{ required: false, message: '请选择发货清单' }] }]">
                             <a-select-option :value="item.id" v-for="item in list" :key="item.id">
                                 {{ item.label }}
                             </a-select-option>

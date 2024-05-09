@@ -22,8 +22,9 @@
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
-                                <a-form-item label="时间范围d" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-range-picker valueFormat="YYYY-MM-DD" v-model="form.dateData" style="width: 100%;" />
+                                <a-form-item label="时间范围" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-range-picker valueFormat="YYYY-MM-DD" v-model="form.dateData"
+                                        style="width: 100%;" />
                                 </a-form-item>
                             </a-col>
                         </a-row>
@@ -31,6 +32,7 @@
                     <span style="float: left; margin-top: 3px;">
                         <a-button type="primary" @click="getNoticeList">查询</a-button>
                         <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                        <slot name="add"></slot>
                     </span>
                 </a-form>
             </div>
@@ -59,18 +61,21 @@
                                     </div>
                                 </div>
                                 <div class="project-item">
-                                    <a-popconfirm title="确定删除该公告?" ok-text="确定" cancel-text="取消"
+                                    <a-popconfirm title="确定删除该公告?" v-if="showDelete" ok-text="确定" cancel-text="取消"
                                         @confirm.stop="deleteNotice(item, i)">
                                         <a>
                                             删除
                                         </a>
                                     </a-popconfirm>
+                                    <a  v-if="showEdit" @click="handleEdit(item)">
+                                        编辑
+                                    </a>
                                 </div>
                             </div>
                         </a-card-meta>
                     </a-card>
                 </a-card-grid>
-                <a-empty v-if="!noticeList.length"/>
+                <a-empty v-if="!noticeList.length" />
             </div>
 
         </a-card>
@@ -118,6 +123,16 @@ export default {
             ],
         }
     },
+    props: {
+        showDelete: {
+            type: Boolean,
+            default: false
+        },
+        showEdit: {
+            type: Boolean,
+            default: false
+        }
+    },
     mounted() {
         this.permission = this.$route.meta.permission
         this.getUserList()
@@ -146,6 +161,9 @@ export default {
         async getUserList() {
             let res = await getUserList({})
             this.userList = res.data.data
+        },
+        handleEdit(data) {
+            this.$emit("handleEdit", data)
         },
         getImg(data) {
             console.log('ss');
@@ -179,14 +197,14 @@ export default {
             let endTime = ""
             let startTime = ""
             if (dateData) {
-                startTime = moment(dateData[0])
-                endTime = moment(dateData[1])
+                startTime = moment(dateData[0]).format('YYYY-MM-DD')
+                endTime = moment(dateData[1]).format('YYYY-MM-DD')
             }
             let params = {
                 "creatorID": this.form.creatorID || 0,
                 "updaterID": this.form.updaterID || 0,
-                "startTime":startTime,
-                "endTime":endTime,
+                "startTime": startTime,
+                "endTime": endTime,
                 "pageSize": 9,
                 "pageIndex": this.pagination.current
             }
@@ -234,7 +252,10 @@ export default {
 .operator {
     margin-bottom: 18px;
 }
-
+.project-item {
+    display: flex;
+    justify-content: space-between;
+}
 .card-title {
     span {
         vertical-align: middle;

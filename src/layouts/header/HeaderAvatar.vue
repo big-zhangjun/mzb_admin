@@ -5,7 +5,7 @@
       <span class="name">{{user.userName}}</span>
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
-      <a-menu-item>
+      <a-menu-item @click="goUserCenter">
         <a-icon type="user" />
         <span>个人中心</span>
       </a-menu-item>
@@ -36,6 +36,9 @@ export default {
       logout()
       localStorage.clear()
       this.$router.push('/login')
+    },
+    goUserCenter() {
+      this.$router.push('/userCenter')
     }
   }
 }

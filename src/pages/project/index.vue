@@ -4,7 +4,7 @@
             <a-form layout="horizontal">
                 <div :class="advanced ? null : 'fold'">
                     <a-row>
-                        <a-col :md="8" :sm="24">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
                                     <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
@@ -12,28 +12,29 @@
                                 </a-select>
                             </a-form-item>
                         </a-col>
-                        <a-col :md="8" :sm="24">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="产品编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-input v-model="form.productNumber" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
-                        <a-col :md="8" :sm="24">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-input v-model="form.customerName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
-                    </a-row>
-                    <a-row v-if="advanced">
-                        <!-- <a-col :md="8" :sm="24">
-                            <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input placeholder="请输入" v-model="form.nickName"/>
-                            </a-form-item>
-                        </a-col> -->
-                        <a-col :md="8" :sm="24">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-range-picker v-model="form.dateData" style="width: 100%;" />
                             </a-form-item>
                         </a-col>
+                    </a-row>
+                    <a-row v-if="advanced">
+                        <!-- <a-col :md="6" :sm="24">
+                            <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input placeholder="请输入" v-model="form.nickName"/>
+                            </a-form-item>
+                        </a-col> -->
+
                     </a-row>
                 </div>
                 <span style="float: right; margin-top: 3px;">
@@ -73,14 +74,19 @@
                             </a>
                         </a-popconfirm>
                     </div>
+                    <template slot="tags" slot-scope="{text, record}">
+                        <a-tag :color="getColor(text)" style="border-radius: 22px;">
+                            P{{ text }}
+                        </a-tag>
+                    </template>
                     <template slot="statusTitle">
                         <a-icon @click.native="onStatusTitleClick" type="info-circle" />
                     </template>
                 </standard-table>
             </div>
         </a-spin>
-        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500">
-            <ProjectForm ref="ProjectForm" :type="type" :key="projectFormKey"/>
+        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500" class="project-modal">
+            <ProjectForm ref="ProjectForm" :type="type" :key="projectFormKey" />
         </a-modal>
     </a-card>
 </template>
@@ -117,7 +123,9 @@ export default {
                 "液压釜",
                 "固化炉",
                 "浸渍罐",
-                "系统改造"
+                "系统改造",
+                "冷却系统",
+                "烘箱",
             ],
             columns: [
                 {
@@ -141,24 +149,26 @@ export default {
                     width: 200,
                 },
                 {
-                    title: "下单日期",
-                    dataIndex: "orderDate",
-                    width: 80
-                },
-                {
-                    title: "收货日期",
-                    dataIndex: "deliveryDate",
-                    width: 80
-                },
-                {
                     title: '型号',
                     width: 80,
                     dataIndex: 'model'
                 },
                 {
                     title: '级别',
-                    width: 100,
-                    dataIndex: 'level'
+                    key: 'tags',
+                    dataIndex: 'level',
+                    width: 80,
+                    scopedSlots: { customRender: 'tags' },
+                },
+                {
+                    title: "下单日期",
+                    dataIndex: "orderDate",
+                    width: 80
+                },
+                {
+                    title: "发货日期",
+                    dataIndex: "deliveryDate",
+                    width: 80
                 },
                 {
                     title: '操作',
@@ -170,7 +180,7 @@ export default {
             type: 'add',
             dataSource: [],
             pagination: {
-                pageIndex: 1,
+                current: 1,
                 pageSize: 10,
                 total: 0
             },
@@ -234,6 +244,21 @@ export default {
                 this.uploadLoading = false
             }
         },
+        getColor(le) {
+            switch (le) {
+                case 1:
+                    return "rgb(240, 112, 78)";
+                case 2:
+                    return "rgb(254, 178, 56)";
+                case 3:
+                    return "rgb(104, 197, 109)";
+                case 4:
+                    return "rgb(81, 215, 214)";
+                case 5:
+                    return "rgb(146, 102, 248)"
+            }
+            console.log(le, 'ss');
+        },
         // 导出
         async exportFile() {
             if (!window.showSaveFilePicker) {
@@ -283,7 +308,7 @@ export default {
             }
         },
         async getFile(remark) {
-            const { pageSize, pageIndex } = this.pagination
+            const { pageSize, current } = this.pagination
             const { dateData, ...formData } = this.form
             let endTime = 0
             let startTime = 0
@@ -298,7 +323,7 @@ export default {
                 level: 0,
                 pageSize,
                 remark,
-                pageIndex
+                pageIndex: current
             }
             const API_PROXY_PREFIX = '/api'
             const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API_BASE_URL : API_PROXY_PREFIX
@@ -319,9 +344,11 @@ export default {
         },
 
         handleSearch() {
+            this.pagination.current = 1
             this.getData()
         },
         handleReset() {
+            this.pagination.current = 1
             this.form = {
 
             }
@@ -337,13 +364,13 @@ export default {
             })
         },
         onPageChange(page, pageSize) {
-            this.pagination.pageIndex = page
+            this.pagination.current = page
             this.pagination.pageSize = pageSize
             this.getData()
         },
         // 获取列表
         async getData() {
-            const { pageSize, pageIndex } = this.pagination
+            const { pageSize, current } = this.pagination
             const { dateData, ...data } = this.form
             console.log(dateData, 'ss)', this.form);
             let endTime = 0
@@ -352,7 +379,7 @@ export default {
                 startTime = moment(dateData[0]).unix()
                 endTime = moment(dateData[1]).unix()
             }
-            const res = await getProjectList({ pageSize, pageIndex, startTime, endTime, ...data })
+            const res = await getProjectList({ pageSize, pageIndex: current, startTime, endTime, ...data })
             this.dataSource = res.data.data.records
             this.pagination.total = res.data.data.totalCount
         },
@@ -407,6 +434,13 @@ export default {
 @media screen and (max-width: 900px) {
     .fold {
         width: 100%;
+    }
+}
+</style>
+<style lang="less">
+.project-modal {
+    .ant-modal {
+        top: 19px
     }
 }
 </style>

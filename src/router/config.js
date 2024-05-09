@@ -284,6 +284,15 @@ const options = {
           },
           component: () => import('@/pages/notice/detail.vue'),
         },
+        {
+          path: 'userCenter',
+          name: '个人中心',
+          meta: {
+            permission: [],
+            icon: 'dashboard',
+          },
+          component: () => import('@/pages/user/userCenter.vue'),
+        },
         // {
         //   name: '测试',
         //   path: 'demo',

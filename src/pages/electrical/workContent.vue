@@ -123,7 +123,7 @@ export default {
             type: 'add',
             dataSource: [],
             pagination: {
-                pageIndex: 1,
+                current: 1,
                 pageSize: 10,
                 total: 0
             },
@@ -156,10 +156,12 @@ export default {
             this.advanced = !this.advanced
         },
         handleSearch() {
+            this.pagination.current = 1
             console.log('aa');
             this.getData()
         },
         handleReset() {
+            this.pagination.current = 1
             this.form = {
 
             }
@@ -178,14 +180,14 @@ export default {
             this.getOperaList()
         },
         onPageChange(page, pageSize) {
-            this.pagination.pageIndex = page
+            this.pagination.current = page
             this.pagination.pageSize = pageSize
             this.getData()
         },
         // 获取列表
         async getData() {
-            const { pageSize, pageIndex } = this.pagination
-            const res = await getBlogContentList({ pageSize, pageIndex, ...this.form })
+            const { pageSize, current } = this.pagination
+            const res = await getBlogContentList({ pageSize, pageIndex: current, ...this.form })
             this.dataSource = res.data.data
         },
         async getOperaList() {

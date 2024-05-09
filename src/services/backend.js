@@ -15,7 +15,8 @@ import {
     ADD_NOTICE_INFO,
     GET_NOTICE_LIST,
     DEL_NOTICE_INFO,
-    GET_NOTICE_INFO
+    GET_NOTICE_INFO,
+    UPDATE_NOTICE_INFO
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -91,4 +92,8 @@ export async function getNoticeInfo(params) {
     return request(GET_NOTICE_INFO, METHOD.POST, params)
 }
 
+// 修改公告信息
+export async function updateNoticeInfo(params) {
+    return request(UPDATE_NOTICE_INFO, METHOD.POST, params)
+}
 

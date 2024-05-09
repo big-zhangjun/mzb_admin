@@ -92,19 +92,19 @@
                         </a-select-option>
                     </a-select>
                 </a-form-item>
-                <a-form-item v-if="showType == 'electricalList'" :label="'电气柜清单'" :labelCol="{ span: 6 }"
+                <a-form-item v-if="showType == 'electricalList'" :label="'电气清单'" :labelCol="{ span: 6 }"
                     :wrapperCol="{ span: 16 }">
                     <a-select placeholder="请选择"
-                        v-decorator="['electricalList', { rules: [{ required: true, message: '请选择电气柜清单' }] }]">
+                        v-decorator="['electricalList', { rules: [{ required: true, message: '请选择电气清单' }] }]">
                         <a-select-option :value="item.id" v-for="item in list" :key="item.id">
                             {{ item.label }}
                         </a-select-option>
                     </a-select>
                 </a-form-item>
-                <a-form-item v-if="showType == 'invoiceList'" :label="'现场安装清单'" :labelCol="{ span: 6 }"
+                <a-form-item v-if="showType == 'invoiceList'" :label="'发货清单'" :labelCol="{ span: 6 }"
                     :wrapperCol="{ span: 16 }">
                     <a-select placeholder="请选择"
-                        v-decorator="['invoiceList', { rules: [{ required: true, message: '请选择现场安装清单' }] }]">
+                        v-decorator="['invoiceList', { rules: [{ required: true, message: '请选择发货清单' }] }]">
                         <a-select-option :value="item.id" v-for="item in list" :key="item.id">
                             {{ item.label }}
                         </a-select-option>

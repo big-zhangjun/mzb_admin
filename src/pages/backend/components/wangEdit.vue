@@ -24,7 +24,7 @@
           <img v-for="item in imgList" :class="{ active: fileName == item.value }" :src="item.src" alt=""
             @click="handleCover(item)">
         </div>
-        <mUpload @uploadOk="uploadOk" ref="mUpload"/>
+        <mUpload @uploadOk="uploadOk" ref="mUpload" />
       </div>
     </div>
   </div>
@@ -33,12 +33,13 @@
 import Vue from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import "@wangeditor/editor/dist/css/style.css"
-import { addNoticeInfo } from "@/services/backend"
+import { addNoticeInfo,updateNoticeInfo,getNoticeInfo } from "@/services/backend"
 export default Vue.extend({
   components: { Editor, Toolbar },
-  props: ["height"],
+  props: ["height", "wangEditType"],
   data() {
     return {
+      id: "",
       title: "",
       form: this.$form.createForm(this),
       editor: null,
@@ -76,8 +77,42 @@ export default Vue.extend({
     onCreated(editor) {
       this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
     },
+    getImg(data) {
+      if (!data.cover) {
+        let randomNum = Math.floor(Math.random() * 5) + 1;
+        let imgs = [
+          "1.jpg",
+          "2.jpg",
+          "3.jpg",
+          "4.png",
+          "5.png"
+        ]
+        return require(`@/assets/cover/${imgs[randomNum - 1]}`)
+      } else if (data.cover.includes("custom")) {
+        return require(`@/assets/cover/${data.cover.split("/")[1]}`)
+      } else {
+        return process.env.VUE_APP_API_BASE_URL + data.cover.replace(/^\./, '')
+      }
+    },
+    initData() {
+      this.html = ""
+      this.fileName = ""
+      this.form.setFieldsValue({ title: '' })
+    },
     uploadOk(fileName) {
       this.fileName = fileName
+    },
+    getDada(data) {
+      this.getNoticeInfo(data.id)
+    },
+    async getNoticeInfo(id) {
+      let res = await getNoticeInfo({ id })
+      this.html = res.data.data.content
+      this.id = id
+      this.form.setFieldsValue({ title: res.data.data.title })
+      this.fileName = res.data.data.cover
+      console.log(this.getImg(res.data.data.cover), res.data.data);
+      this.$refs.mUpload.imageUrl = this.getImg(res.data.data)
     },
     handleCover(v) {
       if (v.value == this.fileName) {
@@ -89,7 +124,6 @@ export default Vue.extend({
     },
     // 新增公告信息
     async addNoticeInfo(data, callback) {
-      console.log(this.html);
       let user = localStorage.getItem("admin.user")
       let creatorID = JSON.parse(user).id
       let params = {
@@ -105,6 +139,23 @@ export default Vue.extend({
       }
       console.log(res);
     },
+    // 修改公告信息
+    async updateNoticeInfo(data, callback) {
+      let user = localStorage.getItem("admin.user")
+      let creatorID = JSON.parse(user).id
+      let params = {
+        creatorID,
+        title: data.title,
+        content: this.html,
+        cover: this.fileName,
+        id: this.id
+      }
+      let res = await addNoticeInfo(params)
+      if (res.data.status.retCode === 0) {
+        this.$message.success("操作成功")
+        callback && callback()
+      }
+    },
     beforeUpload() {
 
     },
@@ -114,7 +165,11 @@ export default Vue.extend({
     handleSubmit(callback) {
       this.form.validateFields((err, values) => {
         if (!err) {
-          this.addNoticeInfo(values, callback)
+          if(this.wangEditType == 'add') {
+            this.addNoticeInfo(values, callback)
+          } else {
+            this.updateNoticeInfo(values, callback)
+          }
         }
       })
     },

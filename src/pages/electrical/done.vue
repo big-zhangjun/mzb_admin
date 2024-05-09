@@ -1,49 +1,76 @@
 <template>
-    <a-card class="plan">
-        <div :class="advanced ? 'search' : null">
-            <a-form layout="horizontal">
-                <div :class="advanced ? null : 'fold'">
-                    <a-row>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
-                                    <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
-                                        }}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.customerName" placeholder="请输入" />
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-range-picker v-model="form.dateData" style="width: 100%;" />
-                            </a-form-item>
-                        </a-col>
-                    </a-row>
-                </div>
-                <span style="float: right; margin-top: 3px;">
-                    <a-button type="primary" @click="handleSearch">查询</a-button>
-                    <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
-                    <a @click="toggleAdvanced" style="margin-left: 8px">
-                        {{ advanced ? '收起' : '展开' }}
-                        <a-icon :type="advanced ? 'up' : 'down'" />
-                    </a>
-                </span>
-            </a-form>
-        </div>
-        <a-space class="operator">
-            <a-button @click="exportFile" type="primary" v-if="permission.includes(5)">导出</a-button>
+    <div class="plan">
+        <a-card>
+            <div :class="advanced ? 'search' : null">
+                <a-form layout="horizontal">
+                    <div :class="advanced ? null : 'fold'">
+                        <a-row>
+                            <a-col :md="8" :sm="24">
+                                <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
+                                        <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
+                                            }}</a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="8" :sm="24">
+                                <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-input v-model="form.customerName" placeholder="请输入" />
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="8" :sm="24">
+                                <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-range-picker v-model="form.dateData" style="width: 100%;" />
+                                </a-form-item>
+                            </a-col>
+                        </a-row>
+                    </div>
+                    <span style="float: right; margin-top: 3px;">
+                        <a-button type="primary" @click="handleSearch">查询</a-button>
+                        <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                        <a @click="toggleAdvanced" style="margin-left: 8px">
+                            {{ advanced ? '收起' : '展开' }}
+                            <a-icon :type="advanced ? 'up' : 'down'" />
+                        </a>
+                    </span>
+                </a-form>
+            </div>
+            <a-space class="operator">
+                <a-button @click="exportFile" type="primary" v-if="permission.includes(5)">导出</a-button>
 
-        </a-space>
+            </a-space>
+            <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
+                <PlanFormItem :detail="detail" ref="PlanFormItem" :showType="showType"></PlanFormItem>
+            </a-modal>
+        </a-card>
         <div class="scrollList" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="true"
             :infinite-scroll-distance="100">
-            <div v-for="item in dataSource" :key="item.id" style="margin-bottom: 25px;">
-                <a-card hoverable type="inner" :loading="loading" :title="item.customerName">
-                    <a slot="extra" href="#">P{{ item.level }}</a>
-                    <a-descriptions>
+            <a-empty v-if="!dataSource.length" />
+            <a-card class="card" v-for="item in dataSource" :key="item.id">
+                <div class="header">
+                    <h1>{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
+                    <a-tag :color="getColor(item.level)" style="border-radius: 22px; height: 22px;">
+                        P{{ item.level }}
+                    </a-tag>
+                </div>
+                <div class="content flex">
+                    <div class="item">
+                        <div class="label">产品名称：</div>
+                        <div class="value">{{ item.productName }}</div>
+                    </div>
+                    <div class="item num">
+                        <div class="label">产品编号：</div>
+                        <div class="value">{{ item.productNumber }}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">下单日期：</div>
+                        <div class="value">{{ item.orderDate }}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">发货日期：</div>
+                        <div class="value">{{ item.deliveryDate }}</div>
+                    </div>
+                    <!-- <a-descriptions>
                         <a-descriptions-item label="产品名称">
                             <div class="item">
                                 <div class="label">
@@ -58,13 +85,49 @@
                                 </div>
                             </div>
                         </a-descriptions-item>
-                        <a-descriptions-item label="型号">
+                        <a-descriptions-item label="下单日期">
                             <div class="item">
                                 <div class="label">
-                                    {{ item.model || '--' }}
+                                    {{ item.orderDate || '--' }}
                                 </div>
                             </div>
                         </a-descriptions-item>
+                        <a-descriptions-item label="发货日期">
+                            <div class="item">
+                                <div class="label">
+                                    {{ item.deliveryDate || '--' }}
+                                </div>
+                            </div>
+                        </a-descriptions-item>
+                    </a-descriptions> -->
+                </div>
+                <div class="content noborder">
+                    <div class="flex_2 border">
+                        <h2>电气柜</h2>
+                        <div class="flex">
+                            <div class="item repName">
+                                <div class="label">负责人：</div>
+                                <div class="value">{{ item.ecRepName || '--' }}</div>
+                                <span @click="handleEdit(item, 'ecRep')">修改</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">开始日期：</div>
+                                <div class="value">{{ item.ecStartDate || '--' }}</div>
+                                <span @click="handleEdit(item, 'ecStartDate')">修改</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">结束日期：</div>
+                                <div class="value">{{ item.ecEndDate || '--' }}</div>
+                                <span @click="handleEdit(item, 'ecEndDate')">修改</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">安装状态：</div>
+                                <div class="value">{{ getStatus(item.ecStatus) || '--' }}</div>
+                                <span @click="handleEdit(item, 'ecStatus')">修改</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <a-descriptions>
                         <a-descriptions-item label="电气柜负责人">
                             <div class="item">
                                 <div class="label">
@@ -97,14 +160,37 @@
                                 <span @click="handleEdit(item, 'ecStatus')">修改</span>
                             </div>
                         </a-descriptions-item>
-                        <a-descriptions-item label="电气柜清单">
-                            <div class="item">
-                                <div class="label">
-                                    {{ getListStatus(item.electricalList) || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'electricalList')">修改</span>
+                    </a-descriptions> -->
+                </div>
+                <div class="content noborder">
+                    <div class="flex_2">
+                        <h2>现场安装</h2>
+                        <div class="flex">
+                            <div class="item repName">
+                                <div class="label">负责人：</div>
+                                <div class="value">{{ item.siRepName || '--' }}</div>
+                                <span @click="handleEdit(item, 'siRep')">修改</span>
                             </div>
-                        </a-descriptions-item>
+                            <div class="item">
+                                <div class="label">开始日期：</div>
+                                <div class="value">{{ item.siStartTime || '--' }}</div>
+                                <span @click="handleEdit(item, 'siStartTime')">修改</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">结束日期：</div>
+                                <div class="value">{{ item.siEndTime || '--' }}</div>
+                                <span @click="handleEdit(item, 'siEndTime')">修改</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">安装状态：</div>
+                                <div class="value">{{ getStatus(item.siStatus) || '--' }}</div>
+                                <span @click="handleEdit(item, 'siStatus')">修改</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <a-descriptions>
+
                         <a-descriptions-item label="现场安装负责人">
                             <div class="item">
                                 <div class="label">
@@ -137,7 +223,16 @@
                                 <span @click="handleEdit(item, 'siStatus')">修改</span>
                             </div>
                         </a-descriptions-item>
-                        <a-descriptions-item label="现场安装清单">
+
+                        <a-descriptions-item label="电气清单">
+                            <div class="item">
+                                <div class="label">
+                                    {{ getListStatus(item.electricalList) || '--' }}
+                                </div>
+                                <span @click="handleEdit(item, 'electricalList')">修改</span>
+                            </div>
+                        </a-descriptions-item>
+                        <a-descriptions-item label="发货清单">
                             <div class="item">
                                 <div class="label">
                                     {{ getListStatus(item.invoiceList) || '--' }}
@@ -145,31 +240,30 @@
                                 <span @click="handleEdit(item, 'invoiceList')">修改</span>
                             </div>
                         </a-descriptions-item>
-                    </a-descriptions>
-                </a-card>
-            </div>
-            <a-empty v-if="!dataSource.length"/>
+                    </a-descriptions> -->
+                </div>
+                <div class="content noborder nobottom">
+                    <div class="flex_3">
+                        <h2>清单</h2>
+                        <div class="flex">
+                            <div class="item list">
+                                <div class="label">发货清单：</div>
+                                <div class="value">{{ getListStatus(item.invoiceList) || '--' }}</div>
+                                <span @click="handleEdit(item, 'invoiceList')">修改</span>
+
+                            </div>
+                            <div class="item list2">
+                                <div class="label">电气清单：</div>
+                                <div class="value">{{ getListStatus(item.electricalList) || '--' }}</div>
+                                <span @click="handleEdit(item, 'electricalList')">修改</span>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a-card>
         </div>
-        <!-- <standard-table :columns="columns" :dataSource="dataSource" :scroll="{ x: 2000 }"
-                :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
-                <div slot="description" slot-scope="{text}">
-                    {{ text }}
-                </div>
-                
-                <div slot="action" slot-scope="{text, record}">
-                    <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
-                        <a-icon type="edit" />编辑
-                    </a>
-                </div>
-                <template slot="statusTitle">
-                    <a-icon @click.native="onStatusTitleClick" type="info-circle" />
-                </template>
-</standard-table> -->
-        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
-            <PlanFormItem :detail="detail" ref="PlanFormItem" :showType="showType"></PlanFormItem>
-            <!-- <PlanForm ref="PlanForm" :type="type" @unpadeList="getData" /> -->
-        </a-modal>
-    </a-card>
+    </div>
 </template>
 
 <script>
@@ -274,7 +368,7 @@ export default {
                     width: 80,
                 },
                 {
-                    title: '电气柜清单',
+                    title: '电气清单',
                     dataIndex: 'electricalListCN',
                     width: 80,
                 },
@@ -302,7 +396,7 @@ export default {
                     width: 80,
                 },
                 {
-                    title: '现场安装清单',
+                    title: '发货清单',
                     dataIndex: 'invoiceListCN',
                     width: 80,
                 },
@@ -489,9 +583,13 @@ export default {
         },
 
         handleSearch() {
+            this.dataSource = []
+            this.pagination.pageIndex = 1
             this.getData()
         },
         handleReset() {
+            this.dataSource = []
+            this.pagination.pageIndex = 1
             this.form = {
 
             }
@@ -547,6 +645,21 @@ export default {
             }
             this.getData()
         },
+        getColor(le) {
+            switch (le) {
+                case 1:
+                    return "rgb(240, 112, 78)";
+                case 2:
+                    return "rgb(254, 178, 56)";
+                case 3:
+                    return "rgb(104, 197, 109)";
+                case 4:
+                    return "rgb(81, 215, 214)";
+                case 5:
+                    return "rgb(146, 102, 248)"
+            }
+            console.log(le, 'ss');
+        },
         addNew() {
             this.type = 'add'
             this.modalTitle = '新增项目'
@@ -591,6 +704,7 @@ td {
 
     .ant-descriptions-item-content {
         min-width: 150px;
+
         &:hover {
             span {
                 display: flex;
@@ -601,7 +715,6 @@ td {
         span {
             display: none;
             color: #13c2c2;
-            background-color: #fff;
         }
 
         .item {
@@ -621,6 +734,148 @@ td {
 
         position: relative;
         min-height: 21px;
+    }
+
+    .scrollList {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        margin-top: 24px;
+
+        ::v-deep .ant-card-body {
+            padding: 0;
+        }
+
+        .card {
+            width: 100%;
+            border-radius: 10px;
+            padding: 0;
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 14px;
+                // background-color: red;
+
+                h1 {
+                    span {
+                        font-size: 16px;
+                        color: #8d8d8d;
+                        font-weight: normal;
+                        margin-left: 12px;
+                    }
+
+                    font-size: 18px;
+                    font-weight: bold;
+                }
+            }
+
+            .content {
+                margin-bottom: 12px;
+                border-bottom: solid #f2f2f2 1px;
+                padding-bottom: 4px;
+
+                .item {
+                    width: 25%;
+                    // flex: 1 / 3;
+                    display: flex;
+
+                    span {
+                        color: #13c2c2;
+                        cursor: pointer;
+                        margin-left: 12px;
+                        display: none;
+                    }
+
+                    &:hover {
+                        span {
+                            display: block;
+                        }
+                    }
+                }
+
+                .num {
+                    margin-left: 120px;
+                }
+
+                .label {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #002925;
+                    margin-bottom: 8px;
+                    margin-right: 8px;
+                }
+
+                h2 {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #13c2c2;
+                }
+            }
+
+            .noborder {
+                border: none;
+                margin-bottom: 0;
+            }
+
+            .flex {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .nobottom {
+                .item {
+                    .label {
+                        margin-bottom: 0;
+                    }
+                }
+
+                h2 {
+                    margin-bottom: 0;
+                }
+            }
+
+            .flex_2 {
+                display: flex;
+
+                h2 {
+                    margin-right: 20px;
+                    width: 100px;
+                }
+
+                .flex {
+                    width: calc(100% - 100px);
+                    justify-content: flex-start;
+
+                    .item {
+                        width: 25%;
+                    }
+
+                    // .repName {
+                    //     width: 200px;
+                    // }
+                }
+            }
+
+            .flex_3 {
+                h2 {
+                    margin-right: 20px;
+                    width: 100px;
+                }
+
+                display: flex;
+                justify-content: flex-start;
+                .item {
+                    width: 358px;
+                }
+                .list {
+                    // width: 378px;
+                    // margin-right: 266px;
+                }
+
+                white-space: nowrap;
+            }
+        }
     }
 }
 </style>

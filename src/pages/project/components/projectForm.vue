@@ -1,5 +1,5 @@
 <template>
-    <a-card class="projectForm" :body-style="{ padding: '24px 32px' }" :bordered="false">
+    <a-card class="projectForm" :body-style="{ padding: '0' }" :bordered="false">
         <a-form :form="form">
             <a-row :gutter="24">
                 <a-col :span="8" v-for="item in formList" :key="item.key">
@@ -47,7 +47,9 @@ export default {
                 "液压釜",
                 "固化炉",
                 "浸渍罐",
-                "系统改造"
+                "系统改造",
+                "冷却系统",
+                "烘箱",
             ],
             levels: [
                 {
@@ -91,22 +93,12 @@ export default {
                     key: "customerName",
                     type: "select",
                     placeholder: "请选择客户名称",
+                    options: [
+
+                    ],
                     required: true
                 },
-                {
-                    label: "下单日期",
-                    key: "orderDate",
-                    type: "date-picker",
-                    placeholder: "请选择下单日期",
-                    required: true
-                },
-                {
-                    label: "收货日期",
-                    key: "deliveryDate",
-                    type: "date-picker",
-                    placeholder: "请选择收货日期",
-                    required: true
-                },
+                
                 {
                     label: "产品名称",
                     key: "productName",
@@ -178,6 +170,20 @@ export default {
 
                     ],
                     placeholder: "请选择规格/型号"
+                },
+                {
+                    label: "下单日期",
+                    key: "orderDate",
+                    type: "date-picker",
+                    placeholder: "请选择下单日期",
+                    required: true
+                },
+                {
+                    label: "发货日期",
+                    key: "deliveryDate",
+                    type: "date-picker",
+                    placeholder: "请选择发货日期",
+                    required: true
                 },
                 {
                     label: "罐体尺寸",

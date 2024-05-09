@@ -3,38 +3,31 @@
     <div class="alert">
       <a-alert type="info" :show-icon="true" v-if="selectedRows">
         <div class="message" slot="message">
-          已选择&nbsp;<a>{{selectedRows.length}}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
-          <template  v-for="(item, index) in needTotalList" >
+          已选择&nbsp;<a>{{ selectedRows.length }}</a>&nbsp;项 <a class="clear" @click="onClear">清空</a>
+          <template v-for="(item, index) in needTotalList">
             <div v-if="item.needTotal" :key="index">
-              {{item.title}}总计&nbsp;
-              <a>{{item.customRender ? item.customRender(item.total) : item.total}}</a>
+              {{ item.title }}总计&nbsp;
+              <a>{{ item.customRender ? item.customRender(item.total) : item.total }}</a>
             </div>
           </template>
         </div>
       </a-alert>
     </div>
-    <a-table
-      :bordered="bordered"
-      :loading="loading"
-      :columns="columns"
-      :dataSource="dataSource"
-      :scroll="scroll"
-      :rowKey="rowKey"
-      v-model="pagination.pageIndex"
-      :pagination="pagination"
-      :expandedRowKeys="expandedRowKeys"
-      :expandedRowRender="expandedRowRender"
-      @change="onChange"
-      :rowSelection="selectedRows ? {selectedRowKeys, onSelect, onSelectAll} : undefined"
-    >
-      <template slot-scope="text, record, index" :slot="slot" v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
-        <slot :name="slot" v-bind="{text, record, index}"></slot>
+    <a-table :bordered="bordered" :loading="loading" :columns="columns" :dataSource="dataSource" :scroll="scroll"
+      :rowKey="rowKey" v-model="pagination.pageIndex" :pagination="pagination" :expandedRowKeys="expandedRowKeys"
+      :expandedRowRender="expandedRowRender" @change="onChange"
+      :rowSelection="selectedRows ? { selectedRowKeys, onSelect, onSelectAll } : undefined">
+      <template slot-scope="text, record, index" :slot="slot"
+        v-for="slot in Object.keys($scopedSlots).filter(key => key !== 'expandedRowRender') ">
+        <slot :name="slot" v-bind="{ text, record, index }"></slot>
       </template>
       <template :slot="slot" v-for="slot in Object.keys($slots)">
         <slot :name="slot"></slot>
       </template>
-      <template slot-scope="record, index, indent, expanded" :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''">
-        <slot v-bind="{record, index, indent, expanded}" :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"></slot>
+      <template slot-scope="record, index, indent, expanded"
+        :slot="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''">
+        <slot v-bind="{ record, index, indent, expanded }"
+          :name="$scopedSlots.expandedRowRender ? 'expandedRowRender' : ''"></slot>
       </template>
     </a-table>
   </div>
@@ -52,9 +45,9 @@ export default {
       type: [String, Function],
       default: 'key'
     },
-    scroll:  {
+    scroll: {
       type: Object,
-      default:()=> {
+      default: () => {
         return {
 
         }
@@ -68,7 +61,7 @@ export default {
     expandedRowKeys: Array,
     expandedRowRender: Function
   },
-  data () {
+  data() {
     return {
       needTotalList: []
     }
@@ -78,7 +71,7 @@ export default {
       if (record1 === record2) {
         return true
       }
-      const {rowKey} = this
+      const { rowKey } = this
       if (rowKey && typeof rowKey === 'string') {
         return record1[rowKey] === record2[rowKey]
       } else if (rowKey && typeof rowKey === 'function') {
@@ -90,7 +83,7 @@ export default {
       if (!arr || arr.length === 0) {
         return false
       }
-      const {equals} = this
+      const { equals } = this
       for (let i = 0; i < arr.length; i++) {
         if (equals(arr[i], item)) {
           return true
@@ -99,7 +92,7 @@ export default {
       return false
     },
     onSelectAll(selected, rows) {
-      const {getKey, contains} = this
+      const { getKey, contains } = this
       const unselected = this.dataSource.filter(item => !contains(rows, item, this.rowKey))
       const _selectedRows = this.selectedRows.filter(item => !contains(unselected, item, this.rowKey))
       const set = {}
@@ -110,7 +103,7 @@ export default {
       this.$emit('selectedRowChange', _rows.map(item => getKey(item)), _rows)
     },
     getKey(record) {
-      const {rowKey} = this
+      const { rowKey } = this
       if (!rowKey || !record) {
         return undefined
       }
@@ -121,12 +114,12 @@ export default {
       }
     },
     onSelect(record, selected) {
-      const {equals, selectedRows, getKey} = this
+      const { equals, selectedRows, getKey } = this
       const _selectedRows = selected ? [...selectedRows, record] : selectedRows.filter(row => !equals(row, record))
       this.$emit('update:selectedRows', _selectedRows)
       this.$emit('selectedRowChange', _selectedRows.map(item => getKey(item)), _selectedRows)
     },
-    initTotalList (columns) {
+    initTotalList(columns) {
       return columns.filter(item => item.needTotal)
         .map(item => {
           return {
@@ -140,23 +133,23 @@ export default {
       this.$emit('selectedRowChange', [], [])
       this.$emit('clear')
     },
-    onChange(pagination, filters, sorter, {currentDataSource}) {
-      this.$emit('change', pagination, filters, sorter, {currentDataSource})
+    onChange(pagination, filters, sorter, { currentDataSource }) {
+      this.$emit('change', pagination, filters, sorter, { currentDataSource })
     }
   },
-  created () {
+  created() {
     this.needTotalList = this.initTotalList(this.columns)
   },
   watch: {
-    selectedRows (selectedRows) {
+    selectedRows(selectedRows) {
       this.needTotalList = this.needTotalList.map(item => {
         return {
           ...item,
           total: selectedRows.reduce((sum, val) => {
             let v
-            try{
+            try {
               v = val[item.dataIndex] ? val[item.dataIndex] : eval(`val.${item.dataIndex}`);
-            }catch(_){
+            } catch (_) {
               v = val[item.dataIndex];
             }
             v = !isNaN(parseFloat(v)) ? parseFloat(v) : 0;
@@ -175,15 +168,17 @@ export default {
 </script>
 
 <style scoped lang="less">
-.standard-table{
-  .alert{
+.standard-table {
+  .alert {
     margin-bottom: 16px;
-    .message{
-      a{
+
+    .message {
+      a {
         font-weight: 600;
       }
     }
-    .clear{
+
+    .clear {
       float: right;
     }
   }
