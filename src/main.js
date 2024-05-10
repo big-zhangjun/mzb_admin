@@ -22,6 +22,7 @@ Vue.use(Viser)
 Vue.use(Plugins)
 
 bootstrap({router, store, i18n, message: Vue.prototype.$message})
+console.log(process.env.VUE_APP_API_BASE_URL);
 
 new Vue({
   router,

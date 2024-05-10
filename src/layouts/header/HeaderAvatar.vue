@@ -1,8 +1,8 @@
 <template>
   <a-dropdown>
     <div class="header-avatar" style="cursor: pointer">
-      <a-avatar class="avatar" size="small" shape="circle" :src="user.avatar"/>
-      <span class="name">{{user.userName}}</span>
+      <a-avatar class="avatar" size="small" shape="circle" :src="getImg()" />
+      <span class="name">{{ user.userName }}</span>
     </div>
     <a-menu :class="['avatar-menu']" slot="overlay">
       <a-menu-item @click="goUserCenter">
@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
-import {logout} from '@/services/user'
+import { mapGetters } from 'vuex'
+import { logout } from '@/services/user'
 
 export default {
   name: 'HeaderAvatar',
@@ -39,26 +39,35 @@ export default {
     },
     goUserCenter() {
       this.$router.push('/userCenter')
-    }
+    },
+    getImg() {
+      if (this.user.avatar) {
+        return process.env.VUE_APP_API_BASE_URL + this.user.avatar.replace(/^\./, '')
+      }
+    },
   }
 }
 </script>
 
 <style lang="less">
-  .header-avatar{
-    display: inline-flex;
-    .avatar, .name{
-      align-self: center;
-    }
-    .avatar{
-      margin-right: 8px;
-    }
-    .name{
-      font-weight: 500;
-    }
-  }
-  .avatar-menu{
-    width: 150px;
+.header-avatar {
+  display: inline-flex;
+
+  .avatar,
+  .name {
+    align-self: center;
   }
 
+  .avatar {
+    margin-right: 8px;
+  }
+
+  .name {
+    font-weight: 500;
+  }
+}
+
+.avatar-menu {
+  width: 150px;
+}
 </style>

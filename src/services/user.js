@@ -5,7 +5,9 @@ import {
   GET_ROLE_INFO,
   ADD_ROLE_INFO,
   DEL_ROLE_INFO,
-  UPDATE_ROLE_INFO
+  UPDATE_ROLE_INFO,
+  UPLOAD_USER_AVATAR,
+  UPLOAD_USER_PASSWORD
 } from '@/services/api'
 import { request, METHOD, removeAuthorization } from '@/utils/request'
 
@@ -129,6 +131,20 @@ export async function getRoleInfo(params) {
     ...params
   })
 }
+
+// 换头像
+export async function uploadUserAvatar(params) {
+  return request(UPLOAD_USER_AVATAR, METHOD.POST, {
+    ...params
+  })
+}
+// 换头像
+export async function uploadUserPassword(params) {
+  return request(UPLOAD_USER_PASSWORD, METHOD.POST, {
+    ...params
+  })
+}
+
 
 export async function getRoutesConfig() {
   let result = {}

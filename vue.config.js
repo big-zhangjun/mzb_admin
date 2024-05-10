@@ -33,7 +33,6 @@ const isProd = process.env.NODE_ENV === 'production'
 //     '//cdn.jsdelivr.net/npm/js-cookie@2.2.1/src/js.cookie.min.js'
 //   ]
 // }
-
 module.exports = {
   devServer: {
     host: '0.0.0.0',
