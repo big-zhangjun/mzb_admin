@@ -166,7 +166,6 @@ export default {
             this.$emit("handleEdit", data)
         },
         getImg(data) {
-            console.log('ss');
             if (!data.cover) {
                 let randomNum = Math.floor(Math.random() * 5) + 1;
                 let imgs = [

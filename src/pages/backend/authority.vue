@@ -84,6 +84,9 @@ export default {
     //     deleteRecord: 'delete'
     // },
     mounted() {
+       
+    },
+    activated() {
         this.getRoleList()
         this.getOperaList().then(() => {
             this.init()

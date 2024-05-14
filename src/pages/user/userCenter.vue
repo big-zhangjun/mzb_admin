@@ -60,12 +60,12 @@
                 <div class="form">
                     <a-form :form="pForm">
                         <a-form-item :label="'旧密码'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                            <a-input :placeholder="'请输入旧密码'"
-                                v-decorator="['userNumber', { rules: [{ required: true, message: '请输入旧密码' }] }]"></a-input>
+                            <a-input type="password" :placeholder="'请输入旧密码'"
+                                v-decorator="['password', { rules: [{ required: true, message: '请输入旧密码' },{ min: 6, message: '长度至少为 6!' }, { max: 6, message: '长度至多为 6!' }] }]"></a-input>
                         </a-form-item>
                         <a-form-item :label="'新密码'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
-                            <a-input :placeholder="'请输入新密码'"
-                                v-decorator="['password', { rules: [{ required: true, message: '请输入新密码' }] }]"></a-input>
+                            <a-input type="password" :placeholder="'请输入新密码'"
+                                v-decorator="['userNumber', { rules: [{ required: true, message: '请输入新密码' },{ min: 6, message: '长度至少为 6!' }, { max: 6, message: '长度至多为 6!' }] }]"></a-input>
                         </a-form-item>
                     </a-form>
                     <a-button class="submit" type="primary" @click="handlePasswordSubmit">
@@ -219,26 +219,26 @@ export default {
             return bigScrect
         },
         async handlePasswordSubmit() {
-            this.form.validateFields((err, values) => {
+            this.pForm.validateFields((err, values) => {
+                console.log(values);
                 if (!err) {
-                    const { deptID, nickName, id, roleID, userName } = this.userInfo
                     let params = {
-                        ...values,
-                        deptID,
-                        id,
-                        roleID,
-                        nickName,
-                        userName,
-                        resign: 1 // 是否在职
+                        id: this.userInfo.id,
+                        userNumber: this.getMD5Up(values.userNumber),
+                        password: this.getMD5Up(values.password),
                     }
-                    console.log(params);
-                    this.updateUserInfo({ ...params, id: this.userInfo.id })
+                    this.uploadUserPassword(params)
                 }
             })
-            let params = {
 
+        },
+        async uploadUserPassword(params) {
+            let res = await uploadUserPassword(params)
+            if (res.data.status.retCode === 0) {
+                this.$message.success("操作成功")
+            }else {
+                this.$message.warning(res.data.status.msg)
             }
-            let res = await uploadUserPassword()
         },
         handleSubmit() {
             this.form.validateFields((err, values) => {
@@ -333,6 +333,7 @@ export default {
     .userInfo {
         ::v-deep .ant-card-body {
             display: flex;
+
             .item {
                 width: 50%;
             }

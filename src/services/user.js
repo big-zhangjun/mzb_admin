@@ -7,7 +7,8 @@ import {
   DEL_ROLE_INFO,
   UPDATE_ROLE_INFO,
   UPLOAD_USER_AVATAR,
-  UPLOAD_USER_PASSWORD
+  UPLOAD_USER_PASSWORD,
+  GETUSERLOCATION
 } from '@/services/api'
 import { request, METHOD, removeAuthorization } from '@/utils/request'
 
@@ -141,6 +142,13 @@ export async function uploadUserAvatar(params) {
 // 换头像
 export async function uploadUserPassword(params) {
   return request(UPLOAD_USER_PASSWORD, METHOD.POST, {
+    ...params
+  })
+}
+
+// 外出地区分布
+export async function getUserLocation(params) {
+  return request(GETUSERLOCATION, METHOD.POST, {
     ...params
   })
 }

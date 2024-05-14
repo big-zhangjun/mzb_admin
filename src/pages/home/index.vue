@@ -58,9 +58,15 @@
         </a-col>
         <a-col style="padding: 0 12px" :xl="8" :lg="24" :md="24" :sm="24" :xs="24">
 
-          <a-card :title="`当月指数`" style="margin-bottom: 24px" :bordered="false" :body-style="{ padding: 0 }">
+          <a-card :title="`出差定位分布`" style="margin-bottom: 24px" :bordered="false" :body-style="{ padding: 0 }">
+            <div slot="extra">
+              <a-button @click="handleUpdate" type="dashed" icon="redo" style="margin-right: 20px;">
+                刷新
+              </a-button>
+              <a @click="handleMore">更多</a>
+            </div>
             <div style="min-height: 400px;">
-              <radar />
+              <China :geo="geo" :color="'#722ed1'" ref="chinaMap" />
             </div>
           </a-card>
         </a-col>
@@ -72,12 +78,13 @@
 <script>
 import PageLayout from '@/layouts/PageLayout'
 import HeadInfo from '@/components/tool/HeadInfo'
-import Radar from '@/components/chart/Radar'
+import China from '@/components/chart/China'
 import { mapGetters } from 'vuex'
 import { getNoticeList, delNoticeInfo } from "@/services/backend"
+
 export default {
   name: 'WorkPlace',
-  components: { HeadInfo, PageLayout, Radar },
+  components: { HeadInfo, PageLayout, China },
   data() {
     return {
       noticeList: [
@@ -89,6 +96,24 @@ export default {
       welcome: {
         timeFix: '',
         message: ''
+      },
+      geo: {
+        map: 'china', // 指定地图类型为中国地图  
+        roam: true, // 是否开启鼠标缩放和平移漫游  
+        label: {
+          emphasis: {
+            show: false // 省份标签是否显示  
+          }
+        },
+        itemStyle: {
+          normal: {
+            borderColor: '#ccc', // 省份边界线颜色  
+            // areaColor: '#215096',
+          },
+          emphasis: {
+            areaColor: '#999' // 鼠标选中省份的颜色  
+          },
+        },
       }
     }
   },
@@ -116,6 +141,16 @@ export default {
       } else {
         return process.env.VUE_APP_API_BASE_URL + data.cover.replace(/^\./, '')
       }
+    },
+    handleUpdate() {
+      this.$refs.chinaMap.initECharts().then(res => {
+        this.$message.success("刷新成功")
+      })
+    },
+    handleMore() {
+      this.$router.push({
+        path: "/statistics/plan"
+      })
     },
     goDetail(data) {
       this.$router.push({

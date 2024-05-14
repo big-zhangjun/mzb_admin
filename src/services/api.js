@@ -75,5 +75,6 @@ module.exports = {
   UPDATE_NOTICE_INFO: `${BASE_URL}/notice/update_notice_info`, //修改公告信息
   UPLOAD_FILE: `${BASE_URL}/disk/upload_file`, //上传附件
   UPLOAD_USER_AVATAR: `${BASE_URL}/user/upload_user_avatar`, //更换头像
-  UPLOAD_USER_PASSWORD: `${BASE_URL}/user/upload_user_password`, //更换头像
+  UPLOAD_USER_PASSWORD: `${BASE_URL}/user/upload_user_password`, //修改密码
+  GETUSERLOCATION: `${BASE_URL}/statistics/user_location`, //外出地区分布
 }
