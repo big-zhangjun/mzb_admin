@@ -149,7 +149,7 @@ export default {
     },
     handleMore() {
       this.$router.push({
-        path: "/statistics/plan"
+        path: "/statistics/trip"
       })
     },
     goDetail(data) {

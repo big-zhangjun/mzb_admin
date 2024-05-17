@@ -209,6 +209,16 @@ const options = {
                 parentID: 21,
               },
               component: () => import('@/pages/statistics/index.vue'),
+            },
+            {
+              path: 'trip',
+              name: '出差分布',
+              meta: {
+                permission: [],
+                id: 86,
+                parentID: 21,
+              },
+              component: () => import('@/pages/statistics/trip/index'),
             }
           ]
         },

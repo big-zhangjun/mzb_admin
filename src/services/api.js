@@ -77,4 +77,6 @@ module.exports = {
   UPLOAD_USER_AVATAR: `${BASE_URL}/user/upload_user_avatar`, //更换头像
   UPLOAD_USER_PASSWORD: `${BASE_URL}/user/upload_user_password`, //修改密码
   GETUSERLOCATION: `${BASE_URL}/statistics/user_location`, //外出地区分布
+  GET_PROJECT_COUNT: `${BASE_URL}/statistics/project_count`, //项目数统计
+  GET_PROJECT_YEAR: `${BASE_URL}/statistics/project_year`, //查询项目年份
 }

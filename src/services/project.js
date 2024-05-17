@@ -12,7 +12,9 @@ import {
     GET_PROJECT_EP_INFO,
     UPDATE_EP_LIST_INFO,
     EXPORT_EP_LIST,
-    UPLOAD_FILE
+    UPLOAD_FILE,
+    GET_PROJECT_YEAR,
+    GET_PROJECT_COUNT
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -73,4 +75,14 @@ export async function updateEcListInfo(params) {
 // 导出电气计划
 export async function exportEpList(params) {
     return request(EXPORT_EP_LIST, METHOD.POST, params)
+}
+
+// 项目数统计
+export async function getProjectCount(params) {
+    return request(GET_PROJECT_COUNT, METHOD.POST, params)
+}
+
+// 查询项目年份
+export async function getProjectYear(params) {
+    return request(GET_PROJECT_YEAR, METHOD.POST, params)
 }

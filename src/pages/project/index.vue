@@ -214,7 +214,11 @@ export default {
     // authorize: {
     //     deleteRecord: 'delete'
     // },
-    async mounted() {
+    async activated() {
+        if (this.$route.query.year) {
+            this.setDatesFromUrl()
+        }
+
         await this.getData()
         if (this.$route.meta) {
             this.permission = this.$route.meta.permission
@@ -223,6 +227,21 @@ export default {
     methods: {
         toggleAdvanced() {
             this.advanced = !this.advanced
+        },
+        setDatesFromUrl() {
+            if(year === '全部') {
+                this.form.dateData = ""
+                return
+            }
+            const year = this.$route.query.year;
+            const month = this.$route.query.month;
+            if (year && month) {
+                console.log(year, month);
+                const startDate = moment(`${year}-${month}-01`);
+                const endDate = startDate.clone().endOf('month');
+                this.form.dateData = [startDate, endDate];
+                console.log(this.form.dateData,'sssdfsf');
+            }
         },
         // 
         handleChange() {
@@ -310,16 +329,16 @@ export default {
         async getFile(remark) {
             const { pageSize, current } = this.pagination
             const { dateData, ...formData } = this.form
-            let endTime = 0
-            let startTime = 0
+            let endDate = ""
+            let startDate = ""
             if (dateData) {
-                startTime = moment(dateData[0])
-                endTime = moment(dateData[1])
+                startDate = moment(dateData[0]).format('YYYY-MM-DD')
+                endDate = moment(dateData[1]).format('YYYY-MM-DD')
             }
             let params = {
                 ...formData,
-                startTime,
-                endTime,
+                startDate,
+                endDate,
                 level: 0,
                 pageSize,
                 remark,
@@ -373,13 +392,13 @@ export default {
             const { pageSize, current } = this.pagination
             const { dateData, ...data } = this.form
             console.log(dateData, 'ss)', this.form);
-            let endTime = 0
-            let startTime = 0
+            let endDate = ""
+            let startDate = ""
             if (dateData) {
-                startTime = moment(dateData[0]).unix()
-                endTime = moment(dateData[1]).unix()
+                startDate = moment(dateData[0]).format('YYYY-MM-DD')
+                endDate = moment(dateData[1]).format('YYYY-MM-DD')
             }
-            const res = await getProjectList({ pageSize, pageIndex: current, startTime, endTime, ...data })
+            const res = await getProjectList({ pageSize, pageIndex: current, startDate, endDate, ...data })
             this.dataSource = res.data.data.records
             this.pagination.total = res.data.data.totalCount
         },
