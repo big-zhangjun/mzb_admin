@@ -56,7 +56,7 @@ import PostForm from '@/pages/user/components/postForm'
 import { mapGetters } from 'vuex'
 import { getRoleList, delRoleInfo } from '@/services/user'
 function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
+    const date = new Date(timestamp); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
     const year = date.getFullYear();
     const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
     const day = date.getDate();
@@ -170,9 +170,10 @@ export default {
         },
         // 获取列表
         getData() {
-            getRoleList(this.form).then(res => {
-                this.dataSource = res.data.data
-                // this.pagination.totalCount = totalCount
+            let {pageIndex, pageSize} = this.pagination
+            getRoleList({...this.form, pageIndex, pageSize}).then(res => {
+                this.dataSource = res.data.data.records
+                this.pagination.totalCount = res.data.data.totalCount
             })
         },
         // 查询职位列表

@@ -106,13 +106,22 @@ import StandardTable from '@/components/table/StandardTable'
 import UserForm from '@/pages/user/components/userForm'
 // import { request } from '@/utils/request'
 import { mapGetters } from 'vuex'
-import { getUserList, deltUserInfo, getDeptList, getRoleList } from '@/services/user'
-function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
+import { getUserList, deltUserInfo, getDeptListS, getRoleListS } from '@/services/user'
+function formatDate(isoString) {
+    const date = new Date(isoString);
+
+    // 获取年、月、日、小时、分钟、秒
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
-    const day = date.getDate();
-    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // 拼接成所需的格式
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDateTime;
 }
 
 export default {
@@ -151,7 +160,7 @@ export default {
                 // },
                 {
                     title: '真实姓名',
-                    dataIndex: 'nickName',
+                    dataIndex: 'realName',
                     width: 150,
                     sorter: true
                 },
@@ -264,8 +273,8 @@ export default {
             })
         },
         initData() {
-            this.getDeptList()
-            this.getRoleList()
+            this.getDeptListS()
+            this.getRoleListS()
         },
         handleCancel() {
             console.log('Clicked cancel button');
@@ -289,15 +298,15 @@ export default {
             })
         },
         // 查询部门列表
-        async getDeptList() {
-            const res = await getDeptList({})
+        async getDeptListS() {
+            const res = await getDeptListS({})
             if (res.data.status.retCode === 0) {
                 this.deptList = res.data.data
             }
         },
         // 查询职位列表
-        async getRoleList() {
-            const res = await getRoleList({})
+        async getRoleListS() {
+            const res = await getRoleListS({})
             if (res.data.status.retCode === 0) {
                 this.roleList = res.data.data
             }

@@ -42,13 +42,22 @@
             <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="700">
                 <PlanFormItem :detail="detail" ref="PlanFormItem" :showType="showType"></PlanFormItem>
             </a-modal>
+            <a-modal v-model="showProcess" title="电气流程" @ok="showType = false" :width="1200">
+                <processCom :id="projectID" ref="process"></processCom>
+            </a-modal>
+            <a-modal v-model="showFile" title="清单文件" @ok="showFile = false" :width="700" >
+                <fileModel :permission="permission" :projectID="projectID" ref="fileModel"></fileModel>
+            </a-modal>
         </a-card>
-        <div class="scrollList" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="true"
+        <div class="scrollList" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
             :infinite-scroll-distance="100">
             <a-empty v-if="!dataSource.length" />
             <a-card class="card" v-for="item in dataSource" :key="item.id">
                 <div class="header">
                     <h1>{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
+                    <a style="margin-left: auto;margin-right: 20px" @click="handleDetail(item)">电气分析</a>
+                    <a style="margin-right: 20px;" @click="handleFlowDetail(item)">电气流程</a>
+                    <a style="margin-right: 20px;" @click="handleFileOpen(item)">清单文件</a>
                     <a-tag :color="getColor(item.level)" style="border-radius: 22px; height: 22px;">
                         P{{ item.level }}
                     </a-tag>
@@ -64,42 +73,12 @@
                     </div>
                     <div class="item">
                         <div class="label">下单日期：</div>
-                        <div class="value">{{ item.orderDate }}</div>
+                        <div class="value">{{ getDate(item.orderDate) }}</div>
                     </div>
                     <div class="item">
                         <div class="label">发货日期：</div>
-                        <div class="value">{{ item.deliveryDate }}</div>
+                        <div class="value">{{ getDate(item.deliveryDate) }}</div>
                     </div>
-                    <!-- <a-descriptions>
-                        <a-descriptions-item label="产品名称">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.productName }}
-                                </div>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="产品编号">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.productNumber || '--' }}
-                                </div>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="下单日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.orderDate || '--' }}
-                                </div>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="发货日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.deliveryDate || '--' }}
-                                </div>
-                            </div>
-                        </a-descriptions-item>
-                    </a-descriptions> -->
                 </div>
                 <div class="content noborder">
                     <div class="flex_2 border">
@@ -108,59 +87,25 @@
                             <div class="item repName">
                                 <div class="label">负责人：</div>
                                 <div class="value">{{ item.ecRepName || '--' }}</div>
-                                <span @click="handleEdit(item, 'ecRep')">修改</span>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'ecRep')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">开始日期：</div>
-                                <div class="value">{{ item.ecStartDate || '--' }}</div>
-                                <span @click="handleEdit(item, 'ecStartDate')">修改</span>
+                                <div class="value">{{ getDate(item.ecStartDate) || '--' }}</div>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'ecStartDate')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">结束日期：</div>
-                                <div class="value">{{ item.ecEndDate || '--' }}</div>
-                                <span @click="handleEdit(item, 'ecEndDate')">修改</span>
+                                <div class="value">{{ getDate(item.ecEndDate) || '--' }}</div>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'ecEndDate')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">安装状态：</div>
                                 <div class="value">{{ getStatus(item.ecStatus) || '--' }}</div>
-                                <span @click="handleEdit(item, 'ecStatus')">修改</span>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'ecStatus')">修改</span>
                             </div>
                         </div>
                     </div>
-                    <!-- <a-descriptions>
-                        <a-descriptions-item label="电气柜负责人">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.ecRepName || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'ecRep')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="电气柜开始日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.ecStartDate || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'ecStartDate')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="电气柜结束日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.ecEndDate || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'ecEndDate')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="电气柜安装状态">
-                            <div class="item">
-                                <div class="label">
-                                    {{ getStatus(item.ecStatus) || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'ecStatus')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                    </a-descriptions> -->
                 </div>
                 <div class="content noborder">
                     <div class="flex_2">
@@ -169,94 +114,22 @@
                             <div class="item repName">
                                 <div class="label">负责人：</div>
                                 <div class="value">{{ item.siRepName || '--' }}</div>
-                                <span @click="handleEdit(item, 'siRep')">修改</span>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'siRep')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">开始日期：</div>
-                                <div class="value">{{ item.siStartTime || '--' }}</div>
-                                <span @click="handleEdit(item, 'siStartTime')">修改</span>
+                                <div class="value">{{ getDate(item.siStartTime) || '--' }}</div>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'siStartTime')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">结束日期：</div>
-                                <div class="value">{{ item.siEndTime || '--' }}</div>
-                                <span @click="handleEdit(item, 'siEndTime')">修改</span>
+                                <div class="value">{{ getDate(item.siEndTime) || '--' }}</div>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'siEndTime')">修改</span>
                             </div>
                             <div class="item">
                                 <div class="label">安装状态：</div>
                                 <div class="value">{{ getStatus(item.siStatus) || '--' }}</div>
-                                <span @click="handleEdit(item, 'siStatus')">修改</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- <a-descriptions>
-
-                        <a-descriptions-item label="现场安装负责人">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.siRepName || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'siRep')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="现场安装开始日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.siStartTime || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'siStartTime')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="现场安装结束日期">
-                            <div class="item">
-                                <div class="label">
-                                    {{ item.siEndTime || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'siEndTime')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="现场安装状态">
-                            <div class="item">
-                                <div class="label">
-                                    {{ getStatus(item.siStatus) || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'siStatus')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-
-                        <a-descriptions-item label="电气清单">
-                            <div class="item">
-                                <div class="label">
-                                    {{ getListStatus(item.electricalList) || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'electricalList')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                        <a-descriptions-item label="发货清单">
-                            <div class="item">
-                                <div class="label">
-                                    {{ getListStatus(item.invoiceList) || '--' }}
-                                </div>
-                                <span @click="handleEdit(item, 'invoiceList')">修改</span>
-                            </div>
-                        </a-descriptions-item>
-                    </a-descriptions> -->
-                </div>
-                <div class="content noborder nobottom">
-                    <div class="flex_3">
-                        <h2>清单</h2>
-                        <div class="flex">
-                            <div class="item list">
-                                <div class="label">发货清单：</div>
-                                <div class="value">{{ getListStatus(item.invoiceList) || '--' }}</div>
-                                <span @click="handleEdit(item, 'invoiceList')">修改</span>
-
-                            </div>
-                            <div class="item list2">
-                                <div class="label">电气清单：</div>
-                                <div class="value">{{ getListStatus(item.electricalList) || '--' }}</div>
-                                <span @click="handleEdit(item, 'electricalList')">修改</span>
-
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'siStatus')">修改</span>
                             </div>
                         </div>
                     </div>
@@ -270,6 +143,8 @@
 // import StandardTable from '@/components/table/StandardTable'
 // import PlanForm from '@/pages/electrical/components/planForm'
 import PlanFormItem from '@/pages/electrical/components/planFormItem'
+import processCom from '@/pages/electrical/process'
+import fileModel from '@/pages/electrical/components/fileModel'
 import { getProjectEpList, delProjectInfo, getProjectEpInfo } from '@/services/project'
 import { mapGetters } from 'vuex'
 import moment from 'moment';
@@ -289,14 +164,17 @@ import infiniteScroll from 'vue-infinite-scroll';
 export default {
     name: 'QueryList',
     directives: { infiniteScroll },
-    components: { PlanFormItem },
+    components: { PlanFormItem, processCom, fileModel },
     data() {
         return {
+            showProcess: false,
             modalTitle: "新增项目",
             showType: "",
+            showFile: false,
             advanced: true,
             loading: false,
             visible: false,
+            projectID: "",
             productName: [
                 "热压罐",
                 "储气罐",
@@ -418,10 +296,10 @@ export default {
                 total: 0
             },
             form: {
-                "number": "",
-                "productNumber": "",
-                "customerName": "",
-                "productName": "",
+                "number": undefined,
+                "productNumber": undefined,
+                "customerName": undefined,
+                "productName": undefined,
                 "level": 0,
                 "pageSize": 10,
                 "pageIndex": 1
@@ -465,8 +343,33 @@ export default {
     methods: {
         handleInfiniteOnLoad() {
             this.pagination.pageIndex++
-            console.log('ss', this.pagination);
             this.getData()
+        },
+        getDate(date) {
+            if (date == '1000-01-01') return '--'
+            return date
+        },
+        handleDetail(data) {
+            this.$router.push({
+                path: "/statistics/order",
+                query: {
+                    id: data.id
+                }
+            })
+        },
+        handleFlowDetail(data) {
+            this.projectID = data.id
+            this.showProcess = true
+            this.$nextTick(()=>{
+                this.$refs.process.init()
+            })
+        },
+        handleFileOpen(data) {
+            this.projectID = data.id
+            this.showFile = true
+            this.$nextTick(()=>{
+                this.$refs.fileModel.getProjectFile()
+            })
         },
         async handleEdit(data, type) {
             this.modalTitle = '编辑项目'
@@ -576,7 +479,6 @@ export default {
                 },
                 body: JSON.stringify(params)
             };
-
             return await fetch(BASE_URL + '/project/export_ep_list', options)
 
         },
@@ -867,9 +769,11 @@ td {
 
                 display: flex;
                 justify-content: flex-start;
+
                 .item {
                     width: 358px;
                 }
+
                 .list {
                     // width: 378px;
                     // margin-right: 266px;

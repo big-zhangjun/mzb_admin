@@ -3,27 +3,36 @@
         <div :class="advanced ? 'search' : null">
             <a-form layout="horizontal">
                 <div class="fold">
-                    <a-row>
-                        <a-col :md="8" :sm="24">
+                    <a-row :gutter="16">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="客户端" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.clientID" allowClear @clear="handleSearch">
-                                    <a-select-option :value="item.id" v-for="item in clientList" :key="item.id">{{ item.cn }}</a-select-option>
+                                    <a-select-option :value="item.id" v-for="item in clientList" :key="item.id">{{
+                                        item.cn }}</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
-                        <a-col :md="8" :sm="24">
+                        <a-col :md="6" :sm="24">
                             <a-form-item label="操作类型" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.operateID" allowClear @clear="handleSearch">
-                                    <a-select-option :value="item.id" v-for="item in operaList" :key="item.id">{{ item.cn }}</a-select-option>
+                                    <a-select-option :value="item.id" v-for="item in operaList" :key="item.id">{{
+                                        item.cn }}</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
-
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-range-picker v-model="form.dateData" style="width: 100%;" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :md="6" :sm="24">
+                            <span style="margin-top: 4px;display: block;">
+                                <a-button type="primary" @click="handleSearch">查询</a-button>
+                                <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                            </span>
+                        </a-col>
                     </a-row>
-                    <span style="margin-top: 3px;">
-                        <a-button type="primary" @click="handleSearch">查询</a-button>
-                        <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
-                    </span>
+
                 </div>
             </a-form>
         </div>
@@ -41,7 +50,8 @@
                         <a-icon type="edit" />编辑
                     </a> -->
 
-                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)" v-if="permission.includes(2)">
+                    <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)"
+                        v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -61,19 +71,25 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import PostForm from '@/pages/user/components/postForm'
-import {mapGetters} from 'vuex'
+import moment from 'moment';
+import { mapGetters } from 'vuex'
 import { getClientList, getLogList, getOperaList, delLogInfo } from '@/services/backend'
-function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000); 
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; 
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)} ${String(hours).padStart(2, 0)}:${String(minutes).padStart(2, 0)}:${String(seconds).padStart(2, 0)}`;
-}
+function formatDate(isoString) {
+    const date = new Date(isoString);
 
+    // 获取年、月、日、小时、分钟、秒
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // 拼接成所需的格式
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDateTime;
+}
 export default {
     name: 'QueryList',
     components: { StandardTable, PostForm },
@@ -154,7 +170,7 @@ export default {
     },
     watch: {
         menuData() {
-          this.permission = this.$route.meta.permission
+            this.permission = this.$route.meta.permission
         }
     },
     activated() {
@@ -195,7 +211,15 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, current } = this.pagination
-            const res = await getLogList({ pageSize, pageIndex:current, ...this.form })
+            const { dateData, ...data } = this.form
+            console.log(dateData, 'ss)', this.form);
+            let endDate = ""
+            let startDate = ""
+            if (dateData) {
+                startDate = moment(dateData[0]).format('YYYY-MM-DD')
+                endDate = moment(dateData[1]).format('YYYY-MM-DD')
+            }
+            const res = await getLogList({ pageSize, pageIndex: current, ...data, startDate, endDate })
             this.dataSource = res.data.data.records
             this.pagination.total = res.data.data.totalCount
         },

@@ -22,6 +22,13 @@
                         item.roleName
                     }}</a-button>
             </div>
+            <h1 class="auth">职位权限</h1>
+            <div class="tab">
+                <a-button @click="changeAuth(item)" :type="authId == item.id ? 'primary' : ''" v-for="item in authList"
+                    :key="item.id">{{
+                        item.label
+                    }}</a-button>
+            </div>
         </div>
     </a-card>
 </template>
@@ -39,17 +46,15 @@ import {
 } from '@/services/backend'
 
 
-import { getRoleList } from '@/services/user'
+import { getRoleListS, updateRoleAuth, getRoleInfo } from '@/services/user'
 
 const getParentKey = (key, tree) => {
     let parentKey;
     for (let i = 0; i < tree.length; i++) {
         const node = tree[i];
         if (node.children) {
-            console.log('sd', node.children, key);
             if (node.children.some(item => item.key == key)) {
                 parentKey = node.key;
-                console.log('sdfafs', parentKey);
             } else if (getParentKey(key, node.children)) {
                 parentKey = getParentKey(key, node.children);
             }
@@ -70,6 +75,21 @@ export default {
             operaList: [],
             autoExpandParent: false,
             moduleList: [],
+            authId: "",
+            authList: [
+                {
+                    id: 0,
+                    label: "全部数据"
+                },
+                {
+                    id: 1,
+                    label: "下属相关"
+                },
+                {
+                    id: 2,
+                    label: "与我相关"
+                }
+            ],
             searchValue: "",
             flatModuleList: [],
             expandedKeys: [],
@@ -84,13 +104,13 @@ export default {
     //     deleteRecord: 'delete'
     // },
     mounted() {
-       
-    },
-    activated() {
-        this.getRoleList()
+        this.getRoleListS()
         this.getOperaList().then(() => {
             this.init()
         })
+    },
+    activated() {
+        
     },
     methods: {
         async init() {
@@ -106,7 +126,6 @@ export default {
         },
         onChanges(item) {
             if (item.moduleId) {
-                console.log('操作');
                 if (item.checked) {
                     this.delAuthorityOperate(item)
                 } else {
@@ -115,7 +134,6 @@ export default {
                 // 点击的是操作授权
             } else {
                 // 点击的是模块授权
-                console.log('模块', item);
                 if (item.checked) {
                     this.delAuthorityInfo(item)
                 } else {
@@ -177,16 +195,28 @@ export default {
 
         },
         // 切换员工职位
-        changeRole(item) {
+        async changeRole(item) {
             this.roleID = item.id
+            let authRes = await getRoleInfo({id: this.roleID})
+            this.authId = authRes.data.data.dataAuth
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
         },
+        async changeAuth(item) {
+            this.authId = item.id
+            let res = await updateRoleAuth({id: this.roleID,dataAuth: this.authId })
+            if(res.data.status.retCode == 0) {
+                this.$message.success("操作成功")
+            }
+
+        },
         // 查询职位信息
-        async getRoleList() {
-            const res = await getRoleList({})
+        async getRoleListS() {
+            const res = await getRoleListS({})
             this.roleList = res.data.data
             let user = localStorage.getItem("admin.user")
-            this.roleID = JSON.parse(user).roleID
+            this.roleID = this.roleID || JSON.parse(user).roleID
+            let authRes = await getRoleInfo({id: this.roleID})
+            this.authId = authRes.data.data.dataAuth
         },
         // 查询操作授权列表
         async getAuthorityOperate() {
@@ -243,7 +273,7 @@ export default {
                     scopedSlots: { title: "custom" }
                 }
             })
-            let ids = [1, 2, 3, 4, 5]
+            let ids = [1, 2, 3, 4, 5, 6, 7 ,8 ,9]
             this.operaIds = this.operaList.filter(item => ids.includes(item.id)).map(item => item.id)
         },
         buildTreeData(data) {
@@ -354,11 +384,17 @@ export default {
 
     .right {
         padding-left: 20px;
-
+        flex: 1;
+        max-width: 60vw;
+        
         .tab {
+            flex-wrap: wrap;
             margin-top: 20px;
             display: flex;
             gap: 20px
+        }
+        .auth {
+            margin-top: 30px;
         }
     }
 }

@@ -29,10 +29,11 @@
                 </div>
                 <div slot="action" slot-scope="{text, record}">
                     <a style="margin-right: 8px" @click="edit(record)">
-                        <a-icon type="edit" v-if="permission.includes(3)"/>编辑
+                        <a-icon type="edit" v-if="permission.includes(3)" />编辑
                     </a>
 
-                    <a-popconfirm title="确定删除该部门?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)" v-if="permission.includes(2)">
+                    <a-popconfirm title="确定删除该部门?" ok-text="确定" cancel-text="取消" @confirm="delDeptInfo(record)"
+                        v-if="permission.includes(2)">
                         <a>
                             <a-icon type="delete" />删除
                         </a>
@@ -52,14 +53,23 @@
 <script>
 import StandardTable from '@/components/table/StandardTable'
 import DeptForm from '@/pages/user/components/deptForm'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import { getDeptList, delDeptInfo, getRoleList } from '@/services/user'
-function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
+function formatDate(isoString) {
+    const date = new Date(isoString);
+
+    // 获取年、月、日、小时、分钟、秒
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
-    const day = date.getDate();
-    return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    // 拼接成所需的格式
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+    return formattedDateTime;
 }
 
 export default {
@@ -132,7 +142,7 @@ export default {
     },
     watch: {
         menuData() {
-          this.permission = this.$route.meta.permission
+            this.permission = this.$route.meta.permission
         }
     },
     methods: {
@@ -169,8 +179,9 @@ export default {
         },
         // 获取列表
         getData() {
-            getDeptList(this.form).then(res => {
-                this.dataSource = res.data.data
+            const { pageSize, current } = this.pagination
+            getDeptList({ pageSize, pageIndex: current }).then(res => {
+                this.dataSource = res.data.data.records
                 // this.pagination.totalCount = totalCount
             })
         },

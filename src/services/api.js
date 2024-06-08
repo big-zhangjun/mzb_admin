@@ -6,9 +6,12 @@ module.exports = {
   LOGIN: `${BASE_URL}/user/login`, // 登录
   ROUTES: `${BASE_URL}/routes`,
   GET_USER_LIST: `${BASE_URL}/user/get_user_list`, // 获取员工列表
+  GET_USER_LIST_S: `${BASE_URL}/user/get_user_list2`, // 获取员工列表
   ADD_USER_INFO: `${BASE_URL}/user/add_user_info`, // 新增员工
   GET_DEPT_LIST: `${BASE_URL}/dept/get_dept_list`, // 查询部门列表
+  GET_DEPT_LIST_S: `${BASE_URL}/dept/get_dept_list2`, // 查询部门列表
   GET_ROLE_LIST: `${BASE_URL}/role/get_role_list`, // 查询职位列表
+  GET_ROLE_LIST_S: `${BASE_URL}/role/get_role_list2`, // 查询职位列表
   GET_USER_INFO: `${BASE_URL}/user/get_user_info`, // 查询员工信息
   DEL_USER_INFO: `${BASE_URL}/user/del_user_info`, // 删除员工信息
   UPDATE_USER_INFO: `${BASE_URL}/user/update_user_info`, // 更新员工信息
@@ -79,4 +82,13 @@ module.exports = {
   GETUSERLOCATION: `${BASE_URL}/statistics/user_location`, //外出地区分布
   GET_PROJECT_COUNT: `${BASE_URL}/statistics/project_count`, //项目数统计
   GET_PROJECT_YEAR: `${BASE_URL}/statistics/project_year`, //查询项目年份
+  GET_PROJECT_BLOG_COUNT: `${BASE_URL}/statistics/blog_count`, //日志统计
+  GET_EP_ANALYSE: `${BASE_URL}/statistics/ep_analyse`, //电气分析
+  UPDATE_ROLE_AUTH: `${BASE_URL}/role/update_role_auth`, //修改职位权限
+  UPDATE_MODULE_INFO: `${BASE_URL}/module/update_module_info`, //修改职位权限
+  GET_MESSAGE_LIST: `${BASE_URL}/message/get_message_list`, //消息列表
+  UPDATE_MESSAGE_INFO: `${BASE_URL}/message/update_message_info`, //消息列表
+  GET_PROJECT_FILE: `${BASE_URL}/project/get_project_file`, //消息列表
+  UPLOAD_PROJECT_FILE: `${BASE_URL}/project/upload_project_file`, //消息列表
+  DEL_PROJECT_FILE: `${BASE_URL}/project/del_project_file`, //消息列表
 }

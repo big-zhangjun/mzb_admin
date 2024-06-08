@@ -93,7 +93,7 @@ export default {
             //         "avatar": "./pic/avatar/20240510165740.png",
             //         "longitude": 121.44297,
             //         "latitude": 28.67307,
-            //         "blogDay": "2024-05-13T00:00:00+08:00"
+            //         "blogDate": "2024-05-13T00:00:00+08:00"
             //     },
             //     {
             //         userName: '李四',
@@ -118,7 +118,7 @@ export default {
                         // 自定义提示框的内容  
                         var htmlContent = '<div class="custom-tooltip">';
                         htmlContent += '<div class="round">姓名: ' + params.name + '</div>';
-                        htmlContent += '<div class="round">日期: ' + that.convertISOToDateString(params.value[2]) + '</div>';
+                        htmlContent += '<div class="round">日期: ' + params.value[2] + '</div>';
                         htmlContent += '<div class="round">地址: ' + params.value[3] + '</div>';
                         // 如果你的数据项还有其他属性，也可以在这里展示  
                         // 例如：htmlContent += '<p>其他信息: ' + params[0].data.otherInfo + '</p>';  
@@ -144,7 +144,7 @@ export default {
                         data: employeeData.map(function (item) { // 假设employeeData是一个包含经纬度和员工信息的数组  
                             return {
                                 name: item.userName, // 员工姓名，用于tooltip显示  
-                                value: [item.longitude, item.latitude, item.blogDay, item.address], // 经纬度坐标  
+                                value: [item.longitude, item.latitude, item.blogDate, item.address], // 经纬度坐标  
                                 label: { // 散点标签  
                                     show: true,
                                     textStyle: { // 文本样式设置  
@@ -203,7 +203,7 @@ export default {
 .map {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 40px);
     min-height: 400px;
 
     ::v-deep .round {

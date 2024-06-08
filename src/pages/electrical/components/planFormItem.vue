@@ -193,10 +193,13 @@ export default {
     },
     methods: {
         async getUserList() {
-            let params = {}
+            let params = {
+                pageSize: 1000,
+                pageIndex: 1
+            }
             let res = await getUserList(params)
             if (res.data.status.retCode == 0) {
-                this.userList = res.data.data
+                this.userList = res.data.data.records
             }
         },
         async addEcRep(params) {

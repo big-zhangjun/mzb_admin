@@ -2,7 +2,6 @@
   <div>
     <div class="new-page statistics">
       <div class="header">
-        <h1>项目统计</h1>
         <div class="choose">
           <div class="item">
             <div class="label">选择年份：</div>
@@ -12,8 +11,7 @@
           </div>
           <div class="item">
             <div class="label">切换图表：</div>
-            <a-select placeholder="请选择" @change="handleChartModelChange" v-model="chartModel"
-              style="width: 100%;">
+            <a-select placeholder="请选择" @change="handleChartModelChange" v-model="chartModel" style="width: 100%;">
               <a-select-option :value="item.value" v-for="item in chartList" :key="item.value">{{ item.label
                 }}</a-select-option>
             </a-select>
@@ -24,15 +22,12 @@
     </div>
     <div class="chart-box">
       <div class="card" v-show="chartModel === 0">
-        <h1>折线图</h1>
         <div class="chart" id="employeeChart"></div>
       </div>
       <div class="card" v-show="chartModel === 1">
-        <h1>柱状图</h1>
         <div class="chart" id="barAnalysisChart"></div>
       </div>
       <div class="card" v-show="chartModel === 2">
-        <h1>饼图</h1>
         <div class="pie">
           <div class="pieChart" id="pieChart1"></div>
           <div class="pieChart" id="pieChart2"></div>
@@ -94,6 +89,10 @@ export default {
     })
 
   },
+  deactivated() {
+    this.myBarChart.dispose()
+    this.lineChart.dispose()
+  },
   methods: {
     handleChange() {
       this.getProjectCount()
@@ -109,7 +108,7 @@ export default {
     },
     async getProjectYear() {
       let user = localStorage.getItem('admin.user')
-      let deptID = JSON.parse(user).id
+      let deptID = JSON.parse(user).deptID
       let res = await getProjectYear({ deptID })
       this.years = [...res.data.data, "全部"]
       this.projectYear = "全部"
@@ -378,7 +377,7 @@ export default {
         projectYear = this.projectYear
       }
       let params = {
-        projectYear
+        year: projectYear
       }
       let res = await getProjectCount(params)
       this.initBarChart(res.data.data)

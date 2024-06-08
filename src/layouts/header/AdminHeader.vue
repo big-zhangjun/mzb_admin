@@ -1,7 +1,7 @@
 <template>
   <a-layout-header :class="[headerTheme, 'admin-header']">
     <div :class="['admin-header-wide', layout, pageWidth]">
-      <router-link v-if="isMobile || layout === 'head'" to="/" :class="['logo', isMobile ? null : 'pc', headerTheme]">
+      <router-link v-if="isMobile || layout === 'head'" to="/home" :class="['logo', isMobile ? null : 'pc', headerTheme]">
         <img width="32" src="@/assets/img/logo.jpg" />
         <h1 v-if="!isMobile">{{systemName}}</h1>
       </router-link>
@@ -11,13 +11,14 @@
         <i-menu class="head-menu" :theme="headerTheme" mode="horizontal" :options="menuData" @select="onSelect"/>
       </div>
       <div :class="['admin-header-right', headerTheme]">
-          <header-search class="header-item" @active="val => searchActive = val" />
-          <a-tooltip class="header-item" title="帮助文档" placement="bottom" >
+          <!-- <header-search class="header-item" @active="val => searchActive = val" /> -->
+          <!-- <a-tooltip class="header-item" title="帮助文档" placement="bottom" >
             <a href="https://iczer.gitee.io/vue-antd-admin-docs/" target="_blank">
               <a-icon type="question-circle-o" />
             </a>
           </a-tooltip>
-          <header-notice class="header-item"/>
+          <header-notice class="header-item"/> -->
+          <header-notice class="header-item"/> 
           <header-avatar class="header-item"/>
           <a-dropdown class="lang header-item">
             <div>

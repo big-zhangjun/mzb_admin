@@ -7,7 +7,7 @@
             </a-form-item>
             <a-form-item :label="'真实姓名'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-input :placeholder="'请输入真实姓名'"
-                    v-decorator="['nickName', { rules: [{ required: true, message: '请输入手机号码' }] }]" />
+                    v-decorator="['realName', { rules: [{ required: true, message: '请输入手机号码' }] }]" />
             </a-form-item>
             <a-form-item :label="'部门'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-select :placeholder="'请选择部门'"
@@ -44,12 +44,18 @@
                 <a-textarea rows="4" :placeholder="'请输入地址'"
                     v-decorator="['address', { rules: [{ required: false, message: '请输入地址' }] }]" />
             </a-form-item>
+            <a-form-item :label="'在职离职'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+                <a-radio-group v-decorator="['resign', { rules: [{ required: true, message: '请选择性别' }] }]">
+                    <a-radio :value="1">在职</a-radio>
+                    <a-radio :value="2">离职</a-radio>
+                </a-radio-group>
+            </a-form-item>
         </a-form>
     </a-card>
 </template>
 
 <script>
-import { addUserInfo, getDeptList, getRoleList, getUserInfo, updateUserInfo } from '@/services/user'
+import { addUserInfo, getDeptListS, getRoleListS, getUserInfo, updateUserInfo } from '@/services/user'
 import md5 from "js-md5";
 export default {
     name: 'BasicForm',
@@ -85,19 +91,22 @@ export default {
         },
         // 初始化数据
         initData() {
-            this.getDeptList()
-            this.getRoleList()
+            this.getDeptListS()
+            this.getRoleListS()
+            this.$nextTick(()=>{
+                this.form.setFieldsValue({ resign: 1 })
+            })
         },
         // 查询部门列表
-        async getDeptList() {
-            const res = await getDeptList({})
+        async getDeptListS() {
+            const res = await getDeptListS({})
             if (res.data.status.retCode === 0) {
                 this.deptList = res.data.data
             }
         },
         // 查询职位列表
-        async getRoleList() {
-            const res = await getRoleList({})
+        async getRoleListS() {
+            const res = await getRoleListS({})
             if (res.data.status.retCode === 0) {
                 this.roleList = res.data.data
             }
@@ -109,13 +118,14 @@ export default {
             if (res.data.status.retCode === 0) {
                 let keys = [
                     'userName',
-                    'nickName',
+                    'realName',
                     'deptID',
                     'roleID',
                     'mobile',
                     'sex',
                     'address',
                     'email',
+                    'resign'
                 ]
                 Object.keys(res.data.data).forEach(item => {
                     if (keys.includes(item)) {
@@ -134,14 +144,12 @@ export default {
                 if (!err) {
                     let params = {
                         ...values,
-                        
-                        resign: 1 // 是否在职
                     }
                     if (this.type == 'edit') {
                         this.updateUserInfo({ ...params, id: this.id }, callback)
                     } else {
                          // 默认密码000000
-                        this.addUserInfo({...params, password: this.getMD5Up('000000')}, callback)
+                        this.addUserInfo({...params, password: this.getMD5Up('000000'), resign: 1}, callback)
                     }
                 }
             })

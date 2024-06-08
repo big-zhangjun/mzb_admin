@@ -70,25 +70,29 @@ export default {
                 {
                     title: '序号',
                     dataIndex: 'id',
-                    width: 50
+                    width: 100
+                },
+                {
+                    title: '姓名',
+                    dataIndex: 'userName',
+                    width: 100
                 },
                 {
                     title: '内容',
                     dataIndex: 'content',
-                    width: 400,
+                    width: 300,
                 },
                 {
-                    title: '操作',
-                    width: 100,
-                    scopedSlots: { customRender: 'action' }
-                },
-
+                    title: '时间',
+                    dataIndex: 'createTime',
+                    width: 200,
+                }
             ],
             type: 'add',
             dataSource: [],
             pagination: {
                 pageIndex: 1,
-                pageSize: 10,
+                pageSize: 5,
                 total: 0
             },
             form: {
@@ -101,9 +105,9 @@ export default {
     // authorize: {
     //     deleteRecord: 'delete'
     // },
+    props: ["id"],
     mounted() {
         this.init()
-        this.getData()
     },
     methods: {
         toggleAdvanced() {
@@ -128,7 +132,13 @@ export default {
             })
         },
         init() {
+            this.pagination = {
+                pageIndex: 1,
+                pageSize: 5,
+                total: 0
+            },
             this.getOperaList()
+            this.getData()
         },
         onPageChange(page, pageSize) {
             this.pagination.pageIndex = page
@@ -138,7 +148,7 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getFlowList({ pageSize, pageIndex })
+            const res = await getFlowList({ pageSize, pageIndex, projectID: +this.id })
             this.dataSource = res.data.data
         },
         async getOperaList() {

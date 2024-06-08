@@ -194,6 +194,7 @@ function getRouter(p, b, operateList) {
 }
 function getChildrenRoute(itemP, operateList, route) {
   return itemP.children.map(childP => {
+    console.log(childP);
     let list = operateList.filter(item => item.moduleID == childP.id).map(item => item.operateID)
     let res = route.children.find(childB => childB.meta.id === childP.id);
     if (res) {

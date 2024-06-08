@@ -192,13 +192,13 @@ const options = {
             },
             {
               path: 'order',
-              name: '工单统计',
+              name: '电气分析',
               meta: {
                 permission: [],
                 id: 39,
                 parentID: 21,
               },
-              component: () => import('@/pages/statistics/index.vue'),
+              component: () => import('@/pages/statistics/electric/index.vue'),
             },
             {
               path: 'log',
@@ -208,7 +208,7 @@ const options = {
                 id: 40,
                 parentID: 21,
               },
-              component: () => import('@/pages/statistics/index.vue'),
+              component: () => import('@/pages/statistics/log/index.vue'),
             },
             {
               path: 'trip',

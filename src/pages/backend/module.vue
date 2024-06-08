@@ -10,10 +10,19 @@
                         <!-- <a-checkbox @click="onChanges(item)" v-model="item.checked">
                             {{ item.moduleName }}
                         </a-checkbox> -->
-                        <div>
+                        <div class="module">
                             <span>{{ item.moduleName }}</span>
                             <a @click="handleDel(item)" style="margin-left: 10px;">
                                 <a-icon type="delete" />
+                            </a>
+                            <a @click="handleEdit(item)" style="margin-left: 10px;">
+                                <a-icon type="edit" />
+                            </a>
+                            <a @click="handleMoveUpp(item)" style="margin-left: 10px;">
+                                <a-icon type="arrow-up" />
+                            </a>
+                            <a @click="handleMoveDown(item)" style="margin-left: 10px;">
+                                <a-icon type="arrow-down" />
                             </a>
                         </div>
                     </template>
@@ -26,7 +35,7 @@
             </a-button>
         </div>
         <a-modal title="提示" :visible="visible" :confirm-loading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
-            <p v-if="type !== 'add'">{{ ModalText }}</p>
+            <p v-if="type == 'del'">{{ ModalText }}</p>
             <a-form :form="form" v-else>
                 <a-form-item :label="'模块名称'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                     <a-input :placeholder="'请输入模块名称'"
@@ -38,7 +47,9 @@
 </template>
 
 <script>
-import { getModuleList, delModuleInfo, addModuleInfo } from '@/services/backend'
+import { getRoutesConfig } from '@/services/user'
+import { loadRoutes } from '@/utils/routerUtil'
+import { getModuleList, delModuleInfo, addModuleInfo, updateModuleInfo } from '@/services/backend'
 const getParentKey = (key, tree) => {
     let parentKey;
     for (let i = 0; i < tree.length; i++) {
@@ -97,13 +108,107 @@ export default {
         handleDel(data) {
             this.detail = data
             this.visible = true;
+            this.type = 'del'
+        },
+        async updateModuleInfo(params) {
+
+            let res = await updateModuleInfo(params)
+            if (res.data.status.retCode == 0) {
+                getRoutesConfig().then(result => {
+                    const routesConfig = result.data
+                    loadRoutes(routesConfig)
+                })
+            }
+
+        },
+        handleEdit(data) {
+            this.detail = data
+            this.visible = true;
             this.type = 'edit'
+            console.log(data);
+
+        },
+        handleMoveDown(data) {
+            let { parentID, moduleNo, id, moduleName } = data
+            // 找出当前层级的数据
+            let list = this.flatModuleList.filter(item => item.parentID == parentID)
+            // 找出当前所在的索引
+            let index = list.findIndex(item => item.id == id)
+            if (index !== -1 && index == list.length - 1) {
+                this.$message.warning("已经在最底部了")
+                return
+            }
+            let oldData = list[index + 1]
+            let oldParams = {
+                moduleName: oldData.moduleName,
+                parentID: oldData.parentID,
+                id: oldData.id,
+                moduleNo: oldData.moduleNo - 1
+            }
+            let newParams = {
+                parentID,
+                moduleNo: moduleNo + 1,
+                id,
+                moduleName
+            }
+            Promise.all([this.updateModuleInfo(oldParams), this.updateModuleInfo(newParams)]).then(() => {
+                this.$message.success('操作成功')
+                this.init()
+                this.visible = false
+                this.confirmLoading = false;
+            })
+        },
+        handleMoveUpp(data) {
+            let { parentID, moduleNo, id, moduleName } = data
+            if (moduleNo == 1) {
+                this.$message.warning("已经在最顶部了")
+                return
+            }
+            let oldData = this.flatModuleList.find(item => {
+                return item.parentID == parentID && (moduleNo - 1) == item.moduleNo
+            })
+            let oldParams = {
+                moduleName: oldData.moduleName,
+                parentID: oldData.parentID,
+                id: oldData.id,
+                moduleNo: oldData.moduleNo + 1
+            }
+            let newParams = {
+                parentID,
+                moduleNo: moduleNo - 1,
+                id,
+                moduleName
+            }
+            Promise.all([this.updateModuleInfo(oldParams), this.updateModuleInfo(newParams)]).then(() => {
+                this.$message.success('操作成功')
+                this.init()
+                this.visible = false
+                this.confirmLoading = false;
+            })
+
         },
         async handleOk() {
             this.confirmLoading = true;
-            if(this.type=='add') {
+            if (this.type == 'add') {
                 this.addModule()
-            }else {
+            } else if (this.type == 'edit') {
+                this.form.validateFields(async (err, values) => {
+                    if (!err) {
+                        let params = {
+                            ...values,
+                            parentID: this.detail.parentID,
+                            id: this.detail.id,
+                            moduleNo: this.detail.moduleNo
+                        }
+                        this.updateModuleInfo(params).then(() => {
+                            this.$message.success('操作成功')
+                            this.init()
+                            this.visible = false
+                            this.confirmLoading = false;
+                        })
+                    }
+                })
+            } else {
                 this.delModule()
             }
 
@@ -236,6 +341,18 @@ export default {
 @media screen and (max-width: 900px) {
     .fold {
         width: 100%;
+    }
+}
+
+.module {
+    a {
+        display: none;
+    }
+
+    &:hover {
+        a {
+            display: inline-block;
+        }
     }
 }
 </style>

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { addDeptInfo, getDeptList, getRoleList, getDeptInfo, updateDeptInfo, getUserList } from '@/services/user'
+import { addDeptInfo, getDeptList, getRoleListS, getDeptInfo, updateDeptInfo, getUserListS } from '@/services/user'
 export default {
     name: 'BasicForm',
     // i18n: require('./i18n'),
@@ -62,10 +62,10 @@ export default {
         async loadData(selectedOptions) {
             const targetOption = selectedOptions[selectedOptions.length - 1];
             targetOption.loading = true;
-            const res = await getUserList({ roleId: targetOption.value })
+            const res = await getUserListS({ roleId: targetOption.value })
             let children = res.data.data.length ? res.data.data.map(item => {
                 return {
-                    label: item.nickName,
+                    label: item.userName,
                     value: item.id
                 }
             }) : []
@@ -79,7 +79,7 @@ export default {
         },
         // 初始化数据
         initData() {
-            this.getRoleList()
+            this.getRoleListS()
         },
         // 查询部门列表
         async getDeptList() {
@@ -89,8 +89,8 @@ export default {
             }
         },
         // 查询职位列表
-        async getRoleList() {
-            const res = await getRoleList({})
+        async getRoleListS() {
+            const res = await getRoleListS({})
             if (res.data.status.retCode === 0) {
                 this.roleList = res.data.data
                 this.options = this.roleList.map(item => {
@@ -120,7 +120,7 @@ export default {
                 })
                 this.options.forEach((item) => {
                     if (item.value == managerRoleID) {
-                        getUserList({ roleId: managerRoleID }).then(respone => {
+                        getUserListS({ roleId: managerRoleID }).then(respone => {
                             let children = respone.data.data.map(_item => {
                                 return {
                                     label: _item.nickName,

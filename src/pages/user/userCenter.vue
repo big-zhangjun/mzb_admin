@@ -65,7 +65,7 @@
                         </a-form-item>
                         <a-form-item :label="'新密码'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                             <a-input type="password" :placeholder="'请输入新密码'"
-                                v-decorator="['userNumber', { rules: [{ required: true, message: '请输入新密码' },{ min: 6, message: '长度至少为 6!' }, { max: 6, message: '长度至多为 6!' }] }]"></a-input>
+                                v-decorator="['realName', { rules: [{ required: true, message: '请输入新密码' },{ min: 6, message: '长度至少为 6!' }, { max: 6, message: '长度至多为 6!' }] }]"></a-input>
                         </a-form-item>
                     </a-form>
                     <a-button class="submit" type="primary" @click="handlePasswordSubmit">
@@ -184,14 +184,15 @@ export default {
         async customRequest(data) {
             const formData = new FormData();
             formData.append('file', data.file);
+            let time = this.formatDate()
             formData.append('path', `./pic/avatar`);
-            formData.append('name', this.formatDate() + '.' + data.file.name.split(".")[1]);
+            formData.append('name', `${this.userInfo.id}_${time}` + '.' + data.file.name.split(".")[1]);
             this.loading = true
             const res = await upLoadFile(formData)
             if (res.data.status.retCode == 0) {
                 this.loading = false
-                this.path = `./pic/avatar/` + this.formatDate() + '.' + data.file.name.split(".")[1]
-                this.$emit("uploadOk", `./pic/avatar/` + this.formatDate() + '.' + data.file.name.split(".")[1])
+                this.path = `./pic/avatar/${this.userInfo.id}_` + time + '.' + data.file.name.split(".")[1]
+                this.$emit("uploadOk", `./pic/avatar/` + time + '.' + data.file.name.split(".")[1])
                 this.uploadUserAvatar()
             } else {
                 this.$message.success(res.data.status.msg)
@@ -201,7 +202,7 @@ export default {
         async uploadUserAvatar() {
             let params = {
                 id: this.userInfo.id,
-                avatar: this.path
+                avatar: `${this.path}`
             }
             let res = await uploadUserAvatar(params)
             if (res.data.status.retCode == 0) {
@@ -224,7 +225,7 @@ export default {
                 if (!err) {
                     let params = {
                         id: this.userInfo.id,
-                        userNumber: this.getMD5Up(values.userNumber),
+                        realName: this.getMD5Up(values.realName),
                         password: this.getMD5Up(values.password),
                     }
                     this.uploadUserPassword(params)

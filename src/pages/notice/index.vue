@@ -14,11 +14,12 @@
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
-                                <a-form-item label="修改用户" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-select placeholder="请选择" v-model="form.updaterID" allowClear>
+                                <a-form-item label="标题" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <!-- <a-select placeholder="请选择" v-model="form.updaterID" allowClear>
                                         <a-select-option :value="item.id" v-for="item in userList" :key="item.id">{{
                                             item.userName }}</a-select-option>
-                                    </a-select>
+                                    </a-select> -->
+                                    <a-input v-model="form.title" placeholder="请输入"></a-input>
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
@@ -93,7 +94,7 @@ let userid = JSON.parse(user).id
 import { mapGetters } from 'vuex'
 import moment from 'moment';
 import { getNoticeList, delNoticeInfo } from "@/services/backend"
-import { getUserList } from "@/services/user"
+import { getUserListS } from "@/services/user"
 export default {
     name: 'QueryList',
     data() {
@@ -110,8 +111,8 @@ export default {
             },
             permission: [],
             form: {
-                creatorID: userid,
-                updaterID: "",
+                creatorID: undefined,
+                updaterID: undefined,
                 dateData: undefined
             },
             noticeList: [],
@@ -135,7 +136,7 @@ export default {
     },
     mounted() {
         this.permission = this.$route.meta.permission
-        this.getUserList()
+        this.getUserListS()
     },
     activated() {
         this.getNoticeList()
@@ -151,15 +152,15 @@ export default {
     methods: {
         handleReset() {
             this.form = {
-                creatorID: userid,
-                updaterID: "",
+                creatorID: undefined,
+                updaterID: undefined,
                 dateData: undefined
             }
             this.getNoticeList()
 
         },
-        async getUserList() {
-            let res = await getUserList({})
+        async getUserListS() {
+            let res = await getUserListS({})
             this.userList = res.data.data
         },
         handleEdit(data) {
@@ -200,12 +201,11 @@ export default {
                 endTime = moment(dateData[1]).format('YYYY-MM-DD')
             }
             let params = {
-                "creatorID": this.form.creatorID || 0,
-                "updaterID": this.form.updaterID || 0,
                 "startTime": startTime,
                 "endTime": endTime,
                 "pageSize": 9,
-                "pageIndex": this.pagination.current
+                "pageIndex": this.pagination.current,
+                "title" : this.form.title
             }
             let res = await getNoticeList(params)
             if (res.data.status.retCode === 0) {

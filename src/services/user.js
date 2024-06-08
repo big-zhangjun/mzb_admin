@@ -3,12 +3,16 @@ import {
   GET_DEPT_INFO,
   UPDATE_DEPT_INFO,
   GET_ROLE_INFO,
+  GET_DEPT_LIST_S,
   ADD_ROLE_INFO,
+  GET_ROLE_LIST_S,
+  GET_USER_LIST_S,
   DEL_ROLE_INFO,
   UPDATE_ROLE_INFO,
   UPLOAD_USER_AVATAR,
   UPLOAD_USER_PASSWORD,
-  GETUSERLOCATION
+  GETUSERLOCATION,
+  UPDATE_ROLE_AUTH
 } from '@/services/api'
 import { request, METHOD, removeAuthorization } from '@/utils/request'
 
@@ -33,6 +37,12 @@ export async function getUserList(params) {
     ...params
   })
 }
+// 获取用户列表
+export async function getUserListS(params) {
+  return request(GET_USER_LIST_S, METHOD.POST, {
+    ...params
+  })
+}
 
 // 新增用户
 export async function addUserInfo(params) {
@@ -48,13 +58,25 @@ export async function getDeptList(params) {
   })
 }
 
+// 查询部门列表
+export async function getDeptListS(params) {
+  return request(GET_DEPT_LIST_S, METHOD.POST, {
+    ...params
+  })
+}
+
 // 查询职位列表
 export async function getRoleList(params) {
   return request(GET_ROLE_LIST, METHOD.POST, {
     ...params
   })
 }
-
+// 查询职位列表
+export async function getRoleListS(params) {
+  return request(GET_ROLE_LIST_S, METHOD.POST, {
+    ...params
+  })
+}
 // 查询员工信息
 export async function getUserInfo(params) {
   return request(GET_USER_INFO, METHOD.POST, {
@@ -152,7 +174,12 @@ export async function getUserLocation(params) {
     ...params
   })
 }
-
+// 修改职位权限
+export async function updateRoleAuth(params) {
+  return request(UPDATE_ROLE_AUTH, METHOD.POST, {
+    ...params
+  })
+}
 
 export async function getRoutesConfig() {
   let result = {}

@@ -3,7 +3,7 @@
         <a-form :form="form">
             <a-form-item :label="'请选择日期：'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                 <a-date-picker style="width: 100%;"
-                    v-decorator="['blogDay', { rules: [{ required: true, message: '请选择日期' }] }]" />
+                    v-decorator="['blogDate', { rules: [{ required: true, message: '请选择日期' }] }]" />
             </a-form-item>
             <a-form-item :label="'地址'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                 <a-input placeholder="请输入"
@@ -19,7 +19,7 @@
             </a-form-item>
             <a-form-item :label="'工作内容：'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                 <a-select mode="multiple" show-search
-                    v-decorator="['contentId', { rules: [{ required: true, message: '请选择日期' }] }]" placeholder="请选择">
+                    v-decorator="['contentId', { rules: [{ required: true, message: '请选择工作内容' }] }]" placeholder="请选择">
                     <a-select-option :value="item.id" v-for="item in blogContentList" :key="item.id">
                         {{ item.content }}
                     </a-select-option>
@@ -27,7 +27,7 @@
             </a-form-item>
             <a-form-item :label="'备注'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 16 }">
                 <a-textarea placeholder="请输入"
-                    v-decorator="['remark', { rules: [{ required: true, message: '请输入地址' }] }]"></a-textarea>
+                    v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]"></a-textarea>
             </a-form-item>
         </a-form>
     </a-card>
@@ -37,7 +37,7 @@
 import moment from 'moment';
 
 // import { addBlogList, getDeptList, getRoleInfo, updateBlogContentList } from '@/services/user'
-import { addBlogList, getBlogContentList, addEcRep, addSiRep, addAsRep } from '@/services/electrical'
+import { addBlogList, getBlogContentList, addEcRep,updateBlogInfo, addSiRep, addAsRep } from '@/services/electrical'
 import { getProjectList } from '@/services/project'
 
 export default {
@@ -101,11 +101,12 @@ export default {
         // },
         getWorkTent(data) {
             let keys = [
-                'blogDay',
+                'blogDate',
                 'address',
                 'remark',
                 'projectID'
             ]
+            this.id = data.id
             keys.forEach((key) => {
                 this.form.setFieldsValue({ [key]: data[key] })
             })
@@ -122,15 +123,18 @@ export default {
             console.log(this.$store.state);
             this.form.validateFields((err, values) => {
                 if (!err) {
-                    const { contentId, blogDay, ...p } = values
+                    const { contentId, blogDate, ...p } = values
                     let params = {
                         ...p,
-                        blogDay: moment(blogDay).format('YYYY-MM-DD'),
+                        blogDate: moment(blogDate).format('YYYY-MM-DD'),
                         userID: this.$store.state.account.user.id,
                         content: this.blogContentList.filter(item => contentId.includes(item.id)).map(item => item.content).join(",")
                     }
-                    this.addBlogList(params, callback)
-
+                    if(this.type == 'add') {
+                      this.addBlogList(params, callback)
+                    } else {
+                        this.updateBlogInfo({...params, id: this.id}, callback)
+                    }
 
                     let addFun = this.blogContentList.filter(item => contentId.includes(item.id)).map(item => item.contentType)
                     addFun = [...new Set(addFun)]
@@ -176,6 +180,15 @@ export default {
         },
         addBlogList(params, callback) {
             addBlogList(params).then(res => {
+                if (res.data.status.retCode === 0) {
+                    callback()
+                } else {
+                    this.$message.warning(res.data.status.msg)
+                }
+            })
+        },
+        updateBlogInfo(params, callback) {
+            updateBlogInfo(params).then(res => {
                 if (res.data.status.retCode === 0) {
                     callback()
                 } else {

@@ -7,6 +7,7 @@ import {
     EXPORTPROJECTLIST,
     UPDATE_PROJECT_INFO,
     IMPORTPROJECTLIST,
+    DEL_PROJECT_FILE,
     GETPROJECTTIPS,
     GET_PROJECT_EP_LIST,
     GET_PROJECT_EP_INFO,
@@ -14,7 +15,11 @@ import {
     EXPORT_EP_LIST,
     UPLOAD_FILE,
     GET_PROJECT_YEAR,
-    GET_PROJECT_COUNT
+    GET_PROJECT_COUNT,
+    GET_PROJECT_BLOG_COUNT,
+    GET_EP_ANALYSE,
+    UPLOAD_PROJECT_FILE,
+    GET_PROJECT_FILE
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -85,4 +90,29 @@ export async function getProjectCount(params) {
 // 查询项目年份
 export async function getProjectYear(params) {
     return request(GET_PROJECT_YEAR, METHOD.POST, params)
+}
+
+// 日志统计
+export async function getProjectBlogCount(params) {
+    return request(GET_PROJECT_BLOG_COUNT, METHOD.POST, params)
+}
+
+// 电气分析
+export async function getEpAnalyse(params) {
+    return request(GET_EP_ANALYSE, METHOD.POST, params)
+}
+
+// 电气分析
+export async function getProjectFile(params) {
+    return request(GET_PROJECT_FILE, METHOD.POST, params)
+}
+
+// 电气分析
+export async function uploadProjectFile(params) {
+    return request(UPLOAD_PROJECT_FILE, METHOD.POST, params)
+}
+
+// 电气分析
+export async function delProjectFile(params) {
+    return request(DEL_PROJECT_FILE, METHOD.POST, params)
 }

@@ -14,9 +14,12 @@ import {
     ADD_MODUEL_INFO,
     ADD_NOTICE_INFO,
     GET_NOTICE_LIST,
+    UPDATE_MESSAGE_INFO,
     DEL_NOTICE_INFO,
     GET_NOTICE_INFO,
-    UPDATE_NOTICE_INFO
+    UPDATE_NOTICE_INFO,
+    GET_MESSAGE_LIST,
+    UPDATE_MODULE_INFO
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
 
@@ -97,3 +100,15 @@ export async function updateNoticeInfo(params) {
     return request(UPDATE_NOTICE_INFO, METHOD.POST, params)
 }
 
+// 修改模块信息
+export async function updateModuleInfo(params) {
+    return request(UPDATE_MODULE_INFO, METHOD.POST, params)
+}
+// 修改模块信息
+export async function getMessageList(params) {
+    return request(GET_MESSAGE_LIST, METHOD.POST, params)
+}
+// 修改模块信息
+export async function updateMessageInfo(params) {
+    return request(UPDATE_MESSAGE_INFO, METHOD.POST, params)
+}

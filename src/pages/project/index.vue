@@ -1,94 +1,151 @@
 <template>
-    <a-card>
-        <div :class="advanced ? 'search' : null">
-            <a-form layout="horizontal">
-                <div :class="advanced ? null : 'fold'">
-                    <a-row>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
-                                    <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
-                                        }}</a-select-option>
-                                </a-select>
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="产品编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.productNumber" placeholder="请输入" />
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.customerName" placeholder="请输入" />
-                            </a-form-item>
-                        </a-col>
-                        <a-col :md="6" :sm="24">
-                            <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-range-picker v-model="form.dateData" style="width: 100%;" />
-                            </a-form-item>
-                        </a-col>
-                    </a-row>
-                    <a-row v-if="advanced">
-                        <!-- <a-col :md="6" :sm="24">
+    <div>
+        <a-card>
+            <div :class="advanced ? 'search' : null">
+                <a-form layout="horizontal">
+                    <div :class="advanced ? null : 'fold'">
+                        <a-row>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
+                                        <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
+                                            }}</a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="产品编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-input v-model="form.productNumber" placeholder="请输入" />
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-input v-model="form.customerName" placeholder="请输入" />
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-range-picker v-model="form.dateData" style="width: 100%;" />
+                                </a-form-item>
+                            </a-col>
+                        </a-row>
+                        <a-row v-if="advanced">
+                            <!-- <a-col :md="6" :sm="24">
                             <a-form-item label="真实姓名" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-input placeholder="请输入" v-model="form.nickName"/>
                             </a-form-item>
                         </a-col> -->
 
-                    </a-row>
-                </div>
-                <span style="float: right; margin-top: 3px;">
-                    <a-button type="primary" @click="handleSearch">查询</a-button>
-                    <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
-                    <a @click="toggleAdvanced" style="margin-left: 8px">
-                        {{ advanced ? '收起' : '展开' }}
-                        <a-icon :type="advanced ? 'up' : 'down'" />
-                    </a>
-                </span>
-            </a-form>
-        </div>
-        <a-space class="operator">
-            <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
-            <a-button @click="exportFile" type="danger" v-if="permission.includes(5)">导出</a-button>
-            <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
-                :showUploadList="false" :customRequest="customRequest">
-                <a-button> <a-icon type="upload" /> 导入 </a-button>
-            </a-upload>
-        </a-space>
-        <a-spin :spinning="uploadLoading">
-            <div>
-                <standard-table :columns="columns" :dataSource="dataSource"
-                    :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
-                    <div slot="description" slot-scope="{text}">
-                        {{ text }}
+                        </a-row>
                     </div>
-                    <div slot="action" slot-scope="{text, record}">
-                        <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
-                            <a-icon type="edit" />编辑
+                    <span style="float: right; margin-top: 3px;">
+                        <a-button type="primary" @click="handleSearch">查询</a-button>
+                        <a-button style="margin-left: 8px" @click="handleReset">重置</a-button>
+                        <a @click="toggleAdvanced" style="margin-left: 8px">
+                            {{ advanced ? '收起' : '展开' }}
+                            <a-icon :type="advanced ? 'up' : 'down'" />
                         </a>
+                    </span>
+                </a-form>
+            </div>
+            <a-space class="operator">
+                <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
+                <a-button @click="exportFile" type="danger" v-if="permission.includes(5)">导出</a-button>
+                <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange" v-if="permission.includes(6)"
+                    :showUploadList="false" :customRequest="customRequest">
+                    <a-button> <a-icon type="upload" /> 导入 </a-button>
+                </a-upload>
+            </a-space>
+            <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500" class="project-modal">
+                <ProjectForm ref="ProjectForm" :type="type" :key="projectFormKey" />
+            </a-modal>
+        </a-card>
+        <div class="list" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
+            :infinite-scroll-distance="100">
+            <div class="card" v-for="(item, idx) in dataSource" :key="item.id">
+                <div class="box">
+                    <div class="left">
+                        <div class="title">
+                            <h1>{{ item.customerName }}</h1>
+                            <a-tag :color="getColor(item.level)" style="border-radius: 22px;">
+                                P{{ item.level }}
+                            </a-tag>
+                        </div>
+                        <div class="tags">
+                            <div class="item">{{ item.productName }}</div>
+                        </div>
+                        <div class="content">
+                            <div class="item">
+                                <div class="label">项目编号：</div>
+                                <div class="value">{{ item.number }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">产品编号：</div>
+                                <div class="value">{{ item.productNumber || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">型号：</div>
+                                <div class="value">{{ item.model || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">下单日期：</div>
+                                <div class="value">{{ item.orderDate || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">发货日期：</div>
+                                <div class="value">{{ item.deliveryDate || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">工作压力(MPa)：</div>
+                                <div class="value">{{ item.workingPressure || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">工作温度(℃)：</div>
+                                <div class="value">{{ item.workingTemperature || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">加热功率(kw)：</div>
+                                <div class="value">{{ item.heatingPower || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">循环风机：</div>
+                                <div class="value">{{ item.circulatingFan || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">热电偶：</div>
+                                <div class="value">{{ item.thermocouple || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">检测口：</div>
+                                <div class="value">{{ item.inspectionPort || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">真空路数：</div>
+                                <div class="value">{{ item.vacuumNumber || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">增压机：</div>
+                                <div class="value">{{ item.supercharger || '--' }}</div>
+                            </div>
+                            <div class="item">
+                                <div class="label">空压机：</div>
+                                <div class="value">{{ item.airCompressor || '--' }}</div>
+                            </div>
+                        </div>
 
-                        <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(record)"
+
+                    </div>
+                    <div class="btn">
+                        <div class="edit" @click="edit(item)" v-if="permission.includes(3)">查看详情</div>
+                        <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(item, idx)"
                             v-if="permission.includes(2)">
-                            <a>
-                                <a-icon type="delete" />删除
-                            </a>
+                            <div class="del">删除</div>
                         </a-popconfirm>
                     </div>
-                    <template slot="tags" slot-scope="{text, record}">
-                        <a-tag :color="getColor(text)" style="border-radius: 22px;">
-                            P{{ text }}
-                        </a-tag>
-                    </template>
-                    <template slot="statusTitle">
-                        <a-icon @click.native="onStatusTitleClick" type="info-circle" />
-                    </template>
-                </standard-table>
+                </div>
             </div>
-        </a-spin>
-        <a-modal v-model="visible" :title="modalTitle" @ok="handleOk" :width="1500" class="project-modal">
-            <ProjectForm ref="ProjectForm" :type="type" :key="projectFormKey" />
-        </a-modal>
-    </a-card>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -102,11 +159,13 @@ import { mapGetters } from 'vuex/dist/vuex.common.js'
 //   const month = date.getMonth() + 1; // 月份从0开始，所以需要加1
 //   const day = date.getDate();
 //   return `${year}-${String(month).padStart(2, 0)}-${String(day).padStart(2, 0)}`;
-// }
+// }+
+import infiniteScroll from 'vue-infinite-scroll';
 import moment from 'moment';
 export default {
     name: 'QueryList',
     components: { StandardTable, ProjectForm },
+    directives: { infiniteScroll },
     data() {
         return {
             projectFormKey: 0,
@@ -218,18 +277,23 @@ export default {
         if (this.$route.query.year) {
             this.setDatesFromUrl()
         }
-
         await this.getData()
         if (this.$route.meta) {
             this.permission = this.$route.meta.permission
         }
     },
     methods: {
+        handleInfiniteOnLoad() {
+            this.pagination.current++
+            console.log(this.pagination.pageIndex);
+            // return
+            this.getData()
+        },
         toggleAdvanced() {
             this.advanced = !this.advanced
         },
         setDatesFromUrl() {
-            if(year === '全部') {
+            if (year === '全部') {
                 this.form.dateData = ""
                 return
             }
@@ -240,7 +304,7 @@ export default {
                 const startDate = moment(`${year}-${month}-01`);
                 const endDate = startDate.clone().endOf('month');
                 this.form.dateData = [startDate, endDate];
-                console.log(this.form.dateData,'sssdfsf');
+                console.log(this.form.dateData, 'sssdfsf');
             }
         },
         // 
@@ -364,6 +428,7 @@ export default {
 
         handleSearch() {
             this.pagination.current = 1
+            this.dataSource = []
             this.getData()
         },
         handleReset() {
@@ -371,6 +436,7 @@ export default {
             this.form = {
 
             }
+            this.dataSource = []
             this.getData()
         },
         handleOk() {
@@ -399,7 +465,7 @@ export default {
                 endDate = moment(dateData[1]).format('YYYY-MM-DD')
             }
             const res = await getProjectList({ pageSize, pageIndex: current, startDate, endDate, ...data })
-            this.dataSource = res.data.data.records
+            this.dataSource = [...this.dataSource, ...res.data.data.records]
             this.pagination.total = res.data.data.totalCount
         },
         edit(data) {
@@ -411,17 +477,18 @@ export default {
                 this.$refs.ProjectForm.getProjectInfo(data.id)
             })
         },
-        async delProjectInfo(data) {
+        async delProjectInfo(data, index) {
             const params = {
                 id: data.id
             }
             let res = await delProjectInfo(params)
             if (res.data.status.retCode == 0) {
                 this.$message.success("操作成功")
+                this.dataSource.splice(index, 1)
             } else {
                 this.$message.warning("操作失败")
             }
-            this.getData()
+            // this.getData()
         },
         addNew() {
             this.projectFormKey++
@@ -437,8 +504,133 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.search {
-    // margin-bottom: 24px;
+.list {
+    margin-top: 24px;
+    border-radius: 8px;
+    max-height: 600px; /* or any other appropriate height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    .del {
+        color: rgb(80, 122, 253);
+        cursor: pointer;
+        text-decoration: underline;
+        display: inline-block;
+        margin-top: 12px;
+    }
+
+    .card {
+        width: 100%;
+        background-color: #fff;
+        padding: 30px;
+        box-sizing: border-box;
+        display: flex;
+        border-bottom: solid 1px #f0f0f0;
+
+        .box {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+
+            .btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+                .edit {
+                    background-color: rgb(80, 122, 253);
+                    color: #fff;
+                    height: 34px;
+                    display: block;
+                    width: 100px;
+                    text-align: center;
+                    line-height: 34px;
+                    cursor: pointer;
+                    border-radius: 4px;
+
+                    // margin-bottom: 12px;
+                    &:hover {
+                        background-color: rgb(71, 108, 219);
+                    }
+                }
+            }
+        }
+
+        .cover {
+            width: 78px;
+            height: 78px;
+            background-color: rgb(126, 180, 216);
+            border-radius: 8px;
+            margin-right: 30px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left {
+            .title {
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+            }
+
+            h1 {
+                font-size: 18px;
+                margin-bottom: 0;
+                margin-right: 12px;
+                font-weight: bold;
+            }
+
+            .tags {
+
+                .item {
+                    color: rgb(192, 151, 254);
+                    background: rgb(241, 237, 249);
+                    text-align: center;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    display: inline;
+                    margin-right: 12px;
+                }
+
+                .orange {
+                    background: rgb(251, 237, 215);
+                    color: rgb(254, 185, 94);
+                }
+            }
+
+            .content {
+                margin-top: 12px;
+                display: flex;
+                // width: 900px;
+                flex-wrap: wrap;
+                // justify-content: space-between;
+                gap: 12px;
+
+                .item {
+                    display: flex;
+                    width: 200px;
+                    margin-right: 8px;
+
+                    .label {
+                        color: rgb(155, 155, 155);
+                        min-width: 56px;
+                    }
+
+                    .value {
+                        color: #12151b;
+                        font-weight: bold;
+                        // white-space: nowrap;
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 .fold {
