@@ -4,15 +4,47 @@
 
 <script>
 import * as echarts from 'echarts';
+import AMapLoader from '@amap/amap-jsapi-loader';
 import { getUserLocation } from "@/services/user"
 export default {
     name: 'EChartsComponent',
     data() {
         return {
-            myChart: null
+            myChart: null,
+            dataValue: [
+                // {
+                //     "value": [114.271522, 22.753644],
+                //     "Sales": "2台",
+                //     "text": "机器人1"
+                // },
+                // {
+                //     "value": [118.46, 32.02],
+                //     "Sales": "2台",
+                //     "text": "机器人1"
+                // },
+                // {
+                //     "value": [106.54, 29.59],
+                //     "Sales": "1台",
+                //     "text": "机器人1"
+                // },
+                // {
+                //     "value": [116.24, 39.55],
+                //     "Sales": "3台",
+                //     "text": "机器人1"
+                // },
+                // {
+                //     "value": [113.41, 29.59],
+                //     "Sales": "2台",
+                //     "text": "机器人1"
+                // }
+            ]
         }
     },
     props: {
+        fontSize: {
+            type: String,
+            default: "7"
+        },
         geo: {
             type: Object,
             default: () => {
@@ -76,106 +108,190 @@ export default {
         })
     },
     methods: {
+        // 根据经纬度得到当前所属城市
+        async getLocation({ longitude, latitude }, callback) {
+            window._AMapSecurityConfig = {
+                securityJsCode: "f209553e4d940456fb3eb40ecd10bbf6",
+            };
+            try {
+                // 加载高德地图 API
+                console.log(longitude, latitude);
+                const AMap = await AMapLoader.load({
+                    key: '74ee337f5bd92559399ccd7b5bb85caf', // 你的 API Key
+                    version: '2.0', // 高德地图 API 版本
+                    plugins: ['AMap.Geocoder'] // 加载 Geocoder 插件
+                });
+
+                const geocoder = new AMap.Geocoder({
+                    // 设置 Geocoder 配置
+                });
+
+                // 调用 geocode 方法
+                geocoder.getAddress([longitude, latitude], (status, result) => {
+                    if (status === 'complete' && result.regeocode) {
+                        callback(result.regeocode.addressComponent)
+                    } else {
+                        console.error('获取省份信息失败', result);
+                    }
+                });
+            } catch (error) {
+                console.error('加载高德地图 API 失败', error);
+            }
+        },
         async getUserLocation() {
             const res = await getUserLocation({ deptID: 51 })
             return res.data.data
         },
         async initECharts() {
-            let that = this
             let res = await this.getUserLocation()
             let employeeData = res.filter(item => item.longitude)
-            // const employeeData = [
-            //     {
-            //         "id": 221,
-            //         "userName": "张俊",
-            //         "nickName": "张俊",
-            //         "deptName": "电控部",
-            //         "avatar": "./pic/avatar/20240510165740.png",
-            //         "longitude": 121.44297,
-            //         "latitude": 28.67307,
-            //         "blogDate": "2024-05-13T00:00:00+08:00"
-            //     },
-            //     {
-            //         userName: '李四',
-            //         longitude: 118.426143,
-            //         latitude: 31.19967
-            //     }
-            // ]
-            let chartDom = this.$refs.echartsRef;
-            echarts.registerMap('china', require('./china.json'));
-            this.myChart = echarts.init(chartDom);
-            var option = {
-                title: {
-                    text: '',
-                    left: 'center'
-                },
-                tooltip: {
-                    trigger: 'item', // 触发类型，默认数据触发，可选为：'item'、'axis'  
-                    formatter: function (params) {
-                        // params 是一个包含当前数据点信息的数组  
-                        // 通常包含 seriesName（系列名称）、data（数据值）、dataIndex（数据索引）等信息  
-
-                        // 自定义提示框的内容  
-                        var htmlContent = '<div class="custom-tooltip">';
-                        htmlContent += '<div class="round">姓名: ' + params.name + '</div>';
-                        htmlContent += '<div class="round">日期: ' + params.value[2] + '</div>';
-                        htmlContent += '<div class="round">地址: ' + params.value[3] + '</div>';
-                        // 如果你的数据项还有其他属性，也可以在这里展示  
-                        // 例如：htmlContent += '<p>其他信息: ' + params[0].data.otherInfo + '</p>';  
-
-                        // 如果你的图表有多个数据系列并且你想要展示所有系列的信息  
-                        // 你可以遍历 params 数组来构建内容  
-                        // params.forEach(function (param) {  
-                        //     htmlContent += '<p>' + param.seriesName + ': ' + param.value + '</p>';  
-                        // });  
-
-                        htmlContent += '</div>';
-
-                        // 返回自定义的 HTML 内容  
-                        return htmlContent;
-                    },
-                },
-                geo: this.geo,
-                series: [
-                    {
-                        name: '员工分布',
-                        type: 'scatter', // 图表类型为散点图  
-                        coordinateSystem: 'geo', // 使用地理坐标系  
-                        data: employeeData.map(function (item) { // 假设employeeData是一个包含经纬度和员工信息的数组  
-                            return {
-                                name: item.userName, // 员工姓名，用于tooltip显示  
-                                value: [item.longitude, item.latitude, item.blogDate, item.address], // 经纬度坐标  
-                                label: { // 散点标签  
-                                    show: true,
-                                    textStyle: { // 文本样式设置  
-                                        color: that.color, // 设置为金色  
-                                        borderColor: 'transparent', // 取消描边，设置为透明  
-                                        borderWidth: 0 // 边框宽度设置为0，进一步确保没有描边  
-                                    },
-                                    formatter: '{b}' // 显示员工姓名  
-                                },
-                            };
-                        }),
-                        symbolSize: function (val) { // 散点大小  
-                            return val[2] / 10; // 假设每个员工数据还有一个表示大小的字段，这里简化为直接返回固定值  
-                        },
-                        label: {
-                            formatter: '{b}' // 标签内容格式，这里显示员工姓名  
-                        },
-                        emphasis: { // 高亮状态  
-                            label: {
-                                show: true
+            let idx = 0;
+            let list = []
+            employeeData.forEach(item => {
+                this.getLocation(item, (res) => {
+                    const result = res;
+                    idx++
+                    list.push({ ...result, ...item })
+                    if (idx == employeeData.length) {
+                        let grouped = list.reduce((acc, current) => {
+                            let province = current.province;
+                            if (!acc[province]) {
+                                acc[province] = [];
                             }
-                        },
-                        itemStyle: {
-                            color: that.color // 散点颜色  
-                        },
-                        zlevel: 1 // 控制图形的前后顺序  
+                            acc[province].push(current);
+                            return acc;
+                        }, {});
+                        this.dataValue = Object.keys(grouped).map(province => ({
+                            province: province,
+                            result: grouped[province],
+                            value: [grouped[province][0].longitude, grouped[province][0].latitude]
+                        }));
+                        this.$emit("setTableList", this.dataValue)
+                        let chartDom = this.$refs.echartsRef;
+                        echarts.registerMap('china', require('./china.json'));
+                        this.myChart = echarts.init(chartDom);
+                        var option = {
+                            //设置一个标题
+                            title: {
+                                text: '',
+                                x: 'center',
+                                textStyle: {
+                                    color: '#fff',
+                                    fontSize: "40"
+                                }
+                            },
+
+                            //鼠标划过省份下弹框
+                            tooltip: {
+                                show: true,
+                            },
+                            geo: {
+                                map: "china",
+                                show: true,
+                                roam: true,
+                                zoom: 1.3,//地图缩放比例
+                                center: [105, 30],//地图位置
+                                itemStyle: {
+                                    // 地图区域的颜色
+                                    areaColor: "#71d5a1", // 绿色
+                                    // 图形的描边颜色
+                                    borderColor: "#2979ff", // 蓝色
+                                },
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        fontSize: this.fontSize,
+                                        color: "rgb(255,255,153)"
+                                    }
+                                },
+                                emphasis: {
+                                    // 设置区域样式
+                                    itemStyle: {
+                                        areaColor: "#ffff99", // 黄色
+                                        borderColor: "#f29100", // 描边颜色黄色
+                                    },
+                                    // 设置字体
+                                    label: {
+                                        fontSize: 16, // 16px
+                                        color: "#f29100", // 黄色
+                                    },
+                                },
+
+                            },
+
+                            series: [
+                                //我们的散点
+                                {
+                                    type: "map",
+                                    map: "china",
+                                    geoIndex: 0,
+                                    roam: true,
+                                },
+                                {
+                                    name: '点',
+                                    type: 'scatter',
+                                    coordinateSystem: 'geo',
+                                    zlevel: 6,
+                                    itemStyle: {
+                                        color: "red",
+                                        shadowColor: "red"
+                                    }
+                                },
+                                //涟漪特效
+                                {
+
+                                    name: "产品销量",
+                                    type: "effectScatter",
+                                    coordinateSystem: "geo",
+                                    data: this.dataValue,//传入的地图点数据
+                                    symbolSize: 12,//涟漪大小
+                                    showEffectOn: "render",
+                                    //涟漪效应
+                                    rippleEffect: {
+                                        brushType: "stroke",
+                                        color: "red",
+                                        period: 10,//周期
+                                        scale: 4//规模
+                                    },
+                                    hoverAnimation: true,//悬停动画
+                                    //地图点样式
+                                    label: {
+                                        formatter: "{b}",
+                                        position: "top",
+                                        show: true,
+                                        fontSize: "10",
+                                    },
+                                    itemStyle: {
+                                        color: "#f13434",
+                                        shadowBlur: 2,
+                                        shadowColor: "#333"
+                                    },
+                                    //鼠标点击散点的下弹框
+                                    tooltip: {
+                                        show: true,
+                                        triggerOn: "click",
+                                        formatter: function (data1) {
+                                            console.log(data1)
+                                            let list = data1.data.result
+                                            let str = ""
+                                            list.forEach(item => {
+                                                str += `<div class="custom-tooltip" style="margin-bottom: 12px">
+                                                        <div class="round"><b>姓名</b>: ${item.userName}<br /><b>日期</b>: ${item.blogDate}<br /><b>地址</b>: ${item.address}</div>
+                                                    </div>`
+                                            })
+                                            return str
+                                        }
+                                    },
+                                    zlevel: 1
+                                }
+                            ]
+                        }
+                        // 使用刚指定的配置项和数据显示图表。  
+                        this.myChart.setOption(option);
                     }
-                ]
-            };
-            // 使用刚指定的配置项和数据显示图表。  
-            this.myChart.setOption(option);
+                })
+
+            })
             // 基于准备好的dom，初始化echarts实例  
         },
         convertISOToDateString(isoString) {
