@@ -31,6 +31,10 @@
                 <h1>基本资料</h1>
                 <div class="form">
                     <a-form :form="form">
+                        <a-form-item :label="'真实姓名'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+                            <a-input :placeholder="'请输入真实姓名'"
+                                v-decorator="['realName', { rules: [{ required: true, message: '请输入真实姓名' }] }]"></a-input>
+                        </a-form-item>
                         <a-form-item :label="'手机号码'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                             <a-input :placeholder="'请输入手机号码'"
                                 v-decorator="['mobile', { rules: [{ required: true, message: '请输入手机号码' }] }]"></a-input>
@@ -125,6 +129,7 @@ export default {
                     'sex',
                     'address',
                     'email',
+                    'realName'
                 ]
                 this.userInfo = res.data.data
                 Object.keys(res.data.data).forEach(item => {
@@ -244,13 +249,12 @@ export default {
         handleSubmit() {
             this.form.validateFields((err, values) => {
                 if (!err) {
-                    const { deptID, nickName, id, roleID, userName } = this.userInfo
+                    const { deptID, id, roleID, userName } = this.userInfo
                     let params = {
                         ...values,
                         deptID,
                         id,
                         roleID,
-                        nickName,
                         userName,
                         resign: 1 // 是否在职
                     }

@@ -2,27 +2,43 @@
   <a-dropdown :trigger="['click']" v-model="show">
     <div slot="overlay">
       <a-spin :spinning="loading">
-        <a-tabs class="dropdown-tabs" :tabBarStyle="{ textAlign: 'center' }" :style="{ width: '297px' }">
+        <a-tabs class="dropdown-tabs" :tabBarStyle="{ textAlign: 'center' }" :style="{ width: '297px' }" v-model="activeIndex">
           <a-tab-pane tab="通知" key="1">
-            <a-list class="tab-pane">
-              <a-list-item style="cursor: pointer;" v-for="item in paneList" :key="item.id" @click="goDetail(item)">
-                <a-list-item-meta :title="item.content" :description="getDate(item.createTime)">
-                  <div class="avatar" slot="avatar">
-                    <div class="round" v-if="item.read!=2"></div>
-                    <img src="@/assets/img/laba.png" alt="">
-                  </div>
-                </a-list-item-meta>
-              </a-list-item>
-            </a-list>
+            <div class="list" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
+              :infinite-scroll-distance="100">
+              <a-list class="tab-pane">
+                <a-list-item style="cursor: pointer;" v-for="item in paneList" :key="item.id" @click="goDetail(item)">
+                  <a-list-item-meta :title="item.content" :description="getDate(item.createTime)">
+                    <div class="avatar" slot="avatar">
+                      <div class="round" v-if="item.read != 2"></div>
+                      <img src="@/assets/img/laba.png" alt="">
+                    </div>
+                  </a-list-item-meta>
+                </a-list-item>
+              </a-list>
+            </div>
           </a-tab-pane>
           <!-- <a-tab-pane tab="消息" key="2">
             <a-list class="tab-pane"></a-list>
           </a-tab-pane> -->
           <a-tab-pane tab="待办" key="3">
-            <a-list class="tab-pane"></a-list>
+            <div class="list" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
+              :infinite-scroll-distance="100">
+              <a-list class="tab-pane">
+                <a-list-item style="cursor: pointer;" v-for="item in paneList" :key="item.id" @click="goDetail(item)">
+                  <a-list-item-meta :title="item.content" :description="getDate(item.createTime)">
+                    <div class="avatar" slot="avatar">
+                      <div class="round" v-if="item.read != 2"></div>
+                      <img src="@/assets/img/laba.png" alt="">
+                    </div>
+                  </a-list-item-meta>
+                </a-list-item>
+              </a-list>
+            </div>
           </a-tab-pane>
         </a-tabs>
       </a-spin>
+
     </div>
     <span @click="fetchNotice" class="header-notice">
       <a-badge class="notice-badge" :count="total">
@@ -31,28 +47,34 @@
     </span>
   </a-dropdown>
 </template>
-getMessageList
 <script>
 import { getMessageList, updateMessageInfo } from "@/services/backend.js"
+import infiniteScroll from 'vue-infinite-scroll';
+
 export default {
   name: 'HeaderNotice',
+  directives: { infiniteScroll },
   data() {
     return {
       loading: false,
       show: false,
       messageList: [],
-      total:0 
+      activeIndex: '1',
+      total: 0
     }
   },
   computed: {
     paneList() {
-      return this.messageList.filter(item => item.type == 1)
+      return this.messageList.filter(item => item.type == this.activeIndex)
     }
   },
   created() {
     this.getMessageList()
   },
   methods: {
+    handleInfiniteOnLoad() {
+      console.log('ss');
+    },
     async goDetail(data) {
       let params = {
         id: data.id,
@@ -62,17 +84,19 @@ export default {
       this.$router.push({
         path: data.url
       })
+      this.getMessageList()
       this.show = false
     },
     async getMessageList() {
       this.loading = true
+      let user = JSON.parse(localStorage.getItem("admin.user"))
       let params = {
-        "userID": 171,
-        "pageSize": 10,
+        "userID": user.id,
+        "pageSize": 9999,
         "pageIndex": 1
       }
       let res = await getMessageList(params)
-      this.messageList = [...this.messageList, ...res.data.data.records]
+      this.messageList = [...res.data.data.records]
       this.total = res.data.data.totalCount
       this.loading = false
     },
@@ -92,7 +116,7 @@ export default {
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
     fetchNotice() {
-     
+
     }
   }
 }
@@ -116,14 +140,17 @@ export default {
     }
   }
 }
+
 .avatar {
   width: 30px;
   position: relative;
   height: 30px;
   border-radius: 50%;
+
   img {
     width: 100%;
   }
+
   .round {
     position: absolute;
     width: 10px;
@@ -134,6 +161,7 @@ export default {
     top: 0;
   }
 }
+
 .dropdown-tabs {
   background-color: @base-bg-color;
   box-shadow: 0 2px 8px @shadow-color;
@@ -141,7 +169,12 @@ export default {
 
   .tab-pane {
     padding: 0 24px 12px;
-    min-height: 250px;
+
+  }
+
+  .list {
+    height: 250px;
+    overflow-y: auto
   }
 }
 </style>

@@ -277,6 +277,8 @@ export default {
         if (this.$route.query.year) {
             this.setDatesFromUrl()
         }
+        this.pagination.current = 1
+        this.dataSource = []
         await this.getData()
         if (this.$route.meta) {
             this.permission = this.$route.meta.permission
@@ -421,7 +423,6 @@ export default {
                 },
                 body: JSON.stringify(params)
             };
-
             return await fetch(BASE_URL + '/project/export_project_list', options)
 
         },
@@ -433,9 +434,7 @@ export default {
         },
         handleReset() {
             this.pagination.current = 1
-            this.form = {
-
-            }
+            this.form = { }
             this.dataSource = []
             this.getData()
         },
@@ -457,7 +456,6 @@ export default {
         async getData() {
             const { pageSize, current } = this.pagination
             const { dateData, ...data } = this.form
-            console.log(dateData, 'ss)', this.form);
             let endDate = ""
             let startDate = ""
             if (dateData) {
