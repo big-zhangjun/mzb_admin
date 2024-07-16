@@ -51,7 +51,7 @@
         </a-card>
         <div class="scrollList" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
             :infinite-scroll-distance="100">
-            <a-empty v-if="!dataSource.length" />
+            <a-empty v-if="!dataSource.length" style="margin: 0 auto;"/>
             <a-card class="card" v-for="item in dataSource" :key="item.id">
                 <div class="header">
                     <h1>{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>

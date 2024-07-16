@@ -7,7 +7,8 @@
                         <a-row>
                             <a-col :md="6" :sm="24">
                                 <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
+                                    <a-select :placeholder="'请选择产品名称'" v-model="form.productName"
+                                        @change="handleSearch">
                                         <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
                                             }}</a-select-option>
                                     </a-select>
@@ -15,12 +16,13 @@
                             </a-col>
                             <a-col :md="6" :sm="24">
                                 <a-form-item label="产品编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-input v-model="form.productNumber" placeholder="请输入" />
+                                    <a-input @pressEnter="handleSearch" v-model="form.productNumber"
+                                        placeholder="请输入" />
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
                                 <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-input v-model="form.customerName" placeholder="请输入" />
+                                    <a-input @pressEnter="handleSearch" v-model="form.customerName" placeholder="请输入" />
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
@@ -51,8 +53,8 @@
             <a-space class="operator">
                 <a-button @click="addNew" type="primary" v-if="permission.includes(1)">新建</a-button>
                 <a-button @click="exportFile" type="danger" v-if="permission.includes(5)">导出</a-button>
-                <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange" v-if="permission.includes(6)"
-                    :showUploadList="false" :customRequest="customRequest">
+                <a-upload name="file" :multiple="true" action="#" :headers="headers" @change="handleChange"
+                    v-if="permission.includes(6)" :showUploadList="false" :customRequest="customRequest">
                     <a-button> <a-icon type="upload" /> 导入 </a-button>
                 </a-upload>
             </a-space>
@@ -66,14 +68,15 @@
                 <div class="box">
                     <div class="left">
                         <div class="title">
-                            <h1>{{ item.customerName }}</h1>
+                            <h1 :title="item.id">{{ item.customerName }}</h1>
                             <a-tag :color="getColor(item.level)" style="border-radius: 22px;">
                                 P{{ item.level }}
                             </a-tag>
+                            <div class="tags">
+                                <div class="item">{{ item.productName }}</div>
+                            </div>
                         </div>
-                        <div class="tags">
-                            <div class="item">{{ item.productName }}</div>
-                        </div>
+
                         <div class="content">
                             <div class="item">
                                 <div class="label">项目编号：</div>
@@ -137,13 +140,16 @@
                     </div>
                     <div class="btn">
                         <div class="edit" @click="edit(item)" v-if="permission.includes(3)">查看详情</div>
-                        <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消" @confirm="delProjectInfo(item, idx)"
-                            v-if="permission.includes(2)">
+                        <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消"
+                            @confirm="delProjectInfo(item, idx)" v-if="permission.includes(2)">
                             <div class="del">删除</div>
                         </a-popconfirm>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="no-data" v-if="!dataSource.length">
+            <a-empty />
         </div>
     </div>
 </template>
@@ -434,7 +440,7 @@ export default {
         },
         handleReset() {
             this.pagination.current = 1
-            this.form = { }
+            this.form = {}
             this.dataSource = []
             this.getData()
         },
@@ -443,6 +449,8 @@ export default {
                 this.$refs.ProjectForm.handleSubmit(() => {
                     this.$message.success('保存成功', 3)
                     this.visible = false
+                    this.pagination.current = 1
+                    this.dataSource = []
                     this.getData()
                 })
             })
@@ -505,9 +513,11 @@ export default {
 .list {
     margin-top: 24px;
     border-radius: 8px;
-    max-height: 600px; /* or any other appropriate height */
+    max-height: calc(100vh - 320px);
+    /* or any other appropriate height */
     overflow-y: auto;
     overflow-x: hidden;
+
     .del {
         color: rgb(80, 122, 253);
         cursor: pointer;

@@ -12,12 +12,37 @@
                                 </a-select>
                             </a-form-item>
                         </a-col>
+
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="部门" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
+                                <!-- <a-input v-model="form.deptName" placeholder="请输入" /> -->
+                                <a-select placeholder="请选择" v-model="form.deptID" @change="handleDeptChange">
+                                    <a-select-option :value="item.id" v-for="item in deptList" :key="item.id">{{
+                                        item.deptName }}</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="员工" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
+                                <!-- <a-input v-model="form.deptName" placeholder="请输入" /> -->
+                                <a-select @change="handleSearch" :disabled="disabled" placeholder="请选择"
+                                    v-model="form.userID">
+                                    <a-select-option :value="item.id" v-for="item in userList" :key="item.id">{{
+                                        item.userName }}</a-select-option>
+                                </a-select>
+                            </a-form-item>
+                        </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="操作类型" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                 <a-select placeholder="请选择" v-model="form.operateID" allowClear @clear="handleSearch">
                                     <a-select-option :value="item.id" v-for="item in operaList" :key="item.id">{{
                                         item.cn }}</a-select-option>
                                 </a-select>
+                            </a-form-item>
+                        </a-col>
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="详细信息" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-input @pressEnter="handleSearch" v-model="form.detail" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="6" :sm="24">
@@ -37,19 +62,15 @@
             </a-form>
         </div>
         <div>
-            <!-- <a-space class="operator">
-                <a-button @click="addNew" type="primary">新建</a-button>
-            </a-space> -->
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
                 </div>
+                <template slot="userName" slot-scope="{text, record}">
+                    <div :title="record.userID">{{ text }}</div>
+                </template>
                 <div slot="action" slot-scope="{text, record}">
-                    <!-- <a style="margin-right: 8px" @click="edit(record)">
-                        <a-icon type="edit" />编辑
-                    </a> -->
-
                     <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delLogInfo(record)"
                         v-if="permission.includes(2)">
                         <a>
@@ -73,6 +94,8 @@ import StandardTable from '@/components/table/StandardTable'
 import PostForm from '@/pages/user/components/postForm'
 import moment from 'moment';
 import { mapGetters } from 'vuex'
+import { getDeptListS, getUserList } from '@/services/user'
+
 import { getClientList, getLogList, getOperaList, delLogInfo } from '@/services/backend'
 function formatDate(isoString) {
     const date = new Date(isoString);
@@ -98,6 +121,8 @@ export default {
             modalTitle: "新增职位",
             advanced: true,
             visible: false,
+            userList: [],
+            deptList: [],
             columns: [
                 {
                     title: '序号',
@@ -108,6 +133,8 @@ export default {
                     title: '用户名',
                     dataIndex: 'userName',
                     width: 60,
+                    scopedSlots: { customRender: 'userName' }
+
                 },
                 {
                     title: '客户端名称',
@@ -163,6 +190,7 @@ export default {
     mounted() {
         this.init()
         this.getData()
+        this.getUserInfo()
         this.permission = this.$route.meta.permission
     },
     computed: {
@@ -177,6 +205,15 @@ export default {
         this.getData()
     },
     methods: {
+        async getUserInfo() {
+            let deptRes = await getDeptListS({})
+            this.deptList = deptRes.data.data
+        },
+        async handleDeptChange() {
+            let userRes = await getUserList({ deptID: this.form.deptID, pageSize: 1000, pageIndex: 1 })
+            this.form.userID = undefined
+            this.userList = userRes.data.data.records
+        },
         toggleAdvanced() {
             this.advanced = !this.advanced
         },
@@ -212,7 +249,6 @@ export default {
         async getData() {
             const { pageSize, current } = this.pagination
             const { dateData, ...data } = this.form
-            console.log(dateData, 'ss)', this.form);
             let endDate = ""
             let startDate = ""
             if (dateData) {

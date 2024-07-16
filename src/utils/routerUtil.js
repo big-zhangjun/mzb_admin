@@ -143,6 +143,7 @@ async function getAuthorityListFun(list) {
   let user = localStorage.getItem("admin.user")
   let roleID = JSON.parse(user).roleID
   let res = await getAuthorityList({ roleID })
+  console.log(res,'res');
   let result = []
   list.forEach(element => {
     res.data.data.forEach(item => {
@@ -151,6 +152,7 @@ async function getAuthorityListFun(list) {
       }
     })
   });
+  console.log(result);
   let tree1 = buildTreeData(result).filter(item => item.parentID == 0)
   const { router, store } = appOptions
   const rootRoute = router.options.routes.find(item => item.path === '/')
@@ -194,7 +196,6 @@ function getRouter(p, b, operateList) {
 }
 function getChildrenRoute(itemP, operateList, route) {
   return itemP.children.map(childP => {
-    console.log(childP);
     let list = operateList.filter(item => item.moduleID == childP.id).map(item => item.operateID)
     let res = route.children.find(childB => childB.meta.id === childP.id);
     if (res) {

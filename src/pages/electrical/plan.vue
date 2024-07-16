@@ -1,26 +1,69 @@
 <template>
-    <div class="plan">
+    <div class="plan" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
+        :infinite-scroll-distance="100">
         <a-card>
             <div :class="advanced ? 'search' : null">
                 <a-form layout="horizontal">
                     <div :class="advanced ? null : 'fold'">
                         <a-row>
-                            <a-col :md="8" :sm="24">
+                            <a-col :md="6" :sm="24">
                                 <a-form-item label="产品名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-select :placeholder="'请选择产品名称'" v-model="form.productName">
+                                    <a-select @change="handleSearch" :placeholder="'请选择产品名称'"
+                                        v-model="form.productName">
                                         <a-select-option :value="item" v-for="item in productName" :key="item">{{ item
                                             }}</a-select-option>
                                     </a-select>
                                 </a-form-item>
                             </a-col>
-                            <a-col :md="8" :sm="24">
+                            <a-col :md="6" :sm="24">
                                 <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-input v-model="form.customerName" placeholder="请输入" />
+                                    <a-input @pressEnter="handleSearch" v-model="form.customerName" placeholder="请输入" />
                                 </a-form-item>
                             </a-col>
-                            <a-col :md="8" :sm="24">
+                            <a-col :md="6" :sm="24">
                                 <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-range-picker v-model="form.dateData" style="width: 100%;" />
+                                    <a-range-picker @change="handleSearch" v-model="form.dateData"
+                                        style="width: 100%;" />
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="发货清单：" :labelCol="{ span: 5 }"
+                                    :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select @change="handleSearch" :placeholder="'请选择发货清单'"
+                                        v-model="form.deliveryList">
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                            }}</a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="电气清单：" :labelCol="{ span: 5 }"
+                                    :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select @change="handleSearch" :placeholder="'请选择电气清单'"
+                                        v-model="form.electricalList">
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                            }}</a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="电气图：" :labelCol="{ span: 5 }"
+                                    :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select @change="handleSearch" :placeholder="'请选择电气图'"
+                                        v-model="form.electricalDiagram">
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                            }}</a-select-option>
+                                    </a-select>
+                                </a-form-item>
+                            </a-col>
+                            <a-col :md="6" :sm="24">
+                                <a-form-item label="是否验收：" :labelCol="{ span: 5 }"
+                                    :wrapperCol="{ span: 18, offset: 1 }">
+                                    <a-select @change="handleSearch" :placeholder="'请选择是否验收：'"
+                                        v-model="form.acceptance">
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.name
+                                            }}</a-select-option>
+                                    </a-select>
                                 </a-form-item>
                             </a-col>
                         </a-row>
@@ -45,16 +88,15 @@
             <a-modal v-model="showProcess" title="电气流程" @ok="showType = false" :width="1200">
                 <processCom :id="projectID" ref="process"></processCom>
             </a-modal>
-            <a-modal v-model="showFile" title="清单文件" @ok="showFile = false" :width="700" >
+            <a-modal v-model="showFile" title="清单文件" @ok="showFile = false" :width="700">
                 <fileModel :permission="permission" :projectID="projectID" ref="fileModel"></fileModel>
             </a-modal>
         </a-card>
-        <div class="scrollList" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="false"
-            :infinite-scroll-distance="100">
-            <a-empty v-if="!dataSource.length" />
+        <div class="scrollList">
+            <a-empty v-if="!dataSource.length" style="margin: 0 auto;" />
             <a-card class="card" v-for="item in dataSource" :key="item.id">
                 <div class="header">
-                    <h1>{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
+                    <h1 :title="item.id">{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
                     <a style="margin-left: auto;margin-right: 20px" @click="handleDetail(item)">电气分析</a>
                     <a style="margin-right: 20px;" @click="handleFlowDetail(item)">电气流程</a>
                     <a style="margin-right: 20px;" @click="handleFileOpen(item)">清单文件</a>
@@ -134,6 +176,36 @@
                         </div>
                     </div>
                 </div>
+                <div class="content noborder">
+                    <div class="flex_2">
+                        <h2>文件状态</h2>
+                        <div class="flex">
+                            <div class="item repName">
+                                <div class="label">发货清单：</div>
+                                <div class="value" :class="{ hasFile: item.deliveryList }">{{
+                                    getHasFile(item.deliveryList) }}</div>
+                                <span  @click="handleLookFile(item, '1')">查看</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">电气清单：</div>
+                                <div class="value" :class="{ hasFile: item.electricalList }">{{
+                                    getHasFile(item.electricalList) }}</div>
+                                <span  @click="handleLookFile(item, '2')">查看</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">电气图：</div>
+                                <div class="value" :class="{ hasFile: item.electricalDiagram }">{{
+                                    getHasFile(item.electricalDiagram) }}</div>
+                                <span  @click="handleLookFile(item, '3')">查看</span>
+                            </div>
+                            <div class="item">
+                                <div class="label">是否验收：</div>
+                                <div class="value">{{ getAcceptance(item.acceptance) }}</div>
+                                <span v-if="permission.includes(3)" @click="handleEdit(item, 'acceptance')">修改</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </a-card>
         </div>
     </div>
@@ -184,6 +256,23 @@ export default {
                 "系统改造",
                 "冷却系统",
                 "烘箱",
+            ],
+            fileList: [
+                {
+                    label: "全部",
+                    name: "全部",
+                    id: 0
+                },
+                {
+                    label: "有",
+                    name: "是",
+                    id: 1
+                },
+                {
+                    label: "无",
+                    name: "否",
+                    id: 2
+                },
             ],
             statusList: [
                 {
@@ -341,6 +430,25 @@ export default {
         this.getData()
     },
     methods: {
+        handleLookFile(data, idx) {
+            this.projectID = data.id
+            this.showFile = true
+            this.$nextTick(() => {
+                this.$refs.fileModel.active = idx
+                this.$refs.fileModel.getProjectFile()
+            })
+        },
+        getHasFile(v) {
+
+            return v ? '有' : '无'
+        },
+        getAcceptance(v) {
+            if (v == 1) {
+                return '是'
+            } else if (v == 2) {
+                return '否'
+            } else return '--'
+        },
         handleInfiniteOnLoad() {
             this.pagination.pageIndex++
             this.getData()
@@ -360,14 +468,14 @@ export default {
         handleFlowDetail(data) {
             this.projectID = data.id
             this.showProcess = true
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
                 this.$refs.process.init()
             })
         },
         handleFileOpen(data) {
             this.projectID = data.id
             this.showFile = true
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
                 this.$refs.fileModel.getProjectFile()
             })
         },
@@ -605,6 +713,8 @@ td {
 }
 
 .plan {
+    height: calc(100vh - 130px);
+    overflow-y: scroll;
 
     .ant-descriptions-item-content {
         min-width: 150px;
@@ -689,6 +799,10 @@ td {
                         cursor: pointer;
                         margin-left: 12px;
                         display: none;
+                    }
+
+                    .hasFile {
+                        color: red;
                     }
 
                     &:hover {

@@ -6,7 +6,7 @@
                     <a-row>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="部门名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.deptName" placeholder="请输入" />
+                                <a-input @pressEnter="handleSearch" v-model="form.deptName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
@@ -180,7 +180,7 @@ export default {
         // 获取列表
         getData() {
             const { pageSize, current } = this.pagination
-            getDeptList({ pageSize, pageIndex: current }).then(res => {
+            getDeptList({ pageSize, pageIndex: current,...this.form }).then(res => {
                 this.dataSource = res.data.data.records
                 // this.pagination.totalCount = totalCount
             })

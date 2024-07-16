@@ -498,14 +498,14 @@ export default {
                     placeholder: "请选择牵引车"
                 },
                 {
-                    label: "泄压阀",
+                    label: "减压阀",
                     key: "pressureReliefValve",
                     hide: ['储气罐'],
                     type: "select",
                     options: [
 
                     ],
-                    placeholder: "请选择泄压阀"
+                    placeholder: "请选择减压阀"
                 },
                 {
                     label: "进气阀组",

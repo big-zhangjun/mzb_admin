@@ -3,8 +3,10 @@ import {
     GET_BLOG_CONTENT_LIST,
     ADD_BLOG_CONTENT_LIST,
     UPDATE_BLOG_CONTENT_LIST,
+    ADD_MATERIAL_SHOT_INFO,
     DEL_BLOG_CONTENT_LIST,
     GET_FLOW_LIST,
+    GET_SHOTAGE_LIST,
     ADD_FLOW_LIST,
     GET_FLOW_INFO,
     DEL_FLOW_INFO,
@@ -23,6 +25,14 @@ import {
     ADDASREP,
     DELASREP,
     UPDATEASINFO,
+    GET_BLOG_LIST2,
+    UPDDATE_EP_INFO,
+    GET_MATERIAL_LIST,
+    GET_MATERIAL_GROUP_LIST,
+    GET_MATERIAL_SHOT_LIST,
+    DEL_SHOTAGE_INFO,
+    DEL_MATERIAL_SHOT_INFO,
+    GET_SHOTAGE_INFO
 
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
@@ -141,3 +151,41 @@ export async function updateAsInfo(params) {
     return request(UPDATEASINFO, METHOD.POST, params)
 }
 
+// 修改售后信息
+export async function getBlogList2(params) {
+    return request(GET_BLOG_LIST2, METHOD.POST, params)
+}
+
+export async function updateEpInfo(params) {
+    return request(UPDDATE_EP_INFO, METHOD.POST, params)
+}
+
+// 查询物料组列表
+export async function getMaterialGroupList(params) {
+    return request(GET_MATERIAL_GROUP_LIST, METHOD.POST, params)
+}
+
+// 查询物料组列表
+export async function getShotageList(params) {
+    return request(GET_SHOTAGE_LIST, METHOD.POST, params)
+}
+
+export async function getShotageInfo(params) {
+    return request(GET_SHOTAGE_INFO, METHOD.POST, params)
+}
+
+export async function delShotageInfo(params) {
+    return request(DEL_SHOTAGE_INFO, METHOD.POST, params)
+}
+export async function getMaterialList(params) {
+    return request(GET_MATERIAL_LIST, METHOD.POST, params)
+}
+export async function getMaterialShotList(params) {
+    return request(GET_MATERIAL_SHOT_LIST, METHOD.POST, params)
+}
+export async function addMaterialShotInfo(params) {
+    return request(ADD_MATERIAL_SHOT_INFO, METHOD.POST, params)
+}
+export async function delMaterialShotInfo(params) {
+    return request(DEL_MATERIAL_SHOT_INFO, METHOD.POST, params)
+}

@@ -105,37 +105,13 @@ const options = {
           children: [
             {
               path: 'plan',
-              name: '电气计划',
+              name: '电气项目',
               meta: {
                 permission: [],
                 id: 77,
                 parentID: 17,
               },
-              component: BlankView,
-              children: [
-                {
-                  path: 'completed',
-                  name: '待完成',
-                  meta: {
-                    permission: [],
-                    icon: 'dashboard',
-                    id: 85,
-                    parentID: 77,
-                  },
-                  component: () => import('@/pages/electrical/plan.vue'),
-                },
-                {
-                  path: 'done',
-                  name: '已完成',
-                  meta: {
-                    permission: [],
-                    icon: 'dashboard',
-                    id: 84,
-                    parentID: 77,
-                  },
-                  component: () => import('@/pages/electrical/done.vue'),
-                },
-              ]
+              component: () => import('@/pages/electrical/plan.vue'),
             },
             {
               path: 'process',
@@ -166,6 +142,16 @@ const options = {
                 parentID: 17,
               },
               component: () => import('@/pages/electrical/workContent.vue'),
+            },
+            {
+              path: 'material',
+              name: '缺料报备',
+              meta: {
+                permission: [],
+                id: 100,
+                parentID: 17,
+              },
+              component: () => import('@/pages/electrical/material.vue'),
             }
           ]
         },
@@ -272,8 +258,17 @@ const options = {
                 parentID: 22,
               },
               component: () => import('@/pages/backend/announcement'),
+            },
+            {
+              path: 'userconfig',
+              name: '用户配置',
+              meta: {
+                permission: [],
+                id: 99,
+                parentID: 22,
+              },
+              component: () => import('@/pages/backend/userConfig'),
             }
-
           ]
         },
         {

@@ -16,7 +16,7 @@
                         <a-col :md="6" :sm="24">
                             <a-form-item label="员工" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
                                 <!-- <a-input v-model="form.deptName" placeholder="请输入" /> -->
-                                <a-select :disabled="disabled" placeholder="请选择" v-model="form.userID">
+                                <a-select @change="handleSearch" :disabled="disabled" placeholder="请选择" v-model="form.userID">
                                     <a-select-option :value="item.id" v-for="item in userList" :key="item.id">{{
                                         item.userName }}</a-select-option>
                                 </a-select>
@@ -24,17 +24,26 @@
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="客户名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.customerName" placeholder="请输入" />
+                                <a-input  @pressEnter="handleSearch" v-model="form.customerName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.content" placeholder="请输入" />
+                                <a-input  @pressEnter="handleSearch" v-model="form.content" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="时间范围" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-range-picker v-model="form.dateData" style="width: 100%;" />
+                                <a-range-picker @change="handleSearch" v-model="form.dateData" style="width: 100%;" />
+                            </a-form-item>
+                        </a-col>
+                        <a-col :md="6" :sm="24">
+                            <a-form-item label="在职离职" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-select @change="handleSearch" placeholder="请选择" v-model="form.resign">
+                                    <a-select-option :value="2">在职</a-select-option>
+                                    <a-select-option :value="1">离职</a-select-option>
+                                    <a-select-option :value="0">全部</a-select-option>
+                                </a-select>
                             </a-form-item>
                         </a-col>
                         <a-col :md="6" :sm="24">
@@ -56,6 +65,18 @@
             </a-space>
             <standard-table :columns="columns" :dataSource="dataSource"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
+                <div slot="userName"  slot-scope="{text, record}">
+                    <span :title="record.userID">{{ text }}</span>
+                </div>
+                <div slot="blogDate"  slot-scope="{text, record}">
+                    <span :title="record.createTime">{{ text }}</span>
+                </div>
+                <div slot="customerName"  slot-scope="{text, record}">
+                    <span>[{{ record.productNumber }}]</span>
+                    <b > {{ text }} </b>
+                    <span>({{ record.model }})</span>
+
+                </div>
                 <div slot="description" slot-scope="{text}">
                     {{ text }}
                 </div>
@@ -63,7 +84,6 @@
                     <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
                         <a-icon type="edit" />编辑
                     </a>
-
                     <a-popconfirm title="确定删除该日志?" ok-text="确定" cancel-text="取消" @confirm="delBlogInfo(record)"
                         v-if="permission.includes(2)">
                         <a>
@@ -105,17 +125,20 @@ export default {
                 {
                     title: '姓名',
                     dataIndex: 'userName',
+                    scopedSlots: { customRender: 'userName' },
                     width: 50,
                 },
                 {
                     title: '客户名称',
                     dataIndex: 'customerName',
-                    width: 100,
+                    scopedSlots: { customRender: 'customerName' },
+                    width: 150,
                 },
                 {
                     title: '日期',
                     dataIndex: 'blogDate',
-                    width: 100,
+                    scopedSlots: { customRender: 'blogDate' },
+                    width: 50,
                 },
                 {
                     title: '内容',
@@ -125,7 +148,7 @@ export default {
                 {
                     title: '地址',
                     dataIndex: 'address',
-                    width: 100,
+                    width: 140,
                 },
                 {
                     title: '备注',
@@ -134,7 +157,7 @@ export default {
                 },
                 {
                     title: '操作',
-                    width: 100,
+                    width: 60,
                     scopedSlots: { customRender: 'action' }
                 },
 
@@ -148,7 +171,8 @@ export default {
             },
             form: {
                 userID: undefined,
-                deptID: undefined
+                deptID: undefined,
+                resign: 2
             },
             disabled: false,
             clientList: [],

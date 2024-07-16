@@ -6,12 +6,12 @@
                     <a-row>
                         <a-col :md="8" :sm="24">
                             <a-form-item label="内容" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.content" style="width: 100%" placeholder="请输入" />
+                                <a-input  @pressEnter="handleSearch" v-model="form.content" style="width: 100%" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">
                             <a-form-item label="类别" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.contentType">
+                                <a-select @change="handleSearch" placeholder="请选择" v-model="form.contentType">
                                     <a-select-option :value="item.type" v-for="item in typeList" :key="item.type">{{
                                         item.label }}</a-select-option>
                                 </a-select>

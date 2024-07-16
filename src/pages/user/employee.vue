@@ -6,12 +6,12 @@
                     <a-row>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="用户名" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-input v-model="form.userName" style="width: 100%" placeholder="请输入" />
+                                <a-input  @pressEnter="handleSearch" v-model="form.userName" style="width: 100%" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="部门名称" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.deptID">
+                                <a-select @change="handleSearch" placeholder="请选择" v-model="form.deptID">
                                     <a-select-option :value="item.id" v-for="item in deptList" :key="item.id">{{
             item.deptName }}</a-select-option>
                                 </a-select>
@@ -19,7 +19,7 @@
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="职位名称" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.roleID">
+                                <a-select @change="handleSearch" placeholder="请选择" v-model="form.roleID">
                                     <a-select-option :value="item.id" v-for="item in roleList" :key="item.id">{{
             item.roleName }}</a-select-option>
                                 </a-select>
@@ -27,9 +27,10 @@
                         </a-col>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="在职离职" :labelCol="{ span: 4 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                <a-select placeholder="请选择" v-model="form.resign">
-                                    <a-select-option :value="1">在职</a-select-option>
-                                    <a-select-option :value="2">离职</a-select-option>
+                                <a-select @change="handleSearch" placeholder="请选择" v-model="form.resign">
+                                    <a-select-option :value="2">在职</a-select-option>
+                                    <a-select-option :value="1">离职</a-select-option>
+                                    <a-select-option :value="0">全部</a-select-option>
                                 </a-select>
                             </a-form-item>
                         </a-col>
@@ -188,7 +189,10 @@ export default {
                 {
                     title: '在职离职',
                     width: 150,
-                    customRender: (text) => text == 1 ? '在职' : '离职',
+                    customRender: (type) => {
+                        let list = ['全部', '离职', '在职']
+                        return  list[type]
+                    },
                     dataIndex: "resign"
                 },
                 {

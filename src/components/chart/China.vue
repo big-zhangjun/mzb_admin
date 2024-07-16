@@ -115,7 +115,6 @@ export default {
             };
             try {
                 // 加载高德地图 API
-                console.log(longitude, latitude);
                 const AMap = await AMapLoader.load({
                     key: '74ee337f5bd92559399ccd7b5bb85caf', // 你的 API Key
                     version: '2.0', // 高德地图 API 版本
@@ -161,11 +160,28 @@ export default {
                             acc[province].push(current);
                             return acc;
                         }, {});
-                        this.dataValue = Object.keys(grouped).map(province => ({
-                            province: province,
-                            result: grouped[province],
-                            value: [grouped[province][0].longitude, grouped[province][0].latitude]
-                        }));
+                        this.dataValue = Object.keys(grouped).map(province => {
+                            let groupedByCity = grouped[province].reduce((acc, curr) => {
+                                if (!acc[curr.city]) {
+                                    acc[curr.city] = [];
+                                }
+                                acc[curr.city].push(curr);
+                                return acc;
+                            }, {});
+                            let groupedByCityArray = Object.keys(groupedByCity).map(city => {
+                                return {
+                                    city,
+                                    data: groupedByCity[city]
+                                };
+                            });
+
+                            return {
+                                province: province,
+                                result: groupedByCityArray,
+                                value: [grouped[province][0].longitude, grouped[province][0].latitude]
+                            }
+                        });
+                        console.log(this.dataValue, 'grouped');
                         this.$emit("setTableList", this.dataValue)
                         let chartDom = this.$refs.echartsRef;
                         echarts.registerMap('china', require('./china.json'));

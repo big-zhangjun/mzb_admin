@@ -5,7 +5,7 @@
                 <div class="choose">
                     <div class="item">
                         <div class="label">客户名称：</div>
-                        <a-input placeholder="请输入客户名称" v-model="customerName"></a-input>
+                        <a-input  @pressEnter="handleSearch" placeholder="请输入客户名称" v-model="customerName"></a-input>
                     </div>
                     <div class="item">
                         <div class="label">切换图表：</div>
@@ -27,14 +27,6 @@
         <div class="content">
             <div class="left" v-infinite-scroll="handleInfiniteOnLoad" :infinite-scroll-disabled="busy"
                 :infinite-scroll-distance="10">
-                <!-- <a-list item-layout="horizontal" :data-source="dataSource">
-                    <a-list-item slot="renderItem" slot-scope="item, index">
-                        <a-list-item-meta
-                            :description="item.customerName">
-                            <a slot="title" @click="handleClick(item, index)" :class="{active: index == active}">{{ item.customerName }}</a>
-                        </a-list-item-meta>
-                    </a-list-item>
-                </a-list> -->
                 <ul class="content-list">
                     <li v-for="(item,index) in dataSource" :key="item.id"  @click="handleClick(item, index)" >
                         <h1 :class="{active: index == active}">{{ item.customerName }}</h1>

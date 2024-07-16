@@ -85,7 +85,8 @@ export default {
             expandedKeys: [],
             detail: null,
             parentID: 0,
-            type: ""
+            type: "",
+            nodeChildren: []
         }
     },
     // authorize: {
@@ -230,7 +231,8 @@ export default {
                 if (!err) {
                     let params = {
                         ...values,
-                        parentID: this.parentID
+                        parentID: this.parentID,
+                        moduleNo: this.nodeChildren.length + 1
                     }
                     addModuleInfo(params).then(res => {
                         if (res.data.status.retCode == 0) {
@@ -270,8 +272,15 @@ export default {
 
             return this.setOpera(treeData);
         },
-        select(v) {
+        select(v, node) {
             this.parentID = v[0]
+            let { selectedNodes } = node
+            if (selectedNodes.length) {
+                let VNode = selectedNodes[0].data.props.dataRef
+                this.nodeChildren = VNode.children
+            } else {
+                this.nodeChildren = []
+            }
         },
         setOpera(treeData) {
             treeData.forEach(item => {
@@ -294,7 +303,6 @@ export default {
             const expandedKeys = this.flatModuleList
                 .map(item => {
                     if (item.moduleName.indexOf(value) > -1) {
-                        console.log(getParentKey(item.key, this.moduleList));
                         return getParentKey(item.key, this.moduleList);
                     }
                     return null;

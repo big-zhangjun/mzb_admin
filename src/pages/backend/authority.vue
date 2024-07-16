@@ -4,8 +4,8 @@
             <div class="header">
                 <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange"
                     :expanded-keys="expandedKeys" />
-                <a-tree show-icon :checkStrictly='false' :tree-data="moduleList" :selectable="false" :replaceFields="replaceFields"
-                    :auto-expand-parent="autoExpandParent">
+                <a-tree show-icon :checkStrictly='false' :tree-data="moduleList" :selectable="false"
+                    :replaceFields="replaceFields" :auto-expand-parent="autoExpandParent">
                     <template slot="custom" slot-scope="item">
                         <a-checkbox @click="onChanges(item)" v-model="item.checked">
                             {{ item.moduleName }}
@@ -110,7 +110,7 @@ export default {
         })
     },
     activated() {
-        
+
     },
     methods: {
         async init() {
@@ -140,6 +140,18 @@ export default {
                     this.addAuthorityInfo(item)
                 }
             }
+            if (item.children && item.children.length >= 8) {
+                if (item.checked) {
+                    item.children.forEach(_item => {
+                        this.delAuthorityOperate(_item)
+                    })
+                } else {
+                    item.children.forEach(_item => {
+                        this.addAuthorityOperate(_item)
+                    })
+                }
+
+            }
         },
         // 新增模块授权
         async addAuthorityInfo(data) {
@@ -149,7 +161,7 @@ export default {
             }
             const res = await addAuthorityInfo(params)
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
-            if(res.data.status.retCode === 0) {
+            if (res.data.status.retCode === 0) {
                 this.$message.success("操作成功")
             }
         },
@@ -162,7 +174,7 @@ export default {
             }
             const res = await addAuthorityOperate(params)
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
-            if(res.data.status.retCode === 0) {
+            if (res.data.status.retCode === 0) {
                 this.$message.success("操作成功")
             }
 
@@ -175,7 +187,7 @@ export default {
             }
             const res = await delAuthorityInfo(params)
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
-            if(res.data.status.retCode === 0) {
+            if (res.data.status.retCode === 0) {
                 this.$message.success("操作成功")
             }
 
@@ -189,7 +201,7 @@ export default {
             }
             const res = await delAuthorityOperate(params)
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
-            if(res.data.status.retCode === 0) {
+            if (res.data.status.retCode === 0) {
                 this.$message.success("操作成功")
             }
 
@@ -197,14 +209,14 @@ export default {
         // 切换员工职位
         async changeRole(item) {
             this.roleID = item.id
-            let authRes = await getRoleInfo({id: this.roleID})
+            let authRes = await getRoleInfo({ id: this.roleID })
             this.authId = authRes.data.data.dataAuth
             Promise.all([this.getAuthorityOperate(), this.getAuthorityList()])
         },
         async changeAuth(item) {
             this.authId = item.id
-            let res = await updateRoleAuth({id: this.roleID,dataAuth: this.authId })
-            if(res.data.status.retCode == 0) {
+            let res = await updateRoleAuth({ id: this.roleID, dataAuth: this.authId })
+            if (res.data.status.retCode == 0) {
                 this.$message.success("操作成功")
             }
 
@@ -215,7 +227,7 @@ export default {
             this.roleList = res.data.data
             let user = localStorage.getItem("admin.user")
             this.roleID = this.roleID || JSON.parse(user).roleID
-            let authRes = await getRoleInfo({id: this.roleID})
+            let authRes = await getRoleInfo({ id: this.roleID })
             this.authId = authRes.data.data.dataAuth
         },
         // 查询操作授权列表
@@ -252,16 +264,16 @@ export default {
                 if (item.children && item.children.length) {
                     this.setAuthorityChecked(item.children)
                 } else {
-                    let modulelist = this.authorityOperateList.filter(_item=> _item.moduleID == item.moduleId)
-                    let operaIds = modulelist.map(_item=> _item.operateID)
-                    if(operaIds.includes(item.id) ) {
+                    let modulelist = this.authorityOperateList.filter(_item => _item.moduleID == item.moduleId)
+                    let operaIds = modulelist.map(_item => _item.operateID)
+                    if (operaIds.includes(item.id)) {
                         this.$set(item, 'checked', true)
                     } else {
                         this.$set(item, 'checked', false)
                     }
                 }
             })
-        }, 
+        },
         // 获取操作列表
         async getOperaList() {
             const res = await getOperaList({})
@@ -273,7 +285,7 @@ export default {
                     scopedSlots: { title: "custom" }
                 }
             })
-            let ids = [1, 2, 3, 4, 5, 6, 7 ,8 ,9]
+            let ids = [1, 2, 3, 4, 5, 6, 7, 8, 9]
             this.operaIds = this.operaList.filter(item => ids.includes(item.id)).map(item => item.id)
         },
         buildTreeData(data) {
@@ -386,13 +398,14 @@ export default {
         padding-left: 20px;
         flex: 1;
         max-width: 60vw;
-        
+
         .tab {
             flex-wrap: wrap;
             margin-top: 20px;
             display: flex;
             gap: 20px
         }
+
         .auth {
             margin-top: 30px;
         }

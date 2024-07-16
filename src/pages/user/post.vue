@@ -6,7 +6,7 @@
                     <a-row>
                         <a-col :md="6" :sm="24">
                             <a-form-item label="职位名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 0 }">
-                                <a-input v-model="form.roleName" placeholder="请输入" />
+                                <a-input  @pressEnter="handleSearch" v-model="form.roleName" placeholder="请输入" />
                             </a-form-item>
                         </a-col>
                         <a-col :md="8" :sm="24">

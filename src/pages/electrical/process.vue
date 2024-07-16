@@ -148,7 +148,7 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getFlowList({ pageSize, pageIndex, projectID: +this.id })
+            const res = await getFlowList({ pageSize, pageIndex, hostID: +this.id, flowType: 1 })
             this.dataSource = res.data.data
         },
         async getOperaList() {

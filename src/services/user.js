@@ -6,9 +6,12 @@ import {
   GET_DEPT_LIST_S,
   ADD_ROLE_INFO,
   GET_ROLE_LIST_S,
+  UPDATE_USER_CONFIG,
   GET_USER_LIST_S,
   DEL_ROLE_INFO,
   UPDATE_ROLE_INFO,
+  GET_CONFIG_INFO,
+  UPDATE_CONFIG_INFO,
   UPLOAD_USER_AVATAR,
   UPLOAD_USER_PASSWORD,
   GETUSERLOCATION,
@@ -177,6 +180,24 @@ export async function getUserLocation(params) {
 // 修改职位权限
 export async function updateRoleAuth(params) {
   return request(UPDATE_ROLE_AUTH, METHOD.POST, {
+    ...params
+  })
+}
+// 修改职位权限
+export async function updateUserConfig(params) {
+  return request(UPDATE_USER_CONFIG, METHOD.POST, {
+    ...params
+  })
+}
+
+export async function getConfigInfo(params) {
+  return request(GET_CONFIG_INFO, METHOD.POST, {
+    ...params
+  })
+}
+
+export async function updateConfigInfo(params) {
+  return request(UPDATE_CONFIG_INFO, METHOD.POST, {
     ...params
   })
 }

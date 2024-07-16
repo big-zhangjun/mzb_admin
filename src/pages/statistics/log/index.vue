@@ -23,16 +23,23 @@
                             style="width: 100%;">
                             <a-select-option :value="item.value" v-for="item in chartList" :key="item.value">{{
                                 item.label
-                                }}</a-select-option>
+                            }}</a-select-option>
                         </a-select>
                     </div>
                     <div class="item">
                         <div class="label">切换部门：</div>
-                        <a-select placeholder="请选择"  @change="handleChange" v-model="deptID"
-                            style="width: 100%;">
+                        <a-select placeholder="请选择" @change="handleChange" v-model="deptID" style="width: 100%;">
                             <a-select-option :value="item.id" v-for="item in deptList" :key="item.id">{{
                                 item.deptName
-                                }}</a-select-option>
+                            }}</a-select-option>
+                        </a-select>
+                    </div>
+                    <div class="item">
+                        <div class="label">在职离职：</div>
+                        <a-select style="width: 100%;" placeholder="请选择" v-model="resign" @change="handleChange">
+                            <a-select-option :value="2">在职</a-select-option>
+                            <a-select-option :value="1">离职</a-select-option>
+                            <a-select-option :value="0">全部</a-select-option>
                         </a-select>
                     </div>
                 </div>
@@ -47,24 +54,32 @@
                 <div class="chart" id="barAnalysisChartLog"></div>
             </div>
         </div>
+        <a-modal v-model="visible" title="日志统计" @ok="handleOk" :width="1000" class="modal">
+            <calendar :userID="userID" ref="calendar"/>
+        </a-modal>
     </div>
 </template>
 
 <script>
 import { getProjectBlogCount, getProjectYear } from '@/services/project'
 import { getDeptListS } from '@/services/user'
+import calendar from "@/pages/statistics/components/calendar.vue"
 import * as echarts from 'echarts';
 import { mapState } from 'vuex'
 export default {
     name: 'Log',
+    components: { calendar },
     data() {
         return {
             years: [
 
             ],
+            visible: false,
+            resign: 2,
             deptID: 51,
             deptList: [],
             chartModel: 0,
+            userID: 0,
             chartList: [
                 {
                     label: "折线图",
@@ -74,15 +89,10 @@ export default {
                     label: "柱状图",
                     value: 1
                 },
-                // {
-                //     label: "饼图",
-                //     value: 2
-                // }
-            ],
+``            ],
             year: "",
-            month: "全部",
+            month: (new Date().getMonth() + 1).toString().padStart(2, '0'),
             months: [
-                "全部",
                 "01",
                 "02",
                 "03",
@@ -111,7 +121,7 @@ export default {
 
     },
     activated() {
-        this.getProjectYear().then(async() => {
+        this.getProjectYear().then(async () => {
             await this.getDeptListS()
             this.getProjectBlogCount()
         })
@@ -122,6 +132,7 @@ export default {
         this.lineCharts11.dispose()
     },
     methods: {
+        handleOk() { },
         handleChange() {
             this.getProjectBlogCount()
         },
@@ -131,16 +142,12 @@ export default {
         // 获取列表
         async getDeptListS() {
             let res = await getDeptListS(this.form)
-                this.deptList = res.data.data
-                // this.pagination.totalCount = totalCount
+            this.deptList = res.data.data
         },
         handleChartModelChange() {
             this.$nextTick(() => {
                 this.myBarCharts11.resize();
                 this.lineCharts11.resize();
-                // this.pieChart11.resize()
-                // this.pieChart22.resize()
-                // this.pieChart33.resize()
             })
         },
         async getProjectYear() {
@@ -156,6 +163,7 @@ export default {
                 return {
                     value: item[key],
                     name: item.label,
+                    userID: item.userID,
                 }
             })
             var option = {
@@ -245,31 +253,27 @@ export default {
                     }
                 ]
             };
+            this.lineCharts11.off('click')
+            this.lineCharts11.on('click', (params) => {
+                console.log(params, 'parans');
+                if (!['未知'].includes(this.year)) {
+                    this.visible = true
+                    this.userID = data[params.dataIndex].userID
+                    this.$nextTick(()=>{
+                        this.$refs.calendar.initData()
+                    })
+                }
+            });
             this.lineCharts11.setOption(option);
         }
         ,
         initBarChart(data) {
             var chartDom = document.getElementById('barAnalysisChartLog');
             this.myBarCharts11 = echarts.init(chartDom);
-            // let undoneData = data.map((item, idx) => {
-            //     return {
-            //         value: item.undone,
-            //         itemStyle: {
-            //             color: 'rgb(84,112,198)'
-            //         }
-            //     }
-            // })
-            // let totalData = data.map((item, idx) => {
-            //     return {
-            //         value: item.total,
-            //         itemStyle: {
-            //             color: 'rgb(250,200,88)'
-            //         }
-            //     }
-            // })
             let datas = data.map((item, idx) => {
                 return {
                     value: item.number,
+                    userID: item.userID,
                     itemStyle: {
                         color: 'rgb(145,204,117)'
                     }
@@ -284,19 +288,6 @@ export default {
                 tooltip: {
                     trigger: 'item'
                 },
-                // legend: {
-                //     data: [
-                //         {
-                //             name: "未完成",
-                //         },
-                //         {
-                //             name: "已完成",
-                //         },
-                //         {
-                //             name: "总数",
-                //         }
-                //     ]
-                // },
                 dataZoom: [
                     {
                         type: 'inside', // 使用 inside 类型
@@ -328,38 +319,17 @@ export default {
                         type: 'bar',
                         barWidth: '20%'
                     },
-                    // {
-                    //     name: "已完成",
-                    //     data: doneData,
-                    //     type: 'bar',
-                    //     barWidth: '20%'
-                    // },
-                    // {
-                    //     name: "总数",
-                    //     data: totalData,
-                    //     type: 'bar',
-                    //     barWidth: '20%'
-                    // }
                 ]
             };
             this.myBarCharts11.off('click')
             this.myBarCharts11.on('click', (params) => {
-                // params 是一个包含了点击事件信息的对象
-                // params.dataIndex 是点击的柱子的索引
-                // params.name 是点击的柱子的系列名称
-                console.log(params);
-                // params.value 是点击的柱子的值
-                // params.componentType 表明事件发生的组件类型，这里是 'series'
                 if (!['未知'].includes(this.year)) {
-                    this.$router.push({
-                        path: "/project",
-                        query: {
-                            year: this.year,
-                            month: params.name
-                        }
+                    this.visible = true
+                    this.userID = params.data.userID
+                    this.$nextTick(()=>{
+                        this.$refs.calendar.initData()
                     })
                 }
-                // 在这里执行你需要的操作，比如弹出提示框、跳转到其他页面等
             });
             this.myBarCharts11.setOption(option);
         },
@@ -373,7 +343,8 @@ export default {
             let params = {
                 year: projectYear,
                 month: this.month == "全部" ? "" : this.month,
-                deptID: this.deptID
+                deptID: this.deptID,
+                resign: this.resign
             }
             let res = await getProjectBlogCount(params)
             this.initBarChart(res.data.data)
@@ -459,5 +430,12 @@ export default {
 .chart {
     width: 100%;
     height: 400px;
+}
+
+.modal {
+    ::v-deep .ant-modal-body {
+        background-color: rgb(246, 247, 248);
+        padding: 12px;
+    }
 }
 </style>

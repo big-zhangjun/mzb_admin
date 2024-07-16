@@ -14,7 +14,7 @@
     <a-layout class="admin-layout-main beauty-scroll">
       <admin-header :class="[{'fixed-tabs': fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]" :style="headerStyle" :menuData="headMenuData" :collapsed="collapsed" @toggleCollapse="toggleCollapse"/>
       <a-layout-header :class="['virtual-header', {'fixed-tabs' : fixedTabs, 'fixed-header': fixedHeader, 'multi-page': multiPage}]" v-show="fixedHeader"></a-layout-header>
-      <a-layout-content class="admin-layout-content" :style="`min-height: ${minHeight}px;`">
+      <a-layout-content class="admin-layout-content" :style="`min-height: ${minHeight}`">
         <div style="position: relative">
           <slot></slot>
         </div>
@@ -34,14 +34,14 @@ import SideMenu from '../components/menu/SideMenu'
 import Setting from '../components/setting/Setting'
 import {mapState, mapMutations, mapGetters} from 'vuex'
 
-// const minHeight = window.innerHeight - 64 - 122
+// const minHeight = window.innerHeight - 64 - 122 
 
 export default {
   name: 'AdminLayout',
   components: {Setting, SideMenu, Drawer, PageFooter, AdminHeader},
   data () {
     return {
-      minHeight: window.innerHeight - 64 - 122,
+      minHeight: `calc(100vh - 84px)`,
       collapsed: false,
       showSetting: false,
       drawerOpen: false

@@ -1,6 +1,6 @@
 <template>
     <a-card :body-style="{ padding: '0 0 ' }" :bordered="false">
-        <a-tabs default-active-key="1" @change="callback">
+        <a-tabs default-active-key="1" @change="callback" v-model="active">
             <a-tab-pane key="1" tab="发货清单">
 
             </a-tab-pane>

@@ -78,7 +78,7 @@ module.exports = {
   UPDATE_NOTICE_INFO: `${BASE_URL}/notice/update_notice_info`, //修改公告信息
   UPLOAD_FILE: `${BASE_URL}/disk/upload_file`, //上传附件
   UPLOAD_USER_AVATAR: `${BASE_URL}/user/upload_user_avatar`, //更换头像
-  UPLOAD_USER_PASSWORD: `${BASE_URL}/user/upload_user_password`, //修改密码
+  UPLOAD_USER_PASSWORD: `${BASE_URL}/user/update_user_password`, //修改密码
   GETUSERLOCATION: `${BASE_URL}/statistics/user_location`, //外出地区分布
   GET_PROJECT_COUNT: `${BASE_URL}/statistics/project_count`, //项目数统计
   GET_PROJECT_YEAR: `${BASE_URL}/statistics/project_year`, //查询项目年份
@@ -91,4 +91,17 @@ module.exports = {
   GET_PROJECT_FILE: `${BASE_URL}/project/get_project_file`, //消息列表
   UPLOAD_PROJECT_FILE: `${BASE_URL}/project/upload_project_file`, //消息列表
   DEL_PROJECT_FILE: `${BASE_URL}/project/del_project_file`, //消息列表
+  UPDATE_USER_CONFIG: `${BASE_URL}/user/update_user_config`, //消息列表
+  UPDATE_CONFIG_INFO: `${BASE_URL}/config/update_config_info`, //消息列表
+  GET_CONFIG_INFO: `${BASE_URL}/config/get_config_info`, //消息列表
+  GET_BLOG_LIST2: `${BASE_URL}/blog/get_blog_list2`, //消息列表
+  UPDDATE_EP_INFO: `${BASE_URL}/project/update_ep_info`, //消息列表
+  GET_MATERIAL_GROUP_LIST: `${BASE_URL}/shotage/get_material_group_list`, //查询物料组列表
+  GET_SHOTAGE_LIST: `${BASE_URL}/shotage/get_shotage_list`, //查询缺料报备列表
+  GET_SHOTAGE_INFO: `${BASE_URL}/shotage/get_shotage_info`, //查询缺料报备信息
+  DEL_SHOTAGE_INFO: `${BASE_URL}/shotage/delete_shotage_info`, //删除缺料报备信息
+  GET_MATERIAL_LIST: `${BASE_URL}/shotage/get_material_list`, //查询缺料报备信息
+  GET_MATERIAL_SHOT_LIST: `${BASE_URL}/shotage/get_material_shot_list`, //删除缺料报备信息
+  ADD_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/add_material_shot_info`, //新增缺料报备信息
+  DEL_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/delete_material_shot_info`, //新增缺料报备信息
 }

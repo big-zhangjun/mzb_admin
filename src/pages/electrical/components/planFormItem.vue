@@ -110,13 +110,22 @@
                         </a-select-option>
                     </a-select>
                 </a-form-item>
+                <a-form-item v-if="showType == 'acceptance'" :label="'是否验收'" :labelCol="{ span: 6 }"
+                    :wrapperCol="{ span: 16 }">
+                    <a-select placeholder="请选择"
+                        v-decorator="['acceptance', { rules: [{ required: true, message: '请选择是否验收' }] }]">
+                        <a-select-option :value="item.id" v-for="item in acceptances" :key="item.id">
+                            {{ item.label }}
+                        </a-select-option>
+                    </a-select>
+                </a-form-item>
             </a-form>
         </a-card>
     </div>
 </template>
 
 <script>
-import { addEcRep, delEcRep, updateEcInfo, addSiRep, delSiRep, updateSiInfo, addAsRep, delAsRep, updateAsInfo } from '@/services/electrical'
+import { addEcRep, delEcRep, updateEcInfo, addSiRep, delSiRep, updateSiInfo, addAsRep, delAsRep, updateAsInfo, updateEpInfo } from '@/services/electrical'
 import { getProjectTips, updateEcListInfo } from '@/services/project'
 import { getUserList } from '@/services/user'
 import moment from 'moment';
@@ -135,6 +144,16 @@ export default {
                 {
                     label: "无",
                     id: 0
+                },
+            ],
+            acceptances: [
+                {
+                    label: "是",
+                    id: 1
+                },
+                {
+                    label: "否",
+                    id: 2
                 },
             ],
             statusList: [
@@ -359,10 +378,26 @@ export default {
                         this.updateSiInfo(callback, params)
                     }
                     break
+                case "acceptance":
+                    {
+                        let params = {
+                            acceptance: this.ecForm.getFieldsValue().acceptance
+                        }
+                        this.updateEpInfo(callback, params)
+                    }
+                    break
                 case "asStatus":
                     this.updateAsInfo(callback)
                     break
             }
+        },
+        async updateEpInfo(callback, p) {
+            let params = {
+                "id": this.detail.id,
+                ...p
+            }
+            const result = await updateEpInfo(params)
+            callback('update')
         },
         async updateEcInfo(callback, p) {
             let params = {
@@ -380,7 +415,6 @@ export default {
             }
             const result = await updateSiInfo(params)
             callback('update')
-            console.log(result);
         },
         async updateAsInfo(callback) {
             let startDate = moment(this.ecForm.getFieldsValue().asStartTime).format('YYYY-MM-DD')
@@ -424,7 +458,7 @@ export default {
                 if (!err) {
                     if (['siRep', 'asRep', 'ecRep'].includes(this.showType)) {
                         callback('update')
-                    } else if (['ecStatus', 'asStatus', 'siStatus', 'ecStartDate', 'ecEndDate', 'siStartTime', 'siEndTime'].includes(this.showType)) {
+                    } else if (['ecStatus', 'asStatus', 'siStatus', 'ecStartDate', 'ecEndDate', 'siStartTime', 'siEndTime', 'acceptance'].includes(this.showType)) {
                         this.handleEcStatus(this.showType, callback)
                     } else if (['electricalList', 'invoiceList'].includes(this.showType)) {
                         this.handleListSelect(this.showType, callback)
