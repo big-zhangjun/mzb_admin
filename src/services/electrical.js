@@ -3,6 +3,7 @@ import {
     GET_BLOG_CONTENT_LIST,
     ADD_BLOG_CONTENT_LIST,
     UPDATE_BLOG_CONTENT_LIST,
+    UPDATE_SHOT_INFO,
     ADD_MATERIAL_SHOT_INFO,
     DEL_BLOG_CONTENT_LIST,
     GET_FLOW_LIST,
@@ -12,7 +13,10 @@ import {
     DEL_FLOW_INFO,
     UPDATE_FLOW_INFO,
     GET_BLOG_LIST,
+    GET_FILE_INFO,
+    LOCK_SHOTAGE_INFO,
     ADD_BLOG_INFO,
+    GET_MEMO_LIST,
     GET_BLOG_INFO,
     DEL_BLOG_INFO,
     UPDATE_BLOG_INFO,
@@ -29,10 +33,14 @@ import {
     UPDDATE_EP_INFO,
     GET_MATERIAL_LIST,
     GET_MATERIAL_GROUP_LIST,
+    GET_MATERIAL_SHOT_INFO,
+    UPDATE_MATERIAL_SHOT_INFO,
     GET_MATERIAL_SHOT_LIST,
     DEL_SHOTAGE_INFO,
     DEL_MATERIAL_SHOT_INFO,
-    GET_SHOTAGE_INFO
+    GET_SHOTAGE_INFO,
+    ADD_SHOT_INFO,
+    GET_UNLIMITED_QRCODE,
 
 } from '@/services/api'
 import { request, METHOD } from '@/utils/request'
@@ -189,3 +197,29 @@ export async function addMaterialShotInfo(params) {
 export async function delMaterialShotInfo(params) {
     return request(DEL_MATERIAL_SHOT_INFO, METHOD.POST, params)
 }
+export async function updateMaterialShotInfo(params) {
+    return request(UPDATE_MATERIAL_SHOT_INFO, METHOD.POST, params)
+}
+export async function getMaterialShotInfo(params) {
+    return request(GET_MATERIAL_SHOT_INFO, METHOD.POST, params)
+}
+export async function updateShotInfo(params) {
+    return request(UPDATE_SHOT_INFO, METHOD.POST, params)
+}
+export async function addShotInfo(params) {
+    return request(ADD_SHOT_INFO, METHOD.POST, params)
+}
+export async function getFileInfo(params) {
+    return request(GET_FILE_INFO, METHOD.POST, params)
+}
+export async function getUnlimitedQRCode(params) {
+    return request(GET_UNLIMITED_QRCODE, METHOD.POST, params)
+}
+export async function lockShotageInfo(params) {
+    return request(LOCK_SHOTAGE_INFO, METHOD.POST, params)
+}
+export async function getMemoList(params) {
+    return request(GET_MEMO_LIST, METHOD.POST, params)
+}
+
+

@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
 import {initRouter} from './router'
+import * as echarts from 'echarts'// 在import的后面，echarts的前面加一个 * as
 import './theme/index.less'
 import Antd from 'ant-design-vue'
 import Viser from 'viser-vue'
 import mUpload from '@/components/mUpload'
-import * as echarts from 'echarts'// 在import的后面，echarts的前面加一个 * as
+import Print from 'vue-print-nb'
+Vue.use(Print)
 Vue.prototype.$echarts = echarts
 // 注册全局组件  
 import '@/mock'

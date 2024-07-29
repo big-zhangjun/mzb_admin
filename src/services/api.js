@@ -104,4 +104,12 @@ module.exports = {
   GET_MATERIAL_SHOT_LIST: `${BASE_URL}/shotage/get_material_shot_list`, //删除缺料报备信息
   ADD_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/add_material_shot_info`, //新增缺料报备信息
   DEL_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/delete_material_shot_info`, //新增缺料报备信息
+  UPDATE_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/update_material_shot_info`, //新增缺料报备信息
+  GET_MATERIAL_SHOT_INFO: `${BASE_URL}/shotage/get_material_shot_info`, //新增缺料报备信息
+  UPDATE_SHOT_INFO: `${BASE_URL}/shotage/update_shotage_info`, //新增缺料报备信息
+  ADD_SHOT_INFO: `${BASE_URL}/shotage/add_shotage_info`, //新增缺料报备信息
+  GET_FILE_INFO: `${BASE_URL}/disk/get_file_info`, //新增缺料报备信息
+  GET_UNLIMITED_QRCODE: `${BASE_URL}/bridge/getUnlimitedQRCode`, //新增缺料报备信息
+  LOCK_SHOTAGE_INFO: `${BASE_URL}/shotage/lock_shotage_info`, //新增缺料报备信息
+  GET_MEMO_LIST: `${BASE_URL}/memo/get_memo_list`, //新增缺料报备信息
 }

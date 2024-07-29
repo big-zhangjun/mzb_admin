@@ -7,7 +7,7 @@
       </router-link>
     </div>
     <i-menu :theme="theme" :collapsed="collapsed" :options="menuData" @select="onSelect" class="menu"/>
-    <div class="version">版本：v1.0.0</div>
+    <div class="version">版本：v1.0.1</div>
   </a-layout-sider>
 </template>
 

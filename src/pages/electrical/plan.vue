@@ -31,7 +31,8 @@
                                     :wrapperCol="{ span: 18, offset: 1 }">
                                     <a-select @change="handleSearch" :placeholder="'请选择发货清单'"
                                         v-model="form.deliveryList">
-                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{
+                                            item.label
                                             }}</a-select-option>
                                     </a-select>
                                 </a-form-item>
@@ -41,17 +42,18 @@
                                     :wrapperCol="{ span: 18, offset: 1 }">
                                     <a-select @change="handleSearch" :placeholder="'请选择电气清单'"
                                         v-model="form.electricalList">
-                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{
+                                            item.label
                                             }}</a-select-option>
                                     </a-select>
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
-                                <a-form-item label="电气图：" :labelCol="{ span: 5 }"
-                                    :wrapperCol="{ span: 18, offset: 1 }">
+                                <a-form-item label="电气图：" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
                                     <a-select @change="handleSearch" :placeholder="'请选择电气图'"
                                         v-model="form.electricalDiagram">
-                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.label
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{
+                                            item.label
                                             }}</a-select-option>
                                     </a-select>
                                 </a-form-item>
@@ -61,7 +63,8 @@
                                     :wrapperCol="{ span: 18, offset: 1 }">
                                     <a-select @change="handleSearch" :placeholder="'请选择是否验收：'"
                                         v-model="form.acceptance">
-                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{ item.name
+                                        <a-select-option :value="item.id" v-for="item in fileList" :key="item.id">{{
+                                            item.name
                                             }}</a-select-option>
                                     </a-select>
                                 </a-form-item>
@@ -88,8 +91,15 @@
             <a-modal v-model="showProcess" title="电气流程" @ok="showType = false" :width="1200">
                 <processCom :id="projectID" ref="process"></processCom>
             </a-modal>
-            <a-modal v-model="showFile" title="清单文件" @ok="showFile = false" :width="700">
+            <a-modal v-model="showFile" title="清单文件" @ok="handleFileOk" :width="700" @cancel="handleFileClose">
                 <fileModel :permission="permission" :projectID="projectID" ref="fileModel"></fileModel>
+            </a-modal>
+            <a-modal v-model="showMemorandum" title="备忘录" @ok="handleFileOk" :width="1200" @cancel="showMemorandum=false">
+                <memorandum :permission="permission"  :id="projectID" ref="memorandum"></memorandum>
+            </a-modal>
+            
+            <a-modal v-model="showQrCode" title="小程序二维码" @ok="showQrCode = false" :width="448" :footer="null">
+                <qrCode ref="qrCode" />
             </a-modal>
         </a-card>
         <div class="scrollList">
@@ -97,7 +107,9 @@
             <a-card class="card" v-for="item in dataSource" :key="item.id">
                 <div class="header">
                     <h1 :title="item.id">{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
-                    <a style="margin-left: auto;margin-right: 20px" @click="handleDetail(item)">电气分析</a>
+                    <a-icon type="qrcode" class="qrcode" @click="handlePrintQrcode(item)" />
+                    <a style="margin-right: 20px" @click="handleMemorandums(item)">备忘录</a>
+                    <a style="margin-right: 20px" @click="handleDetail(item)">电气分析</a>
                     <a style="margin-right: 20px;" @click="handleFlowDetail(item)">电气流程</a>
                     <a style="margin-right: 20px;" @click="handleFileOpen(item)">清单文件</a>
                     <a-tag :color="getColor(item.level)" style="border-radius: 22px; height: 22px;">
@@ -182,21 +194,21 @@
                         <div class="flex">
                             <div class="item repName">
                                 <div class="label">发货清单：</div>
-                                <div class="value" :class="{ hasFile: item.deliveryList }">{{
+                                <div class="value" :class="{ hasFile: !item.deliveryList }">{{
                                     getHasFile(item.deliveryList) }}</div>
-                                <span  @click="handleLookFile(item, '1')">查看</span>
+                                <span @click="handleLookFile(item, '1')">查看</span>
                             </div>
                             <div class="item">
                                 <div class="label">电气清单：</div>
-                                <div class="value" :class="{ hasFile: item.electricalList }">{{
+                                <div class="value" :class="{ hasFile: !item.electricalList }">{{
                                     getHasFile(item.electricalList) }}</div>
-                                <span  @click="handleLookFile(item, '2')">查看</span>
+                                <span @click="handleLookFile(item, '2')">查看</span>
                             </div>
                             <div class="item">
                                 <div class="label">电气图：</div>
-                                <div class="value" :class="{ hasFile: item.electricalDiagram }">{{
+                                <div class="value" :class="{ hasFile: !item.electricalDiagram }">{{
                                     getHasFile(item.electricalDiagram) }}</div>
-                                <span  @click="handleLookFile(item, '3')">查看</span>
+                                <span @click="handleLookFile(item, '3')">查看</span>
                             </div>
                             <div class="item">
                                 <div class="label">是否验收：</div>
@@ -217,6 +229,9 @@
 import PlanFormItem from '@/pages/electrical/components/planFormItem'
 import processCom from '@/pages/electrical/process'
 import fileModel from '@/pages/electrical/components/fileModel'
+import qrCode from '@/pages/electrical/components/qrCode'
+import memorandum from '@/pages/electrical/components/memorandum'
+
 import { getProjectEpList, delProjectInfo, getProjectEpInfo } from '@/services/project'
 import { mapGetters } from 'vuex'
 import moment from 'moment';
@@ -236,9 +251,11 @@ import infiniteScroll from 'vue-infinite-scroll';
 export default {
     name: 'QueryList',
     directives: { infiniteScroll },
-    components: { PlanFormItem, processCom, fileModel },
+    components: { PlanFormItem, processCom, fileModel, qrCode, memorandum },
     data() {
         return {
+            showMemorandum: false,
+            showQrCode: false,
             showProcess: false,
             modalTitle: "新增项目",
             showType: "",
@@ -439,8 +456,13 @@ export default {
             })
         },
         getHasFile(v) {
-
             return v ? '有' : '无'
+        },
+        handlePrintQrcode(data) {
+            this.showQrCode = true
+            this.$nextTick(()=> {
+                this.$refs.qrCode.initData(data.id)
+            })
         },
         getAcceptance(v) {
             if (v == 1) {
@@ -463,6 +485,13 @@ export default {
                 query: {
                     id: data.id
                 }
+            })
+        },
+        handleMemorandums(data) {
+            this.projectID = data.id
+            this.showMemorandum = true
+            this.$nextTick(() => {
+                this.$refs.memorandum.init()
             })
         },
         handleFlowDetail(data) {
@@ -495,6 +524,26 @@ export default {
                     this.$refs.PlanFormItem.ecForm.setFieldsValue({
                         [type]: data[type] == '1000-01-01' ? '' : data[type]
                     })
+                }
+            })
+        },
+        handleFileOk() {
+            this.$nextTick(async () => {
+                this.showFile = false
+                await this.getProjectInfo(this.projectID)
+                let index = this.dataSource.findIndex(item => item.id == this.projectID)
+                if (index != -1) {
+                    this.$set(this.dataSource, index, this.detail)
+                }
+            })
+        },
+        handleFileClose() {
+            this.$nextTick(async () => {
+                this.showFile = false
+                await this.getProjectInfo(this.projectID)
+                let index = this.dataSource.findIndex(item => item.id == this.projectID)
+                if (index != -1) {
+                    this.$set(this.dataSource, index, this.detail)
                 }
             })
         },
@@ -609,17 +658,14 @@ export default {
         },
         handleOk() {
             this.$nextTick(() => {
-                console.log(this.$refs.PlanFormItem);
                 this.$refs.PlanFormItem.handleSubmit(async () => {
                     this.$message.success('保存成功', 3)
                     this.visible = false
                     await this.getProjectInfo(this.detail.id)
                     let index = this.dataSource.findIndex(item => item.id == this.detail.id)
-                    console.log(index);
                     if (index != -1) {
                         this.$set(this.dataSource, index, this.detail)
                     }
-                    // this.getData()
                 })
             })
         },
@@ -896,6 +942,13 @@ td {
                 white-space: nowrap;
             }
         }
+    }
+
+    .qrcode {
+        cursor: pointer;
+        margin-left: auto;
+        font-size: 22px;
+        margin-right: 20px;
     }
 }
 </style>

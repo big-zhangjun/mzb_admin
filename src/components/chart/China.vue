@@ -138,7 +138,7 @@ export default {
             }
         },
         async getUserLocation() {
-            const res = await getUserLocation({ deptID: 51 })
+            const res = await getUserLocation({ deptID: 51, resign: 2 })
             return res.data.data
         },
         async initECharts() {
@@ -287,10 +287,10 @@ export default {
                                         show: true,
                                         triggerOn: "click",
                                         formatter: function (data1) {
-                                            console.log(data1)
                                             let list = data1.data.result
                                             let str = ""
-                                            list.forEach(item => {
+                                            list.forEach(data => {
+                                                let item = data.data[0]
                                                 str += `<div class="custom-tooltip" style="margin-bottom: 12px">
                                                         <div class="round"><b>姓名</b>: ${item.userName}<br /><b>日期</b>: ${item.blogDate}<br /><b>地址</b>: ${item.address}</div>
                                                     </div>`

@@ -43,10 +43,12 @@
                 <div class="box">
                     <div class="left">
                         <div class="title">
-                            <h1 :title="item.id">{{ item.customerName }}</h1>
+                            <h1 :title="item.id">{{ item.customerName || '通用耗材领料' }}</h1>
                             <div class="tags">
                                 <div class="item">{{ item.productName }}</div>
                             </div>
+                            <a style="margin-right: 20px;" @click="handleFlowDetail(item)">报备日志</a>
+                            <!-- <a-icon type="style="margin-left: auto;" class="qrcode" @click="handlePrintQrcode(item)"/> -->
                         </div>
 
                         <div class="content">
@@ -93,7 +95,8 @@
 
                     </div>
                     <div class="btn">
-                        <div class="edit" @click="edit(item)" v-if="permission.includes(3)">查看详情</div>
+                        <div class="edit" @click="lookDetail(item)" v-if="permission.includes(3)">查看详情</div>
+                        <div class="del" @click="handleEdit(item)">编辑</div>
                         <a-popconfirm title="确定删除该项目?" ok-text="确定" cancel-text="取消"
                             @confirm="delShotageInfo(item, idx)" v-if="permission.includes(2)">
                             <div class="del">删除</div>
@@ -105,15 +108,24 @@
         <div class="no-data" v-if="!dataSource.length">
             <a-empty />
         </div>
-        <a-modal v-model="showModel" title="缺料报备" @ok="showModel = false" :width="1300">
-            <materialForm ref="materialForm"/>
+        <a-modal v-model="showModel" title="缺料报备" @ok="showModel = false" :width="1600">
+            <materialForm ref="materialForm" @handleUpdate="handleUpdate" :permission="permission"/>
         </a-modal>
+        <a-modal v-model="showFormModel" title="缺料报备" @ok="handleSubmit" :width="600">
+            <materialFormMoel :key="key" :type="modelType" ref="materialFormMoel" />
+        </a-modal>
+        <a-modal v-model="showProcess" title="报备日志" @ok="showType = false" :width="1200" class="processCom">
+            <processCom  :flowType="2" :id="projectID" ref="process"></processCom>
+        </a-modal>
+
     </div>
 </template>
 
 <script>
+import processCom from '@/pages/electrical/process'
 import StandardTable from '@/components/table/StandardTable'
 import materialForm from '@/pages/electrical/components/materialForm'
+import materialFormMoel from '@/pages/electrical/components/materialFormMoel'
 import { getShotageList, delShotageInfo } from '@/services/electrical'
 import { mapGetters } from 'vuex/dist/vuex.common.js'
 // function formatDate(timestamp) {
@@ -127,14 +139,18 @@ import infiniteScroll from 'vue-infinite-scroll';
 import moment from 'moment';
 export default {
     name: 'QueryList',
-    components: { StandardTable, materialForm },
+    components: { StandardTable, materialForm, materialFormMoel, processCom },
     directives: { infiniteScroll },
     data() {
         return {
+            modelType: "add",
+            showProcess: false,
             materialFormKey: 0,
             modalTitle: "新增项目",
+            projectID: "",
+            showFormModel: false,
             advanced: true,
-            visible: false,
+            key: 0,
             showModel: false,
             productName: [
                 "热压罐",
@@ -181,9 +197,16 @@ export default {
             this.pagination.current++
             this.getData()
         },
+        handleUpdate() {
+            this.pagination.current = 1
+            this.dataSource = []
+            this.getData()
+        },
         getProgress(v) {
             if (v) {
                 return v + '%'
+            } else {
+                return '0%'
             }
         },
         toggleAdvanced() {
@@ -213,7 +236,7 @@ export default {
             this.dataSource = [...this.dataSource, ...res.data.data.records]
             this.pagination.total = res.data.data.totalCount
         },
-        edit(data) {
+        lookDetail(data) {
             this.materialFormKey++
             this.modalTitle = '编辑项目'
             this.showModel = true
@@ -222,6 +245,23 @@ export default {
                 this.$refs.materialForm.getShotageInfo(data.id)
             })
         },
+        handleEdit(data) {
+            this.modalTitle = '编辑项目'
+            this.showFormModel = true
+            this.modelType = 'edit'
+            this.$nextTick(() => {
+                this.$refs.materialFormMoel.initData(data.id)
+            })
+        },
+        handleSubmit() {
+            this.$refs.materialFormMoel.handleSubmit(() => {
+                this.showFormModel = false
+                this.pagination.current = 1
+                this.dataSource = []
+                this.getData()
+            })
+        },
+   
         async delShotageInfo(data, index) {
             const params = {
                 id: data.id,
@@ -237,12 +277,20 @@ export default {
             // this.getData()
         },
         addNew() {
-            this.materialFormKey++
             this.type = 'add'
+            this.modelType = 'add'
+            this.showFormModel = true
+            this.key++
             this.modalTitle = '新增项目'
-            this.visible = true
             this.$nextTick(() => {
-                this.$refs.materialForm.resetFields()
+                this.$refs.materialFormMoel.resetFields()
+            })
+        },
+        handleFlowDetail(data) {
+            this.projectID = data.id
+            this.showProcess = true
+            this.$nextTick(() => {
+                this.$refs.process.init()
             })
         },
     }
@@ -350,6 +398,10 @@ export default {
                     color: rgb(254, 185, 94);
                 }
             }
+            .qrcode {
+                cursor: pointer;
+                font-size: 22px;
+            }
 
             .content {
                 margin-top: 12px;
@@ -401,6 +453,11 @@ export default {
 .project-modal {
     .ant-modal {
         top: 19px
+    }
+}
+.processCom {
+    .ant-modal {
+        top: 30px
     }
 }
 </style>

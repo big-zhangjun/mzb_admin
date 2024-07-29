@@ -105,7 +105,12 @@ export default {
     // authorize: {
     //     deleteRecord: 'delete'
     // },
-    props: ["id"],
+    props: {
+        id: {},
+        flowType: {
+            default: 1
+        }
+    },
     mounted() {
         this.init()
     },
@@ -148,8 +153,9 @@ export default {
         // 获取列表
         async getData() {
             const { pageSize, pageIndex } = this.pagination
-            const res = await getFlowList({ pageSize, pageIndex, hostID: +this.id, flowType: 1 })
-            this.dataSource = res.data.data
+            const res = await getFlowList({ pageSize, pageIndex, hostID: +this.id, flowType: this.flowType })
+            this.dataSource = res.data.data.records
+            this.pagination.total = res.data.data.totalCount
         },
         async getOperaList() {
             const res = await getOperaList({})

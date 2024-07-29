@@ -44,12 +44,12 @@
                 <a-textarea rows="4" :placeholder="'请输入地址'"
                     v-decorator="['address', { rules: [{ required: false, message: '请输入地址' }] }]" />
             </a-form-item>
-            <a-form-item :label="'在职离职'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
+            <!-- <a-form-item :label="'在职离职'" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }">
                 <a-radio-group v-decorator="['resign', { rules: [{ required: true, message: '请选择性别' }] }]">
                     <a-radio :value="1">在职</a-radio>
                     <a-radio :value="2">离职</a-radio>
                 </a-radio-group>
-            </a-form-item>
+            </a-form-item> -->
         </a-form>
     </a-card>
 </template>

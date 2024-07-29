@@ -105,6 +105,7 @@ export default {
                 total: 0
             },
             filterList: [],
+            groupID: 0,
             code: ""
         }
     },
@@ -140,28 +141,26 @@ export default {
                 pageSize: 10,
                 pageIndex: this.pagination.current,
                 materialName: this.materialName,
+                groupID: this.groupID,
                 MaterialModel: this.MaterialModel
             }
             let res = await getMaterialList(params)
-            console.log(this.filterList, 'ss');
             let ids = this.filterList.map(item => item.materialID)
             this.dataSource = res.data.data.records.filter(item => !ids.includes(item.id))
             this.pagination.total = res.data.data.totalCount
         },
         onClear() {
-            this.$message.info('您清空了勾选的所有行')
         },
 
         onChange() {
-            this.$message.info('表格状态改变了')
         },
         onSelectChange() {
-            console.log(this.selectedRows);
-            this.$message.info('选中行改变了')
+           
         },
         handleAll() {
             this.code = ""
             this.pagination.current = 1
+            this.groupID = 0
             this.getMaterialList()
         },
         onLoadData(treeNode) {
@@ -186,9 +185,10 @@ export default {
             });
         },
         onSelect(selectedKeys, info) {
-            let { code } = info.node.$vnode.data.props
+            let { code, id } = info.node.$vnode.data.props
             this.pagination.current = 1
             this.code = code
+            this.groupID = id
             this.getMaterialList()
 
         },
