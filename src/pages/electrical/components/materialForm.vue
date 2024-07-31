@@ -3,7 +3,7 @@
         <div class="material-form">
             <div class="item">
                 <div class="label">客户名称：</div>
-                <div class="value">{{ material.customerName }}</div>
+                <div class="value">{{ material.customerName || '通用耗材领料' }}</div>
             </div>
             <div class="item">
                 <div class="label">产品编号：</div>
@@ -36,11 +36,12 @@
                 <div class="value">{{ getProgress(material.progress) }}</div>
             </div>
             <div class="lock" @click="handleLock(material)" v-if="permission.includes(5)">
-                <a-icon type="unlock" v-if="material.locked == 2"/>
-                <a-icon type="lock" v-if="material.locked == 1"/>
+                <a-icon type="unlock" v-if="material.locked == 2" />
+                <a-icon type="lock" v-if="material.locked == 1" />
             </div>
         </div>
-        <a-button type="primary" style="margin-top: 20px;" :disabled="disabled" @click="handleAdd" v-if="permission.includes(1)">新增</a-button>
+        <a-button type="primary" style="margin-top: 20px;" :disabled="disabled" @click="handleAdd"
+            v-if="permission.includes(1)">新增</a-button>
         <a-button style="margin-top: 20px;margin-left: 20px;" @click="print">打印</a-button>
 
         <standard-table :pagination="false" :columns="columns" :dataSource="dataSource" :rowKey="'id'">
@@ -51,7 +52,8 @@
                 <a style="margin-right: 8px" @click="edit(record)" v-if="permission.includes(3)">
                     <a-icon type="edit" />编辑
                 </a>
-                <a-popconfirm title="确定删除该数据?" ok-text="确定" cancel-text="取消" v-if="permission.includes(2)" @confirm="delMaterialShotInfo(record)">
+                <a-popconfirm title="确定删除该数据?" ok-text="确定" cancel-text="取消" v-if="permission.includes(2)"
+                    @confirm="delMaterialShotInfo(record)">
                     <a>
                         <a-icon type="delete" />删除
                     </a>
@@ -62,7 +64,7 @@
             <treeData ref="treeData" />
         </a-modal>
         <a-modal v-model="editModel" title="编辑缺料" @ok="handleEditSubmit" :width="600">
-            <materialEditModel :type="materialShotType" ref="materialEditModel" :disabled="disabled"/>
+            <materialEditModel :type="materialShotType" ref="materialEditModel" :disabled="disabled" />
         </a-modal>
         <a-modal v-model="printShowModel" title="打印" :footer="null" :width="1200">
             <printModel ref="printModel" :columns="columns" :material="material" :dataSource="dataSource" />
@@ -87,7 +89,7 @@ export default {
     props: {
         permission: {
             type: Array,
-            default:()=> []
+            default: () => []
         }
     },
     data() {
@@ -105,6 +107,10 @@ export default {
             ],
             id: "",
             columns: [
+                {
+                    title: '序号',
+                    dataIndex: "sort"
+                },
                 {
                     title: '名称',
                     dataIndex: 'materialName',
@@ -180,7 +186,7 @@ export default {
             ],
         }
     },
-    computed:{
+    computed: {
         disabled() {
             return this.material.locked == 1
         }
@@ -215,6 +221,9 @@ export default {
         },
         async getMaterialShotList() {
             let res = await getMaterialShotList({ shotageID: this.id })
+            res.data.data.forEach((item, dix)=> {
+                item.sort = dix+1
+            })
             this.dataSource = res.data.data
         },
         handleAdd() {
@@ -224,7 +233,7 @@ export default {
             })
         },
         async delMaterialShotInfo(data) {
-            if(this.disabled) return
+            if (this.disabled) return
             let params = {
                 id: data.id,
                 "deleted": 1
@@ -282,7 +291,7 @@ export default {
         },
         async handleLock(data) {
             let locked = data.locked == 2 ? 1 : 2
-            let res = await lockShotageInfo({id: data.id, locked})
+            let res = await lockShotageInfo({ id: data.id, locked })
             if (res.data.status.retCode === 0) {
                 this.getShotageInfo(this.id)
             }
@@ -322,6 +331,7 @@ export default {
     }
 
 }
+
 .lock {
     position: absolute;
     right: 30px;
