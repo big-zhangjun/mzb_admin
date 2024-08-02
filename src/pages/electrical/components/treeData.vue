@@ -29,7 +29,9 @@
             <standard-table :selectedRows.sync="selectedRows" :columns="columns" :dataSource="dataSource"
                 @clear="onClear" @change="onChange" @selectedRowChange="onSelectChange" :scroll="{ y: 500 }"
                 :pagination="{ ...pagination, onChange: onPageChange }" :rowKey="'id'">
-
+                <div slot="amount"  slot-scope="{text, record}">
+                    <a-input-number v-model="record.amount" :min="1" :max="100"/>
+                </div>
             </standard-table>
         </div>
     </a-card>
@@ -73,6 +75,11 @@ export default {
                     title: '单位',
                     dataIndex: 'unit',
                 },
+                {
+                    title: '数量',
+                    dataIndex: 'amount',
+                    scopedSlots: { customRender: 'amount' },
+                },
 
                 // {
                 //     title: '姓名',
@@ -106,7 +113,8 @@ export default {
             },
             filterList: [],
             groupID: 0,
-            code: ""
+            code: "",
+            hasDataSource: []
         }
     },
     // authorize: {
@@ -146,7 +154,16 @@ export default {
             }
             let res = await getMaterialList(params)
             let ids = this.filterList.map(item => item.materialID)
+            res.data.data.records.forEach(item=> {
+                item.amount = 1
+                this.selectedRows.forEach(ele=>{
+                    if(ele.id == item.id) {
+                        item.amount = ele.amount
+                    }
+                })
+            })
             this.dataSource = res.data.data.records.filter(item => !ids.includes(item.id))
+            this.hasDataSource = res.data.data.records.filter(item => ids.includes(item.id))
             this.pagination.total = res.data.data.totalCount
         },
         onClear() {
@@ -202,7 +219,8 @@ export default {
             let list = this.selectedRows.map(item => {
                 return {
                     materialID: item.id,
-                    unit: item.unit
+                    unit: item.unit,
+                    amount: item.amount
                 }
             })
             let promises = list.map(item => {

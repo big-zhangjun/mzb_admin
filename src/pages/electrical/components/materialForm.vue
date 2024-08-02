@@ -35,6 +35,15 @@
                 <div class="label">完整率：</div>
                 <div class="value">{{ getProgress(material.progress) }}</div>
             </div>
+            <div class="item" >
+                <div class="label">金蝶单号：</div>
+                <div class="value">{{ material.kingdeeBill || '--' }}</div>
+            </div>
+            <div class="item" style="width: calc(100% - 500px)">
+                <div class="label">备注：</div>
+                <div class="value">{{ material.remark  || '--'}}</div>
+            </div>
+
             <div class="lock" @click="handleLock(material)" v-if="permission.includes(5)">
                 <a-icon type="unlock" v-if="material.locked == 2" />
                 <a-icon type="lock" v-if="material.locked == 1" />
@@ -61,7 +70,7 @@
             </template>
         </standard-table>
         <a-modal v-model="showModel" title="缺料报备" @ok="handleSubmit" :width="1200" class="treeModal">
-            <treeData ref="treeData" />
+            <treeData ref="treeData" :key="treeKey"/>
         </a-modal>
         <a-modal v-model="editModel" title="编辑缺料" @ok="handleEditSubmit" :width="600">
             <materialEditModel :type="materialShotType" ref="materialEditModel" :disabled="disabled" />
@@ -95,6 +104,7 @@ export default {
     data() {
         return {
             material: {},
+            treeKey: 0,
             printShowModel: false,
             dataSource: [],
             materialShotType: "add",
@@ -227,13 +237,18 @@ export default {
             this.dataSource = res.data.data
         },
         handleAdd() {
+            this.treeKey++
             this.showModel = true
             this.$nextTick(() => {
                 this.$refs.treeData.init(this.dataSource)
             })
         },
         async delMaterialShotInfo(data) {
-            if (this.disabled) return
+            if (this.disabled) {
+                this.$message.warning("该数据已被锁定")
+
+                return
+            }
             let params = {
                 id: data.id,
                 "deleted": 1

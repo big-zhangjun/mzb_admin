@@ -6,8 +6,13 @@
                     <div :class="advanced ? null : 'fold'">
                         <a-row>
                             <a-col :md="6" :sm="24">
-                                <a-form-item label="项目编号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-                                    <a-input @pressEnter="handleSearch" v-model="form.number" placeholder="请输入" />
+                                <a-form-item label="是否锁定" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+                                    <!-- <a-input @pressEnter="handleSearch" v-model="form.number" placeholder="请输入" /> -->
+                                    <a-select @change="handleSearch" placeholder="请选择" v-model="form.locked">
+                                        <a-select-option :value="item.code" v-for="item in lockedList"
+                                            :key="item.code">{{
+                                                item.label }}</a-select-option>
+                                    </a-select>
                                 </a-form-item>
                             </a-col>
                             <a-col :md="6" :sm="24">
@@ -44,10 +49,14 @@
                     <div class="left">
                         <div class="title">
                             <h1 :title="item.id">{{ item.customerName || '通用耗材领料' }}</h1>
-                            <div class="tags">
+                            <div class="tags" v-if="item.productName">
                                 <div class="item">{{ item.productName }}</div>
                             </div>
-                            <a style="margin-right: 20px;" @click="handleFlowDetail(item)">报备日志</a>
+                            <a style="margin-right: 10px;" @click="handleFlowDetail(item)">报备日志</a>
+                            <a-icon type="unlock" v-if="item.locked == 2" />
+                            <a-icon type="lock" v-if="item.locked == 1" style="color: #36cfc9;" />
+                            <span style="margin-left: 10px;" v-if="permission.includes(5)">{{ item.kingdeeBill }}</span>
+
                             <!-- <a-icon type="style="margin-left: auto;" class="qrcode" @click="handlePrintQrcode(item)"/> -->
                         </div>
 
@@ -108,14 +117,14 @@
         <div class="no-data" v-if="!dataSource.length">
             <a-empty />
         </div>
-        <a-modal v-model="showModel" title="缺料报备" @ok="showModel = false" :width="1600">
-            <materialForm ref="materialForm" @handleUpdate="handleUpdate" :permission="permission"/>
+        <a-modal v-model="showModel" title="缺料报备" @ok="handleUpdateOk" :width="1600">
+            <materialForm ref="materialForm" @handleUpdate="handleUpdate" :permission="permission" />
         </a-modal>
         <a-modal v-model="showFormModel" title="缺料报备" @ok="handleSubmit" :width="600">
-            <materialFormMoel :key="key" :type="modelType" ref="materialFormMoel" />
+            <materialFormMoel :key="key" :type="modelType" ref="materialFormMoel" :permission="permission"/>
         </a-modal>
         <a-modal v-model="showProcess" title="报备日志" @ok="showType = false" :width="1200" class="processCom">
-            <processCom  :flowType="2" :id="projectID" ref="process"></processCom>
+            <processCom :flowType="2" :id="projectID" ref="process"></processCom>
         </a-modal>
 
     </div>
@@ -126,7 +135,7 @@ import processCom from '@/pages/electrical/process'
 import StandardTable from '@/components/table/StandardTable'
 import materialForm from '@/pages/electrical/components/materialForm'
 import materialFormMoel from '@/pages/electrical/components/materialFormMoel'
-import { getShotageList, delShotageInfo } from '@/services/electrical'
+import { getShotageList, delShotageInfo, getShotageInfo } from '@/services/electrical'
 import { mapGetters } from 'vuex/dist/vuex.common.js'
 // function formatDate(timestamp) {
 //   const date = new Date(timestamp * 1000); // 注意时间戳要乘以1000，因为JavaScript中的时间戳是以毫秒为单位的
@@ -172,6 +181,20 @@ export default {
             form: {
 
             },
+            lockedList: [
+                {
+                    code: 0,
+                    label: "全部"
+                },
+                {
+                    code: 1,
+                    label: "锁定"
+                },
+                {
+                    code: 2,
+                    label: "未锁定"
+                }
+            ],
             permission: [],
         }
     },
@@ -198,9 +221,14 @@ export default {
             this.getData()
         },
         handleUpdate() {
-            this.pagination.current = 1
-            this.dataSource = []
-            this.getData()
+            this.getShotageInfo(this.projectID)
+            // this.pagination.current = 1
+            // this.dataSource = []
+            // this.getData()
+        },
+        handleUpdateOk() {
+            this.showModel = false
+            this.getShotageInfo(this.projectID)
         },
         getProgress(v) {
             if (v) {
@@ -240,6 +268,7 @@ export default {
             this.materialFormKey++
             this.modalTitle = '编辑项目'
             this.showModel = true
+            this.projectID = data.id
             this.type = 'edit'
             this.$nextTick(() => {
                 this.$refs.materialForm.getShotageInfo(data.id)
@@ -249,6 +278,7 @@ export default {
             this.modalTitle = '编辑项目'
             this.showFormModel = true
             this.modelType = 'edit'
+            this.projectID = data.id
             this.$nextTick(() => {
                 this.$refs.materialFormMoel.initData(data.id)
             })
@@ -256,13 +286,24 @@ export default {
         handleSubmit() {
             this.$refs.materialFormMoel.handleSubmit(() => {
                 this.showFormModel = false
-                this.pagination.current = 1
-                this.dataSource = []
-                this.getData()
+                this.getShotageInfo(this.projectID)
+                // this.pagination.current = 1
+                // this.dataSource = []
+                // this.getData()
             })
         },
-   
+        async getShotageInfo(id) {
+            let res = await getShotageInfo({ id })
+            let idx = this.dataSource.findIndex(item => item.id == id)
+            if (idx != -1) {
+                this.$set(this.dataSource, idx, res.data.data)
+            }
+        },
         async delShotageInfo(data, index) {
+            if(data.locked == 1) {
+                this.$message.warning("该数据已被锁定")
+                return
+            }
             const params = {
                 id: data.id,
                 "deleted": 1
@@ -398,6 +439,7 @@ export default {
                     color: rgb(254, 185, 94);
                 }
             }
+
             .qrcode {
                 cursor: pointer;
                 font-size: 22px;
@@ -455,6 +497,7 @@ export default {
         top: 19px
     }
 }
+
 .processCom {
     .ant-modal {
         top: 30px

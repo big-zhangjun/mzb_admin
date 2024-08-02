@@ -1,9 +1,12 @@
 <template>
     <a-card :bordered="false">
         <a-form :form="form">
-            <a-form-item :label="'选择项目'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+            <a-form-item v-if="type == 'add'" :label="'选择项目'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                 <a-button type="primtry" @click="showModel = true">选择项目</a-button>
                 {{ projectInfo.customerName }}
+            </a-form-item>
+            <a-form-item v-else :label="'选择项目'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                {{ detail.customerName }}
             </a-form-item>
             <a-form-item :label="'发货单位'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                 <a-select :placeholder="'请选择发货单位'" @change="handleDeliveryChange"
@@ -19,10 +22,20 @@
                         }}</a-select-option>
                 </a-select>
             </a-form-item>
+            <a-form-item :label="'金蝶单号'" v-if="permission.includes(5)" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-input :placeholder="'请输入金蝶单号'"
+                    v-decorator="['kingdeeBill', { rules: [{ required: false, message: '请输入金蝶单号' }] }]" />
+            </a-form-item>
             <a-form-item :label="'完整率'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
                 <a-input disabled :placeholder="'请输入完整率'"
                     v-decorator="['progress', { rules: [{ required: false, message: '请输入完整率' }] }]" />
             </a-form-item>
+            <a-form-item :label="'备注'" :labelCol="{ span: 6 }" :wrapperCol="{ span: 18 }">
+                <a-textarea rows="4" :placeholder="'请输入备注'"
+                    v-decorator="['remark', { rules: [{ required: false, message: '请输入备注' }] }]" />
+            </a-form-item>
+
+         
         </a-form>
         <a-modal v-model="showModel" title="项目列表" @ok="handleSelect" :width="900">
             <cusModel ref="cusModel" />
@@ -63,6 +76,10 @@ export default {
         type: {
             type: String,
             default: "add"
+        },
+        permission: {
+            type: Array,
+            default: ()=> []
         }
     },
     methods: {
@@ -76,6 +93,8 @@ export default {
             let keys = [
                 "fromCompany",
                 "source",
+                "kingdeeBill",
+                "remark"
             ]
             this.detail = res.data.data
             Object.keys(res.data.data).forEach((item) => {
