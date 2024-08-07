@@ -179,10 +179,10 @@ export default {
 
                 },
                 {
-                    title: '是否签收',
+                    title: '签收数量',
                     dataIndex: 'ready',
                     customRender: (text) => {
-                        return text == 0 ? '否' : '是'
+                        return text 
                     }
                 },
                 {

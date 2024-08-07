@@ -143,7 +143,19 @@ export default {
                         {
                             name: "系统改造",
                             value: '系统改造'
-                        }
+                        },
+                        {
+                            name: "冷却系统",
+                            value: '冷却系统'
+                        },
+                        {
+                            name: "烘箱",
+                            value: '烘箱'
+                        },
+                        {
+                            name: "缓冲罐",
+                            value: '缓冲罐'
+                        },
                     ],
                     placeholder: "请选择产品名称"
                 },

@@ -51,6 +51,7 @@ export default {
                 "系统改造",
                 "冷却系统",
                 "烘箱",
+                "缓冲罐"
             ],
             columns: [
                 {

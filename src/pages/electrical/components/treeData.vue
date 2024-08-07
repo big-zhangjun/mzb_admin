@@ -23,6 +23,9 @@
                             <a-input @pressEnter="handleSearch" v-model="MaterialModel" placeholder="请输入规格"></a-input>
                         </a-form-item>
                     </a-col>
+                    <a-col :md="8" :sm="24">
+                       <a-button @click="handleReset" style="margin-top: 4px;">重置</a-button>
+                    </a-col>
                 </a-form>
             </a-row>
 
@@ -121,6 +124,12 @@ export default {
     //     deleteRecord: 'delete'
     // },
     methods: {
+        handleReset() {
+            this.materialName = ""
+            this.MaterialModel = ""
+            this.pagination.current = 1
+            this.getMaterialList()
+        },
         async init(list) {
             this.filterList = list
             const res = await getMaterialGroupList({ parentId: 0 })
