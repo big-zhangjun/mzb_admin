@@ -106,7 +106,7 @@
             <a-empty v-if="!dataSource.length" style="margin: 0 auto;" />
             <a-card class="card" v-for="item in dataSource" :key="item.id">
                 <div class="header">
-                    <h1 :title="item.id">{{ item.customerName }}<span>（型号：{{ item.model }}）</span></h1>
+                    <h1 :title="item.id" @click="copyToClipboard(item.customerName )">{{ item.customerName }}<span @click.stop="copyToClipboard(item.model )">（型号：{{ item.model }}）</span></h1>
                     <a-icon type="qrcode" class="qrcode" @click="handlePrintQrcode(item)" />
                     <a style="margin-right: 20px" @click="handleMemorandums(item)">备忘录</a>
                     <a style="margin-right: 20px" @click="handleDetail(item)">电气分析</a>
@@ -117,11 +117,11 @@
                     </a-tag>
                 </div>
                 <div class="content flex">
-                    <div class="item">
+                    <div class="item" @click="copyToClipboard(item.productName )">
                         <div class="label">产品名称：</div>
                         <div class="value">{{ item.productName }}</div>
                     </div>
-                    <div class="item num">
+                    <div class="item num"  @click="copyToClipboard(item.productNumber )">
                         <div class="label">产品编号：</div>
                         <div class="value">{{ item.productNumber }}</div>
                     </div>
@@ -448,6 +448,17 @@ export default {
         this.getData()
     },
     methods: {
+        copyToClipboard(text) {
+            var textarea = document.createElement('textarea');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = 0;
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            this.$message.success("复制成功")
+        },
         handleLookFile(data, idx) {
             this.projectID = data.id
             this.showFile = true

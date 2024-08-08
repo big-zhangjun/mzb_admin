@@ -48,7 +48,7 @@
                 <div class="box">
                     <div class="left">
                         <div class="title">
-                            <h1 :title="item.id">{{ item.customerName || '通用耗材领料' }}</h1>
+                            <h1 :title="item.id" @click="copyToClipboard(item.customerName || '通用耗材领料' )">{{ item.customerName || '通用耗材领料' }}</h1>
                             <div class="tags" v-if="item.productName">
                                 <div class="item">{{ item.productName }}</div>
                             </div>
@@ -66,12 +66,12 @@
                                 <div class="value">{{ item.number }}</div>
                             </div> -->
 
-                            <div class="item">
+                            <div class="item" @click="copyToClipboard(item.customerName )">
                                 <div class="label">客户名称：</div>
                                 <div class="value">{{ item.customerName || '--' }}</div>
                             </div>
-                            <div class="item">
-                                <div class="label">产品编号：</div>
+                            <div class="item" @click="copyToClipboard(item.productNumber )">
+                                <div class="label" >产品编号：</div>
                                 <div class="value">{{ item.productNumber || '--' }}</div>
                             </div>
                             <div class="item">
@@ -217,6 +217,17 @@ export default {
         }
     },
     methods: {
+        copyToClipboard(text) {
+            var textarea = document.createElement('textarea');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = 0;
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            this.$message.success("复制成功")
+        },
         handleInfiniteOnLoad() {
             this.pagination.current++
             this.getData()

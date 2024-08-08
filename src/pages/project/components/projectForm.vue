@@ -3,7 +3,7 @@
         <a-form :form="form">
             <a-row :gutter="24">
                 <a-col :span="8" v-for="item in dataSouce" :key="item.key">
-                    <a-form-item :label="item.label" :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }"  >
+                    <a-form-item :label="item.label" :labelCol="{ span: 10 }" :wrapperCol="{ span: 14 }">
                         <a-input :placeholder="item.placeholder" v-if="item.type == 'input'"
                             v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }, { min: 6, message: '长度至少为 6!' }, { max: 32, message: '长度至多为 32!' }, { max: 32, message: '长度至多为 32!' }] }]" />
 
@@ -12,7 +12,7 @@
                             v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]">
                             <a-select-option :value="_item.value" v-for="_item in item.options" :key="_item.value">{{
                                 _item.name
-                            }}</a-select-option>
+                                }}</a-select-option>
                         </a-select>
                         <a-select :placeholder="item.placeholder"
                             v-if="item.type == 'defaultSelect' && item.key == 'productName'"
@@ -20,7 +20,7 @@
                             v-decorator="[item.key, { rules: [{ required: item.required, message: item.placeholder }] }]">
                             <a-select-option :value="_item.value" v-for="_item in item.options" :key="_item.value">{{
                                 _item.name
-                            }}</a-select-option>
+                                }}</a-select-option>
                         </a-select>
                         <a-select allowClear mode="combobox" showArrow showSearch multiple="false"
                             @dropdownVisibleChange="dropdownVisibleChange(item)" :placeholder="item.placeholder"
@@ -301,7 +301,7 @@ export default {
                     label: "加热功率(kw)",
                     key: "heatingPower",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -310,7 +310,7 @@ export default {
                 {
                     label: "循环风机",
                     key: "circulatingFan",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -321,7 +321,7 @@ export default {
                     label: "热电偶",
                     key: "thermocouple",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -331,7 +331,7 @@ export default {
                     label: "检测口",
                     key: "inspectionPort",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -341,7 +341,7 @@ export default {
                     label: "罐门结构",
                     key: "doorStructure",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -351,7 +351,7 @@ export default {
                     label: "开门方向",
                     key: "openingDirection",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -361,7 +361,7 @@ export default {
                     label: "真空路数",
                     key: "vacuumNumber",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -371,7 +371,7 @@ export default {
                     label: "真空泵",
                     key: "vacuumPump",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -382,7 +382,7 @@ export default {
                     label: "缓冲罐(m³)",
                     key: "bufferTank",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -392,7 +392,7 @@ export default {
                     label: "真空度",
                     key: "vacuumDegree",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -402,7 +402,7 @@ export default {
                     label: "储气罐规格",
                     key: "assModel",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -412,7 +412,7 @@ export default {
                     label: "储气罐工作压力(MPa)",
                     key: "assWorkingPressure",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -422,7 +422,7 @@ export default {
                     label: "储气罐筒体厚度(mm)",
                     key: "assTankthickness",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -432,7 +432,7 @@ export default {
                     label: "储气罐封头厚度(mm)",
                     key: "assHeadThickness",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -442,7 +442,7 @@ export default {
                     label: "空压机",
                     key: "airCompressor",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -452,7 +452,7 @@ export default {
                     label: "制氮机",
                     key: "nitrogenPlant",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -462,7 +462,7 @@ export default {
                     label: "增压机",
                     key: "supercharger",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -471,7 +471,7 @@ export default {
                 // f
                 {
                     label: "罐内小车",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     key: "carInTank",
                     type: "select",
                     options: [
@@ -482,7 +482,7 @@ export default {
                 {
                     label: "罐外小车",
                     key: "carOutTank",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -492,7 +492,7 @@ export default {
                 {
                     label: "桥架",
                     key: "bridgeTray",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -503,7 +503,7 @@ export default {
                     label: "牵引车",
                     key: "tractor",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -512,7 +512,7 @@ export default {
                 {
                     label: "减压阀",
                     key: "pressureReliefValve",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -522,7 +522,7 @@ export default {
                 {
                     label: "进气阀组",
                     key: "intakeValveGroup",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -533,7 +533,7 @@ export default {
                     label: "排气阀组",
                     key: "exhaustValveGroup",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -542,7 +542,7 @@ export default {
                 {
                     label: "冷却阀组",
                     key: "coolingValveGroup",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     type: "select",
                     options: [
 
@@ -553,7 +553,7 @@ export default {
                     label: "排空阀组",
                     key: "emptyValveGroup",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -563,7 +563,7 @@ export default {
                     label: "气冷阀组",
                     key: "airCooledValve",
                     type: "select",
-                    hide: ['储气罐'],
+                    hide: ['储气罐', '液压釜', '浸渍罐', '系统改造', "冷却系统", "烘箱", '缓冲罐'],
                     options: [
 
                     ],
@@ -580,7 +580,7 @@ export default {
     },
     computed: {
         dataSouce() {
-            return this.formList.filter(item=> {
+            return this.formList.filter(item => {
                 return !item.hide.includes(this.projectType)
             })
         }
